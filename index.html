@@ -13,7 +13,6 @@
       --gold: #FFC627;
       --dark: #191919;
       --border: #d0d0d0;
-      --bg: #f5f5f5;
     }
 
     body {
@@ -33,11 +32,7 @@
       justify-content: flex-end;
       gap: 20px;
     }
-    .top-bar a {
-      font-size: 12px;
-      color: rgba(255,255,255,0.65);
-      text-decoration: none;
-    }
+    .top-bar a { font-size: 12px; color: rgba(255,255,255,0.65); text-decoration: none; }
     .top-bar a:hover { color: #fff; }
 
     /* ── HEADER ── */
@@ -47,44 +42,45 @@
       padding: 10px 32px;
       display: flex;
       align-items: center;
-      gap: 0;
     }
 
-    .header-logo img {
-      height: 56px;
+    .header-logo-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    /* ASU sunburst logo from repo */
+    .asu-logo-img {
+      height: 62px;
       width: auto;
       display: block;
     }
-    .header-logo-fallback {
-      display: none;
-      align-items: center;
-      gap: 10px;
+
+    .header-wordmark {
+      display: flex;
+      flex-direction: column;
     }
-    .header-logo-fallback .asu-box {
-      background: var(--maroon);
-      padding: 4px 10px; border-radius: 2px;
-    }
-    .header-logo-fallback .asu-box span {
+    .header-wordmark .school {
       font-family: 'Roboto Condensed', sans-serif;
-      font-size: 24px; font-weight: 700; font-style: italic;
-      color: #fff; line-height: 1;
+      font-size: 15px; font-weight: 700;
+      color: var(--maroon); line-height: 1.25;
     }
-    .header-logo-fallback .txt { display: flex; flex-direction: column; }
-    .header-logo-fallback .txt .t1 { font-size: 10px; color: #777; }
-    .header-logo-fallback .txt .t2 { font-size: 18px; font-weight: 700; font-family: 'Roboto Condensed', sans-serif; color: var(--dark); }
+    .header-wordmark .univ {
+      font-size: 10.5px; color: #666; line-height: 1.3;
+    }
 
     .header-divider {
       width: 1px; height: 46px;
       background: var(--border);
-      margin: 0 20px;
-      flex-shrink: 0;
+      margin: 0 20px; flex-shrink: 0;
     }
 
     .header-site-name {
       font-family: 'Roboto Condensed', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--dark);
+      font-size: 20px; font-weight: 700; color: var(--dark);
     }
 
     /* ── NAV ── */
@@ -92,48 +88,47 @@
       background: #fff;
       border-bottom: 3px solid var(--maroon);
       padding: 0 32px;
-      display: flex;
-      align-items: center;
+      display: flex; align-items: center;
     }
     .nav a {
       padding: 12px 16px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--dark);
-      text-decoration: none;
+      font-size: 14px; font-weight: 500;
+      color: var(--dark); text-decoration: none;
       border-bottom: 3px solid transparent;
       margin-bottom: -3px;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
+      display: inline-flex; align-items: center; gap: 5px;
       white-space: nowrap;
       transition: color 0.15s, border-color 0.15s;
     }
-    .nav a:hover, .nav a.active {
-      color: var(--maroon);
-      border-bottom-color: var(--maroon);
-    }
+    .nav a:hover, .nav a.active { color: var(--maroon); border-bottom-color: var(--maroon); }
 
-    /* ── HERO — gold highlight ONLY behind the text words, not a big block ── */
+    /* ── HERO WITH CAMPUS PHOTO ── */
     .page-hero {
-      background: var(--bg);
-      padding: 48px 32px 40px;
+      position: relative;
+      padding: 64px 32px 56px;
       border-bottom: 1px solid var(--border);
+      overflow: hidden;
+      background-image: url('campus.jpg');
+      background-size: cover;
+      background-position: center 40%;
     }
-
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.48);
+    }
     .page-hero h1 {
+      position: relative;
+      z-index: 1;
       font-family: 'Roboto Condensed', sans-serif;
-      font-size: 56px;
-      font-weight: 700;
-      line-height: 1.1;
-      color: var(--dark);
+      font-size: 58px; font-weight: 700;
+      line-height: 1.1; color: #fff;
     }
-
-    /* Gold mark wraps ONLY the text — tight padding, no big block */
     .page-hero h1 mark {
       background: var(--gold);
       color: var(--dark);
-      padding: 0 4px;
+      padding: 2px 6px;
       display: inline;
       -webkit-box-decoration-break: clone;
       box-decoration-break: clone;
@@ -142,8 +137,7 @@
     /* ── BREADCRUMB ── */
     .breadcrumb {
       padding: 9px 32px;
-      font-size: 12.5px;
-      color: #777;
+      font-size: 12.5px; color: #777;
       border-bottom: 1px solid #eee;
       background: #fff;
     }
@@ -151,53 +145,43 @@
     .breadcrumb a:hover { text-decoration: underline; }
     .breadcrumb .sep { margin: 0 6px; color: #bbb; }
 
-    /* ── MAIN — centered list just like CISA ── */
+    /* ── MAIN ── */
     main {
-      flex: 1;
-      padding: 48px 32px 64px;
+      flex: 1; padding: 48px 32px 64px;
       background: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      display: flex; flex-direction: column; align-items: center;
     }
 
     .link-list {
       list-style: none;
-      width: 100%;
-      max-width: 860px;
+      width: 100%; max-width: 860px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 14px;
     }
 
     .link-list li a {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       text-align: center;
-      padding: 26px 16px;
+      padding: 28px 16px;
       border: 1px solid var(--border);
       border-radius: 3px;
       text-decoration: none;
       font-family: 'Roboto Condensed', sans-serif;
-      font-size: 17px;
-      font-weight: 700;
+      font-size: 17px; font-weight: 700;
       color: var(--maroon);
       background: #fff;
       transition: background 0.15s, box-shadow 0.15s, border-color 0.15s;
       line-height: 1.3;
     }
-
     .link-list li a:hover {
       background: #fdf5f7;
       border-color: var(--maroon);
       box-shadow: 0 2px 12px rgba(140,29,64,0.1);
     }
 
-    /* 4th card: center it when alone in last row */
-    .link-list li:last-child:nth-child(3n+1) {
-      grid-column: 2;
-    }
+    /* Center lone card in last row */
+    .link-list li:last-child:nth-child(3n+1) { grid-column: 2; }
 
     .note {
       margin-top: 32px;
@@ -205,45 +189,32 @@
       background: #fffae6;
       border-left: 4px solid var(--gold);
       border-radius: 0 4px 4px 0;
-      font-size: 13.5px;
-      color: #7a5c00;
-      line-height: 1.6;
-      max-width: 860px;
-      width: 100%;
+      font-size: 13.5px; color: #7a5c00; line-height: 1.6;
+      max-width: 860px; width: 100%;
     }
 
-    /* ══════════════════════
+    /* ══════════════════
        FOOTER
-    ══════════════════════ */
-    .footer-dark {
-      background: #1e1e1e;
-      padding: 36px 32px 28px;
-    }
+    ══════════════════ */
+    .footer-dark { background: #1e1e1e; padding: 36px 32px 28px; }
 
     .footer-top-row {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 24px;
+      display: flex; align-items: flex-start;
+      justify-content: space-between; flex-wrap: wrap; gap: 24px;
     }
 
-    .footer-logo-img {
-      height: 50px;
-      width: auto;
-      /* invert so logo shows white on dark bg */
+    /* Fulton logo — white version on dark bg */
+    .footer-fulton-img {
+      height: 52px; width: auto;
+      display: block;
+      /* invert to white since logo is dark colored */
       filter: brightness(0) invert(1);
     }
-    .footer-logo-fallback { display: none; align-items: center; gap: 10px; }
-    .footer-asu-badge { background: #fff; padding: 4px 8px; border-radius: 2px; }
-    .footer-asu-badge span {
-      font-family: 'Roboto Condensed', sans-serif;
-      font-size: 20px; font-weight: 700; font-style: italic;
-      color: #1e1e1e; line-height: 1; display: block;
+
+    .footer-asu-univ {
+      font-size: 13px; color: rgba(255,255,255,0.65);
+      margin-top: 6px; font-family: 'Roboto', sans-serif;
     }
-    .footer-eng-words .tl { font-size: 11px; color: rgba(255,255,255,0.6); }
-    .footer-eng-words .bl { font-size: 20px; font-weight: 700; color: #fff; font-family: 'Roboto Condensed', sans-serif; }
-    .footer-asu-univ { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 5px; }
 
     .footer-social { display: flex; gap: 8px; align-items: center; }
     .footer-social a {
@@ -257,8 +228,14 @@
 
     .footer-hr { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 24px 0 20px; }
 
-    .footer-school { font-family: 'Roboto Condensed', sans-serif; font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 10px; }
-    .footer-contact { font-size: 13.5px; color: rgba(255,255,255,0.5); text-decoration: underline; display: inline-block; margin-bottom: 20px; }
+    .footer-school-name {
+      font-family: 'Roboto Condensed', sans-serif;
+      font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 10px;
+    }
+    .footer-contact {
+      font-size: 13.5px; color: rgba(255,255,255,0.5);
+      text-decoration: underline; display: inline-block; margin-bottom: 20px;
+    }
     .footer-contact:hover { color: #fff; }
     .footer-btn {
       display: inline-block; background: var(--gold); color: #1a1a1a;
@@ -268,8 +245,7 @@
     .footer-btn:hover { background: #ffe082; }
 
     .footer-gold {
-      background: var(--gold);
-      padding: 15px 32px;
+      background: var(--gold); padding: 15px 32px;
       display: flex; align-items: center;
       justify-content: space-between; flex-wrap: wrap; gap: 12px;
     }
@@ -291,10 +267,11 @@
     @media (max-width: 800px) {
       .link-list { grid-template-columns: repeat(2, 1fr); }
       .link-list li:last-child:nth-child(3n+1) { grid-column: auto; }
+      .page-hero h1 { font-size: 40px; }
     }
     @media (max-width: 520px) {
       .link-list { grid-template-columns: 1fr; }
-      .page-hero h1 { font-size: 38px; }
+      .page-hero h1 { font-size: 32px; }
       .header, .nav, .page-hero, main, .breadcrumb, .footer-dark, .footer-gold, .top-bar { padding-left: 16px; padding-right: 16px; }
     }
   </style>
@@ -310,20 +287,14 @@
 
   <!-- HEADER -->
   <header class="header">
-    <div class="header-logo">
-      <img
-        src="https://poly.engineering.asu.edu/wp-content/uploads/2019/08/thepolytechnicschool_horiz_rgb_maroononwhite.png"
-        alt="The Polytechnic School — Arizona State University"
-        onerror="this.style.display='none'; document.getElementById('hfb').style.display='flex';"
-      />
-      <div class="header-logo-fallback" id="hfb">
-        <div class="asu-box"><span>ASU</span></div>
-        <div class="txt">
-          <span class="t1">Arizona State University</span>
-          <span class="t2">The Polytechnic School</span>
-        </div>
+    <a class="header-logo-block" href="index.html">
+      <!-- asu-logo.png uploaded directly to your repo -->
+      <img class="asu-logo-img" src="asu-logo.png" alt="Arizona State University" />
+      <div class="header-wordmark">
+        <span class="school">The Polytechnic School</span>
+        <span class="univ">Arizona State University</span>
       </div>
-    </div>
+    </a>
     <div class="header-divider"></div>
     <div class="header-site-name">The Polytechnic School Employees</div>
   </header>
@@ -339,8 +310,9 @@
     <a href="#">All Support Resources</a>
   </nav>
 
-  <!-- HERO -->
+  <!-- HERO WITH CAMPUS PHOTO -->
   <div class="page-hero">
+    <!-- campus.jpg uploaded directly to your repo -->
     <h1><mark>Emergency and<br>Evacuation Plans</mark></h1>
   </div>
 
@@ -354,13 +326,11 @@
   <!-- MAIN -->
   <main>
     <ul class="link-list">
-
       <!-- TO ADD PDF: replace href="#" with your PDF path e.g. href="pdfs/Peralta_2024.pdf" -->
       <li><a href="#">Peralta Hall (PRLTA)</a></li>
       <li><a href="#">Santa Catalina Hall (SANCA)</a></li>
       <li><a href="#">Santan Hall (STN)</a></li>
       <li><a href="#">Sutton Hall (SUT)</a></li>
-
     </ul>
 
     <div class="note">
@@ -373,19 +343,8 @@
     <div class="footer-dark">
       <div class="footer-top-row">
         <div>
-          <img
-            class="footer-logo-img"
-            src="https://poly.engineering.asu.edu/wp-content/uploads/2019/08/thepolytechnicschool_horiz_rgb_maroononwhite.png"
-            alt="The Polytechnic School"
-            onerror="this.style.display='none'; document.getElementById('ffb').style.display='flex';"
-          />
-          <div class="footer-logo-fallback" id="ffb">
-            <div class="footer-asu-badge"><span>ASU</span></div>
-            <div class="footer-eng-words">
-              <div class="tl">Ira A. Fulton Schools of</div>
-              <div class="bl">Engineering</div>
-            </div>
-          </div>
+          <!-- fulton-logo.png uploaded directly to your repo -->
+          <img class="footer-fulton-img" src="fulton-logo.png" alt="Ira A. Fulton Schools of Engineering" />
           <div class="footer-asu-univ">Arizona State University</div>
         </div>
 
@@ -410,7 +369,7 @@
 
       <hr class="footer-hr" />
 
-      <div class="footer-school">The Polytechnic School</div>
+      <div class="footer-school-name">The Polytechnic School</div>
       <a href="https://poly.engineering.asu.edu/contact/" class="footer-contact">Contact Us</a><br />
       <a href="https://give.asu.edu" class="footer-btn">Support ASU</a>
     </div>
