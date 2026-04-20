@@ -4,25 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Emergency and Evacuation Plans — The Polytechnic School</title>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <!-- ASU uses Roboto Condensed for headings and Roboto for body, closest to their Webspark theme -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --maroon: #8C1D40;
       --gold: #FFC627;
-      --gold-light: #ffe082;
       --dark: #1e1e1e;
       --white: #fff;
-      --off-white: #f7f7f7;
-      --border: #ddd;
+      --border: #d0d0d0;
       --text-dark: #191919;
-      --text-mid: #444;
+      --text-mid: #555;
       --text-light: #777;
     }
 
     body {
-      font-family: 'Source Sans 3', Arial, sans-serif;
+      font-family: 'Roboto', Arial, sans-serif;
       background: var(--white);
       color: var(--text-dark);
       min-height: 100vh;
@@ -30,18 +29,17 @@
       flex-direction: column;
     }
 
-    /* ── TOP BAR ── */
+    /* ── TOP UTILITY BAR ── */
     .top-bar {
-      background: var(--dark);
-      padding: 6px 40px;
+      background: #2b2b2b;
+      padding: 5px 40px;
       display: flex;
       justify-content: flex-end;
       gap: 20px;
     }
     .top-bar a {
-      font-size: 12px;
-      color: rgba(255,255,255,0.65);
-      text-decoration: none;
+      font-size: 12px; font-family: 'Roboto', sans-serif;
+      color: rgba(255,255,255,0.7); text-decoration: none;
     }
     .top-bar a:hover { color: #fff; }
 
@@ -49,60 +47,49 @@
     .header {
       background: var(--white);
       border-bottom: 1px solid var(--border);
-      padding: 0 40px;
-      display: flex;
-      align-items: stretch;
-      justify-content: space-between;
-    }
-
-    .header-logo {
+      padding: 10px 40px;
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 14px 0;
-      text-decoration: none;
+      justify-content: space-between;
+      gap: 20px;
     }
 
-    .header-logo img {
-      height: 60px;
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* The uploaded logo image */
+    .header-logo-img {
+      height: 62px;
       width: auto;
+      display: block;
     }
 
-    /* Fallback logo */
-    .logo-fallback {
+    /* Fallback text logo if image doesn't load */
+    .header-logo-fallback {
       display: none;
       align-items: center;
       gap: 10px;
     }
-    .logo-fallback .asu-box {
-      background: var(--maroon);
-      padding: 5px 10px;
-      border-radius: 2px;
+    .header-logo-fallback .asu-box {
+      background: var(--maroon); padding: 5px 10px; border-radius: 2px;
     }
-    .logo-fallback .asu-box span {
-      font-size: 24px; font-weight: 900; font-style: italic;
-      color: #fff; letter-spacing: 0.04em; line-height: 1;
+    .header-logo-fallback .asu-box span {
+      font-family: 'Roboto Condensed', sans-serif;
+      font-size: 26px; font-weight: 700; font-style: italic;
+      color: #fff; letter-spacing: 0.03em; line-height: 1;
     }
-    .logo-fallback .school-name {
-      display: flex; flex-direction: column;
-    }
-    .logo-fallback .school-name .line1 {
-      font-size: 11px; color: var(--text-light); line-height: 1.2;
-    }
-    .logo-fallback .school-name .line2 {
-      font-size: 18px; font-weight: 700; color: var(--text-dark); line-height: 1.2;
-    }
+    .header-logo-fallback .eng-block .top { font-size: 11px; color: var(--text-light); line-height: 1.3; }
+    .header-logo-fallback .eng-block .bottom { font-size: 20px; font-weight: 700; color: var(--text-dark); line-height: 1.1; font-family: 'Roboto Condensed', sans-serif; }
+
+    .header-divider { width: 1px; height: 50px; background: var(--border); flex-shrink: 0; }
 
     .header-site-name {
-      display: flex;
-      align-items: center;
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text-dark);
-      letter-spacing: 0.01em;
-      padding: 0 0 0 20px;
-      border-left: 1px solid var(--border);
-      margin-left: 4px;
+      font-family: 'Roboto Condensed', sans-serif;
+      font-size: 22px; font-weight: 700;
+      color: var(--text-dark); letter-spacing: 0.01em;
     }
 
     /* ── NAV ── */
@@ -112,44 +99,45 @@
       padding: 0 40px;
       display: flex;
       align-items: center;
-      gap: 0;
     }
-    .nav a {
+    .nav-home {
+      padding: 12px 14px;
+      color: var(--text-dark); text-decoration: none;
+      border-bottom: 3px solid transparent; margin-bottom: -3px;
       display: flex; align-items: center;
-      padding: 14px 18px;
-      font-size: 14px; font-weight: 600;
-      color: var(--text-dark);
-      text-decoration: none;
-      border-bottom: 3px solid transparent;
-      margin-bottom: -3px;
-      transition: border-color 0.15s, color 0.15s;
-      white-space: nowrap;
     }
-    .nav a:hover { color: var(--maroon); border-bottom-color: var(--maroon); }
-    .nav a.active { color: var(--maroon); border-bottom-color: var(--maroon); }
-    .nav a svg { margin-right: 4px; }
+    .nav-home:hover { border-bottom-color: var(--maroon); }
+    .nav a {
+      padding: 12px 16px;
+      font-size: 14px; font-weight: 500; font-family: 'Roboto', sans-serif;
+      color: var(--text-dark); text-decoration: none;
+      border-bottom: 3px solid transparent; margin-bottom: -3px;
+      display: inline-flex; align-items: center; gap: 4px;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .nav a:hover, .nav a.active { color: var(--maroon); border-bottom-color: var(--maroon); }
 
-    /* ── HERO TITLE (matches CISA gold highlight style) ── */
+    /* ── PAGE HERO — matches CISA gold highlight style ── */
     .page-hero {
-      background: var(--off-white);
-      padding: 48px 40px 40px;
+      background: #f5f5f5;
+      padding: 50px 40px 44px;
       border-bottom: 1px solid var(--border);
     }
-
     .page-hero h1 {
-      font-size: 52px;
-      font-weight: 900;
+      font-family: 'Roboto Condensed', sans-serif;
+      font-size: 58px;
+      font-weight: 700;
       line-height: 1.05;
       color: var(--text-dark);
-      max-width: 700px;
+      max-width: 750px;
     }
-
-    /* Gold highlight effect like CISA */
-    .page-hero h1 .highlight {
+    /* Each word/line wrapped in gold highlight like CISA */
+    .page-hero h1 mark {
       background: var(--gold);
-      padding: 0 6px 2px;
+      color: var(--text-dark);
+      padding: 1px 4px 3px;
       display: inline;
-      line-height: 1.15;
       box-decoration-break: clone;
       -webkit-box-decoration-break: clone;
     }
@@ -158,65 +146,70 @@
     .breadcrumb {
       padding: 10px 40px;
       background: var(--white);
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid #eee;
       font-size: 13px;
       color: var(--text-light);
+      font-family: 'Roboto', sans-serif;
     }
+    .breadcrumb ol { list-style: none; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+    .breadcrumb li { display: flex; align-items: center; gap: 4px; }
+    .breadcrumb li + li::before { content: '/'; color: #bbb; margin-right: 4px; }
     .breadcrumb a { color: var(--maroon); text-decoration: none; }
     .breadcrumb a:hover { text-decoration: underline; }
-    .breadcrumb .sep { margin: 0 8px; }
 
-    /* ── MAIN ── */
+    /* ── MAIN CONTENT ── */
     main {
       flex: 1;
       padding: 48px 40px 64px;
-      background: var(--white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    /* Grid matching CISA 3-column layout */
+    /* 3-column centered grid — matching CISA */
     .building-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, 280px);
       gap: 16px;
-      max-width: 960px;
+      justify-content: center;
+      width: 100%;
+      max-width: 920px;
     }
 
     .building-card {
       border: 1px solid var(--border);
-      border-radius: 4px;
-      overflow: hidden;
+      border-radius: 3px;
       text-decoration: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 28px 20px;
+      padding: 30px 20px;
       background: var(--white);
-      transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
-      animation: fadeUp 0.4s ease both;
+      transition: box-shadow 0.18s, border-color 0.18s, transform 0.18s;
+      animation: fadeUp 0.35s ease both;
+      text-align: center;
     }
-
     .building-card:nth-child(1) { animation-delay: 0.04s; }
     .building-card:nth-child(2) { animation-delay: 0.09s; }
     .building-card:nth-child(3) { animation-delay: 0.14s; }
     .building-card:nth-child(4) { animation-delay: 0.19s; }
 
     .building-card:hover {
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      border-color: var(--maroon);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+      border-color: #999;
       transform: translateY(-2px);
     }
 
-    .card-inner { text-align: center; }
-
     .card-name {
-      font-size: 17px;
+      font-family: 'Roboto Condensed', sans-serif;
+      font-size: 18px;
       font-weight: 700;
       color: var(--text-dark);
-      line-height: 1.3;
-      /* Gold highlight on name — matches CISA style */
+      /* Gold highlight on name — exact CISA style */
       background: var(--gold);
-      padding: 2px 8px 3px;
+      padding: 2px 6px 3px;
       display: inline;
+      line-height: 1.4;
       box-decoration-break: clone;
       -webkit-box-decoration-break: clone;
     }
@@ -225,13 +218,14 @@
       display: block;
       margin-top: 10px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 500;
       color: var(--text-light);
-      letter-spacing: 0.08em;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
+      font-family: 'Roboto', sans-serif;
     }
 
-    .card-pdf {
+    .card-pdf-label {
       display: inline-flex;
       align-items: center;
       gap: 5px;
@@ -239,47 +233,55 @@
       font-size: 11px;
       font-weight: 700;
       color: var(--maroon);
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
+      font-family: 'Roboto', sans-serif;
     }
 
     .note {
       margin-top: 32px;
-      padding: 14px 18px;
-      background: #fff8e6;
+      padding: 14px 20px;
+      background: #fffae6;
       border-left: 4px solid var(--gold);
-      border-radius: 0 6px 6px 0;
-      font-size: 13px;
+      border-radius: 0 4px 4px 0;
+      font-size: 13.5px;
       color: #7a5c00;
       line-height: 1.6;
-      max-width: 960px;
+      max-width: 920px;
+      width: 100%;
+      font-family: 'Roboto', sans-serif;
     }
 
-    /* ══════════════════════
-       FOOTER
-    ══════════════════════ */
-    .footer-dark { background: #1e1e1e; padding: 36px 40px 28px; }
-
+    /* ══════════════════════════
+       FOOTER — exact match to screenshot
+    ══════════════════════════ */
+    .footer-dark {
+      background: #1e1e1e;
+      padding: 36px 40px 28px;
+    }
     .footer-top-row {
       display: flex; align-items: flex-start;
       justify-content: space-between; flex-wrap: wrap; gap: 24px;
     }
 
+    /* Logo in footer: white ASU sunburst + Ira A Fulton text */
     .footer-logo-area { display: flex; align-items: flex-start; gap: 12px; }
+    .footer-logo-img { height: 52px; width: auto; filter: brightness(0) invert(1); }
 
-    .footer-asu-badge {
-      background: #fff; padding: 5px 9px 4px; border-radius: 2px; flex-shrink: 0;
-    }
+    /* Fallback if logo doesn't load */
+    .footer-logo-fallback { display: none; align-items: center; gap: 10px; }
+    .footer-asu-badge { background: #fff; padding: 5px 9px 4px; border-radius: 2px; flex-shrink: 0; }
     .footer-asu-badge span {
-      font-size: 22px; font-weight: 900; font-style: italic;
+      font-family: 'Roboto Condensed', sans-serif;
+      font-size: 22px; font-weight: 700; font-style: italic;
       color: #1e1e1e; letter-spacing: 0.04em; line-height: 1; display: block;
     }
-    .footer-school-words { display: flex; flex-direction: column; justify-content: center; }
-    .footer-school-words .top-line { font-size: 11.5px; color: rgba(255,255,255,0.65); font-weight: 400; line-height: 1.3; }
-    .footer-school-words .big-line { font-size: 23px; font-weight: 800; color: #fff; line-height: 1.1; letter-spacing: -0.01em; }
-    .footer-asu-univ { font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 400; margin-top: 5px; }
+    .footer-eng-words .top-line { font-size: 11.5px; color: rgba(255,255,255,0.65); font-weight: 400; line-height: 1.3; font-family: 'Roboto', sans-serif; }
+    .footer-eng-words .big-line { font-size: 22px; font-weight: 700; color: #fff; line-height: 1.1; font-family: 'Roboto Condensed', sans-serif; }
+    .footer-asu-univ { font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 400; margin-top: 5px; font-family: 'Roboto', sans-serif; }
 
-    .footer-social { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+    /* Social icons */
+    .footer-social { display: flex; align-items: center; gap: 8px; }
     .footer-social a {
       display: flex; align-items: center; justify-content: center;
       width: 38px; height: 38px; border-radius: 6px;
@@ -289,64 +291,70 @@
     }
     .footer-social a:hover { background: rgba(255,198,39,0.15); color: var(--gold); border-color: rgba(255,198,39,0.3); }
 
-    .footer-dark-divider { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 26px 0 22px; }
+    .footer-dark-divider { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 24px 0 20px; }
 
-    .footer-polytechnic-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+    .footer-school-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 10px; font-family: 'Roboto Condensed', sans-serif; letter-spacing: 0.01em; }
     .footer-contact-link {
       font-size: 13.5px; color: rgba(255,255,255,0.55);
       text-decoration: underline; text-underline-offset: 2px;
-      text-decoration-color: rgba(255,255,255,0.2);
       display: inline-block; margin-bottom: 20px;
+      font-family: 'Roboto', sans-serif;
     }
     .footer-contact-link:hover { color: #fff; }
-
     .footer-support-btn {
       display: inline-block; background: var(--gold); color: #1a1a1a;
       font-size: 14px; font-weight: 700; padding: 11px 28px;
-      border-radius: 50px; text-decoration: none; transition: background 0.2s;
+      border-radius: 50px; text-decoration: none;
+      font-family: 'Roboto', sans-serif;
+      transition: background 0.2s;
     }
-    .footer-support-btn:hover { background: var(--gold-light); }
+    .footer-support-btn:hover { background: #ffe082; }
 
+    /* Gold bottom bar */
     .footer-gold {
-      background: var(--gold); padding: 16px 40px;
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 14px;
+      background: var(--gold);
+      padding: 16px 40px;
+      display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 14px;
     }
     .footer-gold-links { display: flex; flex-wrap: wrap; gap: 6px 28px; }
-    .footer-gold-links a { font-size: 14px; font-weight: 600; color: #1a1a1a; text-decoration: none; }
+    .footer-gold-links a {
+      font-size: 14px; font-weight: 600; color: #1a1a1a; text-decoration: none;
+      font-family: 'Roboto', sans-serif;
+    }
     .footer-gold-links a:hover { text-decoration: underline; }
 
     .footer-ranked { display: flex; align-items: center; gap: 10px; }
-    .footer-ranked-text .line1 { font-size: 16px; font-weight: 800; color: #1a1a1a; line-height: 1.15; }
-    .footer-ranked-text .line2 { font-size: 12px; color: #333; font-weight: 500; }
+    .footer-ranked-text .line1 { font-size: 16px; font-weight: 700; color: #1a1a1a; line-height: 1.15; font-family: 'Roboto Condensed', sans-serif; }
+    .footer-ranked-text .line2 { font-size: 12px; color: #333; font-weight: 400; font-family: 'Roboto', sans-serif; }
     .footer-ranked-badge {
       width: 46px; height: 46px; background: #1a1a1a; border-radius: 50%;
       display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    .footer-ranked-badge .hash { font-size: 9px; font-weight: 800; color: #fff; line-height: 1; margin-bottom: -2px; }
-    .footer-ranked-badge .one { font-size: 22px; font-weight: 900; color: #fff; line-height: 1; }
+    .footer-ranked-badge .hash { font-size: 9px; font-weight: 700; color: #fff; line-height: 1; margin-bottom: -2px; font-family: 'Roboto', sans-serif; }
+    .footer-ranked-badge .one { font-size: 22px; font-weight: 900; color: #fff; line-height: 1; font-family: 'Roboto Condensed', sans-serif; }
 
     /* ── ANIMATIONS ── */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
+      from { opacity: 0; transform: translateY(12px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 720px) {
-      .building-grid { grid-template-columns: repeat(2, 1fr); }
-      .header, .nav, .page-hero, main, .footer-dark, .footer-gold { padding-left: 20px; padding-right: 20px; }
-      .page-hero h1 { font-size: 36px; }
-      .top-bar { padding: 6px 20px; }
+    @media (max-width: 900px) {
+      .building-grid { grid-template-columns: repeat(2, 1fr); max-width: 600px; }
     }
-    @media (max-width: 480px) {
-      .building-grid { grid-template-columns: 1fr; }
+    @media (max-width: 600px) {
+      .building-grid { grid-template-columns: 1fr; max-width: 340px; }
+      .header, .nav, .page-hero, main, .footer-dark, .footer-gold, .top-bar, .breadcrumb { padding-left: 20px; padding-right: 20px; }
+      .page-hero h1 { font-size: 38px; }
+      .footer-top-row { flex-direction: column; }
     }
   </style>
 </head>
 <body>
 
-  <!-- TOP BAR -->
+  <!-- TOP UTILITY BAR -->
   <div class="top-bar">
     <a href="https://www.asu.edu">ASU Home</a>
     <a href="https://my.asu.edu">My ASU</a>
@@ -355,27 +363,30 @@
 
   <!-- HEADER -->
   <header class="header">
-    <a class="header-logo" href="index.html">
+    <div class="header-left">
+      <!-- Primary: try to load official Polytechnic School logo -->
       <img
+        class="header-logo-img"
         src="https://poly.engineering.asu.edu/wp-content/uploads/2019/08/thepolytechnicschool_horiz_rgb_maroononwhite.png"
         alt="The Polytechnic School — Arizona State University"
-        onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';"
+        onerror="this.style.display='none'; document.getElementById('hdr-fallback').style.display='flex';"
       />
-      <div class="logo-fallback" id="logo-fallback">
+      <div class="header-logo-fallback" id="hdr-fallback">
         <div class="asu-box"><span>ASU</span></div>
-        <div class="school-name">
-          <span class="line1">Arizona State University</span>
-          <span class="line2">The Polytechnic School</span>
+        <div>
+          <div class="top" style="font-size:11px;color:#777;line-height:1.3;">Arizona State University</div>
+          <div class="bottom" style="font-size:20px;font-weight:700;font-family:'Roboto Condensed',sans-serif;">The Polytechnic School</div>
         </div>
       </div>
-    </a>
-    <div class="header-site-name">The Polytechnic School Employees</div>
+      <div class="header-divider"></div>
+      <div class="header-site-name">The Polytechnic School Employees</div>
+    </div>
   </header>
 
   <!-- NAV -->
   <nav class="nav">
-    <a href="index.html">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 7L8 2l6 5v7a1 1 0 01-1 1h-3v-4H6v4H3a1 1 0 01-1-1V7z" stroke="#444" stroke-width="1.3" fill="none"/></svg>
+    <a class="nav-home" href="index.html" aria-label="Home">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 7.5L8 2l6 5.5V14a.5.5 0 01-.5.5h-4V10h-3v4.5h-4A.5.5 0 012 14V7.5z" stroke="#444" stroke-width="1.3" fill="none" stroke-linejoin="round"/></svg>
     </a>
     <a href="#" class="active">Emergency Resources</a>
     <a href="#">Human Resources</a>
@@ -386,28 +397,29 @@
   <!-- HERO TITLE -->
   <div class="page-hero">
     <h1>
-      <span class="highlight">Emergency and</span><br>
-      <span class="highlight">Evacuation Plans</span>
+      <mark>Emergency and</mark><br>
+      <mark>Evacuation Plans</mark>
     </h1>
   </div>
 
   <!-- BREADCRUMB -->
   <div class="breadcrumb">
-    <a href="index.html">Home</a>
-    <span class="sep">/</span>
-    Emergency and Evacuation Plans | The Polytechnic School Employee Resources
+    <ol>
+      <li><a href="index.html">Home</a></li>
+      <li>Emergency and Evacuation Plans | The Polytechnic School Employee Resources</li>
+    </ol>
   </div>
 
   <!-- MAIN -->
   <main>
     <div class="building-grid">
 
-      <!-- TO ADD PDF: replace href="#" with your PDF path e.g. href="pdfs/Peralta_2024.pdf" -->
+      <!-- TO ADD PDF: replace href="#" with your PDF path, e.g. href="pdfs/Peralta_2024.pdf" -->
       <a class="building-card" href="#">
-        <div class="card-inner">
-          <span class="card-name">Peralta Hall</span>
-          <span class="card-code">PRLTA</span>
-          <div class="card-pdf">
+        <div>
+          <span class="card-name">Peralta Hall (PRLTA)</span>
+          <span class="card-code"></span>
+          <div class="card-pdf-label">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="0.5" width="8.5" height="11" rx="1" stroke="#8C1D40" stroke-width="1.1"/><path d="M3 4h5.5M3 6h5.5M3 8h3.5" stroke="#8C1D40" stroke-width="0.9" stroke-linecap="round"/></svg>
             PDF
           </div>
@@ -415,10 +427,9 @@
       </a>
 
       <a class="building-card" href="#">
-        <div class="card-inner">
-          <span class="card-name">Santa Catalina Hall</span>
-          <span class="card-code">SANCA</span>
-          <div class="card-pdf">
+        <div>
+          <span class="card-name">Santa Catalina Hall (SANCA)</span>
+          <div class="card-pdf-label">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="0.5" width="8.5" height="11" rx="1" stroke="#8C1D40" stroke-width="1.1"/><path d="M3 4h5.5M3 6h5.5M3 8h3.5" stroke="#8C1D40" stroke-width="0.9" stroke-linecap="round"/></svg>
             PDF
           </div>
@@ -426,10 +437,9 @@
       </a>
 
       <a class="building-card" href="#">
-        <div class="card-inner">
-          <span class="card-name">Santan Hall</span>
-          <span class="card-code">STN</span>
-          <div class="card-pdf">
+        <div>
+          <span class="card-name">Santan Hall (STN)</span>
+          <div class="card-pdf-label">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="0.5" width="8.5" height="11" rx="1" stroke="#8C1D40" stroke-width="1.1"/><path d="M3 4h5.5M3 6h5.5M3 8h3.5" stroke="#8C1D40" stroke-width="0.9" stroke-linecap="round"/></svg>
             PDF
           </div>
@@ -437,10 +447,9 @@
       </a>
 
       <a class="building-card" href="#">
-        <div class="card-inner">
-          <span class="card-name">Sutton Hall</span>
-          <span class="card-code">SUT</span>
-          <div class="card-pdf">
+        <div>
+          <span class="card-name">Sutton Hall (SUT)</span>
+          <div class="card-pdf-label">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="0.5" width="8.5" height="11" rx="1" stroke="#8C1D40" stroke-width="1.1"/><path d="M3 4h5.5M3 6h5.5M3 8h3.5" stroke="#8C1D40" stroke-width="0.9" stroke-linecap="round"/></svg>
             PDF
           </div>
@@ -450,7 +459,7 @@
     </div>
 
     <div class="note">
-      <strong>PDF links coming soon.</strong> Plans are being finalized and will be linked here. For immediate assistance, contact ASU Environmental Health &amp; Safety.
+      <strong>PDF links coming soon.</strong> Plans are being finalized and will be linked here. For immediate assistance contact ASU Environmental Health &amp; Safety.
     </div>
   </main>
 
@@ -458,16 +467,30 @@
   <footer>
     <div class="footer-dark">
       <div class="footer-top-row">
+
+        <!-- Logo: use uploaded white version on dark bg -->
         <div>
           <div class="footer-logo-area">
-            <div class="footer-asu-badge"><span>ASU</span></div>
-            <div class="footer-school-words">
-              <div class="top-line">Ira A. Fulton Schools of</div>
-              <div class="big-line">Engineering</div>
+            <img
+              class="footer-logo-img"
+              src="https://poly.engineering.asu.edu/wp-content/uploads/2019/08/thepolytechnicschool_horiz_rgb_maroononwhite.png"
+              alt="The Polytechnic School"
+              onerror="this.style.display='none'; document.getElementById('ftr-fallback').style.display='flex';"
+            />
+            <div class="footer-logo-fallback" id="ftr-fallback">
+              <div class="footer-asu-badge"><span>ASU</span></div>
+              <div>
+                <div class="footer-eng-words">
+                  <div class="top-line">Ira A. Fulton Schools of</div>
+                  <div class="big-line">Engineering</div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="footer-asu-univ">Arizona State University</div>
         </div>
+
+        <!-- Social icons -->
         <div class="footer-social">
           <a href="https://www.facebook.com/ASUFultonEngineering" target="_blank" aria-label="Facebook">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
@@ -489,11 +512,12 @@
 
       <hr class="footer-dark-divider" />
 
-      <div class="footer-polytechnic-name">The Polytechnic School</div>
+      <div class="footer-school-name">The Polytechnic School</div>
       <a href="https://poly.engineering.asu.edu/contact/" class="footer-contact-link">Contact Us</a><br />
       <a href="https://give.asu.edu" class="footer-support-btn">Support ASU</a>
     </div>
 
+    <!-- Gold bar -->
     <div class="footer-gold">
       <div class="footer-gold-links">
         <a href="https://www.asu.edu/about/locations-maps">Maps and Locations</a>
