@@ -36,6 +36,27 @@
     .top-bar a { font-size: 13px; color: rgba(255,255,255,0.65); text-decoration: none; }
     .top-bar a:hover { color: #fff; }
 
+    /* ── FULTON BANNER — fades out on scroll ── */
+    .fulton-banner {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 40px;
+      display: flex;
+      align-items: center;
+      transition: opacity 0.35s ease, max-height 0.4s ease, padding 0.35s ease;
+      overflow: hidden;
+      max-height: 100px;
+      opacity: 1;
+    }
+    .fulton-banner.hidden {
+      opacity: 0;
+      max-height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    .fulton-banner img { height: 52px; width: auto; }
+
     /* ── HEADER ── */
     .header {
       background: #fff;
@@ -298,7 +319,7 @@
     }
 
     .footer-fulton-img {
-      height: 64px;
+      height: 100px;
       width: auto;
       display: block;
     }
@@ -385,6 +406,11 @@
     <a href="https://www.asu.edu">ASU Home</a>
     <a href="https://my.asu.edu">My ASU</a>
     <a href="https://poly.engineering.asu.edu">The Polytechnic School</a>
+  </div>
+
+  <!-- FULTON BANNER — fades out on scroll -->
+  <div class="fulton-banner" id="fulton-banner">
+    <img src="asu_fultonengineering_white.png" alt="Ira A. Fulton Schools of Engineering" style="height:52px; width:auto; filter: invert(1) brightness(0);" />
   </div>
 
   <!-- HEADER -->
@@ -485,10 +511,21 @@
         <a href="https://my.asu.edu">My ASU</a>
       </div>
       <div class="footer-ranked">
-        <img src="ASU-rank-logo.png" alt="Repeatedly ranked #1" style="height:56px; width:auto;" />
+        <img src="ASU-rank-logo.png" alt="Repeatedly ranked #1" style="height:100px; width:auto;" />
       </div>
     </div>
   </footer>
+
+  <script>
+    const banner = document.getElementById('fulton-banner');
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 60) {
+        banner.classList.add('hidden');
+      } else {
+        banner.classList.remove('hidden');
+      }
+    });
+  </script>
 
 </body>
 </html>
