@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Emergency and Evacuation Plans — The Polytechnic School</title>
 
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -16,7 +17,7 @@
     }
 
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Inter', Arial, sans-serif;
       background: #fff;
       color: var(--dark);
       display: flex;
@@ -64,7 +65,7 @@
       gap: 2px;
     }
     .header-wordmark .school {
-      font-family: Arial, sans-serif; letter-spacing: -0.01em;
+      font-family: 'Inter', Arial, sans-serif; letter-spacing: -0.01em;
       font-size: 22px;
       font-weight: 700;
       color: var(--maroon);
@@ -86,7 +87,7 @@
     }
 
     .header-site-name {
-      font-family: Arial, sans-serif; letter-spacing: -0.01em;
+      font-family: 'Inter', Arial, sans-serif; letter-spacing: -0.01em;
       font-size: 24px;
       font-weight: 700;
       color: var(--dark);
@@ -150,30 +151,27 @@
     }
 
     .page-hero h1 {
-      font-family: Arial, sans-serif; letter-spacing: -0.01em;
+      font-family: 'Inter', Arial, sans-serif;
       font-size: 68px;
       font-weight: 700;
-      line-height: 1.08;
+      line-height: 1.4;
       color: #fff;
     }
 
-    /* Gold highlight animates in with a "whoosh" sweep */
+    /* Gold highlight — roomy so descenders like g and y never clip */
     .page-hero h1 mark {
       background: var(--gold);
       color: var(--dark);
-      padding: 2px 8px 4px;
+      padding: 0 8px;
       display: inline;
       -webkit-box-decoration-break: clone;
       box-decoration-break: clone;
-      /* Start invisible, clip from left */
-      position: relative;
-      background-clip: padding-box;
     }
 
-    /* The whoosh: scale from 0 width to full, fade in */
+    /* The whoosh: slide in from left */
     .page-hero h1 .line1 {
       display: block;
-      overflow: hidden;
+      overflow: visible;
       opacity: 0;
       transform: translateX(-30px);
       animation: whoosh 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
@@ -181,7 +179,7 @@
 
     .page-hero h1 .line2 {
       display: block;
-      overflow: hidden;
+      overflow: visible;
       opacity: 0;
       transform: translateX(-30px);
       animation: whoosh 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.42s forwards;
@@ -252,7 +250,7 @@
       border: 1.5px solid var(--border);
       border-radius: 4px;
       text-decoration: none;
-      font-family: Arial, sans-serif; letter-spacing: -0.01em;
+      font-family: 'Inter', Arial, sans-serif; letter-spacing: -0.01em;
       font-size: 18px;
       font-weight: 700;
       color: var(--maroon);
@@ -321,7 +319,7 @@
     .footer-hr { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 26px 0 22px; }
 
     .footer-school-name {
-      font-family: Arial, sans-serif; letter-spacing: -0.01em;
+      font-family: 'Inter', Arial, sans-serif; letter-spacing: -0.01em;
       font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 10px;
     }
     .footer-contact {
@@ -352,7 +350,7 @@
     .footer-ranked { display: flex; align-items: center; gap: 10px; }
     .footer-ranked .rt .l1 {
       font-size: 16px; font-weight: 700; color: #1a1a1a;
-      font-family: Arial, sans-serif; letter-spacing: -0.01em;
+      font-family: 'Inter', Arial, sans-serif; letter-spacing: -0.01em;
     }
     .footer-ranked .rt .l2 { font-size: 12px; color: #333; }
     .footer-badge {
@@ -362,7 +360,7 @@
     .footer-badge .h { font-size: 9px; font-weight: 700; color: #fff; line-height: 1; }
     .footer-badge .n {
       font-size: 22px; font-weight: 900; color: #fff; line-height: 1;
-      font-family: Arial, sans-serif; letter-spacing: -0.01em;
+      font-family: 'Inter', Arial, sans-serif; letter-spacing: -0.01em;
     }
 
     /* ── RESPONSIVE ── */
@@ -487,14 +485,7 @@
         <a href="https://my.asu.edu">My ASU</a>
       </div>
       <div class="footer-ranked">
-        <div class="rt">
-          <div class="l1">Repeatedly ranked</div>
-          <div class="l2">30+ lists in the last 3 years</div>
-        </div>
-        <div class="footer-badge">
-          <div class="h">#</div>
-          <div class="n">1</div>
-        </div>
+        <img src="ASU_rank_logo.avif" alt="Repeatedly ranked #1" style="height:56px; width:auto;" />
       </div>
     </div>
   </footer>
