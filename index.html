@@ -4,221 +4,281 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Emergency and Evacuation Plans — The Polytechnic School</title>
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Source+Sans+3:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --maroon: #8C1D40;
       --gold: #FFC627;
-      --gold-light: #ffe08a;
-      --white: #ffffff;
-      --off-white: #faf9f7;
-      --light-gray: #f0eeec;
-      --border: #e2ddd8;
-      --text-dark: #1a1a1a;
-      --text-light: #888;
+      --gold-light: #ffe082;
+      --dark: #1e1e1e;
+      --white: #fff;
+      --off-white: #f7f7f7;
+      --border: #ddd;
+      --text-dark: #191919;
+      --text-mid: #444;
+      --text-light: #777;
     }
 
     body {
       font-family: 'Source Sans 3', Arial, sans-serif;
-      background: var(--off-white);
+      background: var(--white);
       color: var(--text-dark);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
+    /* ── TOP BAR ── */
+    .top-bar {
+      background: var(--dark);
+      padding: 6px 40px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 20px;
+    }
+    .top-bar a {
+      font-size: 12px;
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+    }
+    .top-bar a:hover { color: #fff; }
+
     /* ── HEADER ── */
-    .header-top {
+    .header {
       background: var(--white);
       border-bottom: 1px solid var(--border);
-      padding: 14px 40px;
+      padding: 0 40px;
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+    }
+
+    .header-logo {
       display: flex;
       align-items: center;
-      gap: 20px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      gap: 14px;
+      padding: 14px 0;
+      text-decoration: none;
     }
-    .asu-logo img { height: 58px; width: auto; display: block; }
-    .asu-logo-fallback { display: none; flex-direction: column; align-items: flex-start; }
-    .asu-logo-fallback .logo-box { background: var(--maroon); padding: 4px 9px; border-radius: 3px; }
-    .asu-logo-fallback .logo-box span { font-size: 22px; font-weight: 700; font-style: italic; color: #fff; letter-spacing: 0.05em; line-height: 1; }
-    .asu-logo-fallback .logo-sub { font-size: 10px; color: var(--maroon); font-weight: 600; margin-top: 3px; line-height: 1.35; }
-    .header-divider { width: 1px; height: 48px; background: var(--border); flex-shrink: 0; }
-    .header-site-title {
-      font-family: 'Merriweather', Georgia, serif;
-      font-size: 18px; font-weight: 700;
-      color: var(--maroon); line-height: 1.3;
-    }
-    .gold-bar { height: 5px; background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold)); }
 
-    /* ── HERO ── */
-    .hero {
+    .header-logo img {
+      height: 60px;
+      width: auto;
+    }
+
+    /* Fallback logo */
+    .logo-fallback {
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-fallback .asu-box {
       background: var(--maroon);
-      padding: 44px 40px 40px;
-      position: relative; overflow: hidden;
+      padding: 5px 10px;
+      border-radius: 2px;
     }
-    .hero::before {
-      content: ''; position: absolute; top: -60px; right: -60px;
-      width: 300px; height: 300px; border-radius: 50%;
-      background: rgba(255,198,39,0.08);
+    .logo-fallback .asu-box span {
+      font-size: 24px; font-weight: 900; font-style: italic;
+      color: #fff; letter-spacing: 0.04em; line-height: 1;
     }
-    .hero::after {
-      content: ''; position: absolute; bottom: -80px; left: 20%;
-      width: 220px; height: 220px; border-radius: 50%;
-      background: rgba(255,255,255,0.04);
+    .logo-fallback .school-name {
+      display: flex; flex-direction: column;
     }
-    .hero-inner { position: relative; z-index: 1; max-width: 700px; }
-    .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(255,198,39,0.15); border: 1px solid rgba(255,198,39,0.35);
-      color: var(--gold); font-size: 11px; font-weight: 700;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      padding: 5px 14px; border-radius: 20px; margin-bottom: 16px;
-      animation: fadeDown 0.5s ease both;
+    .logo-fallback .school-name .line1 {
+      font-size: 11px; color: var(--text-light); line-height: 1.2;
     }
-    .hero h1 {
-      font-family: 'Merriweather', Georgia, serif;
-      font-size: 34px; font-weight: 700; color: var(--white);
-      line-height: 1.2; margin-bottom: 12px;
-      animation: fadeDown 0.5s 0.1s ease both;
+    .logo-fallback .school-name .line2 {
+      font-size: 18px; font-weight: 700; color: var(--text-dark); line-height: 1.2;
     }
-    .hero h1 span { color: var(--gold); }
-    .hero-sub {
-      font-size: 15px; color: rgba(255,255,255,0.72);
-      line-height: 1.65; max-width: 520px;
-      animation: fadeDown 0.5s 0.2s ease both;
+
+    .header-site-name {
+      display: flex;
+      align-items: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-dark);
+      letter-spacing: 0.01em;
+      padding: 0 0 0 20px;
+      border-left: 1px solid var(--border);
+      margin-left: 4px;
+    }
+
+    /* ── NAV ── */
+    .nav {
+      background: var(--white);
+      border-bottom: 3px solid var(--maroon);
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    .nav a {
+      display: flex; align-items: center;
+      padding: 14px 18px;
+      font-size: 14px; font-weight: 600;
+      color: var(--text-dark);
+      text-decoration: none;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -3px;
+      transition: border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .nav a:hover { color: var(--maroon); border-bottom-color: var(--maroon); }
+    .nav a.active { color: var(--maroon); border-bottom-color: var(--maroon); }
+    .nav a svg { margin-right: 4px; }
+
+    /* ── HERO TITLE (matches CISA gold highlight style) ── */
+    .page-hero {
+      background: var(--off-white);
+      padding: 48px 40px 40px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-hero h1 {
+      font-size: 52px;
+      font-weight: 900;
+      line-height: 1.05;
+      color: var(--text-dark);
+      max-width: 700px;
+    }
+
+    /* Gold highlight effect like CISA */
+    .page-hero h1 .highlight {
+      background: var(--gold);
+      padding: 0 6px 2px;
+      display: inline;
+      line-height: 1.15;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
     }
 
     /* ── BREADCRUMB ── */
     .breadcrumb {
-      background: var(--light-gray); border-bottom: 1px solid var(--border);
-      padding: 9px 40px; font-size: 12.5px; color: var(--text-light);
+      padding: 10px 40px;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-light);
     }
     .breadcrumb a { color: var(--maroon); text-decoration: none; }
     .breadcrumb a:hover { text-decoration: underline; }
-    .breadcrumb .sep { margin: 0 8px; color: #ccc; }
+    .breadcrumb .sep { margin: 0 8px; }
 
     /* ── MAIN ── */
-    main { flex: 1; padding: 40px 40px 64px; max-width: 800px; width: 100%; }
-    .section-label {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--maroon);
-      margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
+    main {
+      flex: 1;
+      padding: 48px 40px 64px;
+      background: var(--white);
     }
-    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-    /* ── BUILDING CARDS ── */
-    .building-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-    .building-list li {
-      opacity: 0; transform: translateY(18px);
-      animation: slideUp 0.45s ease forwards;
+    /* Grid matching CISA 3-column layout */
+    .building-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      max-width: 960px;
     }
-    .building-list li:nth-child(1) { animation-delay: 0.05s; }
-    .building-list li:nth-child(2) { animation-delay: 0.13s; }
-    .building-list li:nth-child(3) { animation-delay: 0.21s; }
-    .building-list li:nth-child(4) { animation-delay: 0.29s; }
 
-    .building-list li a {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 18px 22px; background: var(--white);
-      border: 1px solid var(--border); border-radius: 10px;
-      text-decoration: none; position: relative; overflow: hidden;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    .building-card {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 20px;
+      background: var(--white);
+      transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+      animation: fadeUp 0.4s ease both;
     }
-    .building-list li a::before {
-      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
-      background: var(--maroon); border-radius: 10px 0 0 10px;
-      transition: width 0.25s ease, background 0.25s ease;
-    }
-    .building-list li a:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(140,29,64,0.13); border-color: var(--maroon); }
-    .building-list li a:hover::before { width: 8px; background: var(--gold); }
 
-    .building-left { display: flex; align-items: center; gap: 16px; padding-left: 14px; }
-    .building-icon {
-      width: 44px; height: 44px; background: #f9edf1;
-      border-radius: 8px; display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; transition: background 0.2s;
+    .building-card:nth-child(1) { animation-delay: 0.04s; }
+    .building-card:nth-child(2) { animation-delay: 0.09s; }
+    .building-card:nth-child(3) { animation-delay: 0.14s; }
+    .building-card:nth-child(4) { animation-delay: 0.19s; }
+
+    .building-card:hover {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      border-color: var(--maroon);
+      transform: translateY(-2px);
     }
-    .building-list li a:hover .building-icon { background: #fdf0e6; }
-    .building-info .name {
-      font-size: 16px; font-weight: 700; color: var(--text-dark);
-      transition: color 0.2s; letter-spacing: 0.01em;
+
+    .card-inner { text-align: center; }
+
+    .card-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-dark);
+      line-height: 1.3;
+      /* Gold highlight on name — matches CISA style */
+      background: var(--gold);
+      padding: 2px 8px 3px;
+      display: inline;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
     }
-    .building-list li a:hover .building-info .name { color: var(--maroon); }
-    .building-info .code {
-      font-size: 12px; color: var(--text-light); margin-top: 3px;
-      font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase;
+
+    .card-code {
+      display: block;
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-light);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
-    .building-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-    .download-hint {
-      font-size: 12px; color: var(--text-light); opacity: 0;
-      transform: translateX(6px); transition: opacity 0.2s, transform 0.2s;
+
+    .card-pdf {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--maroon);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
-    .building-list li a:hover .download-hint { opacity: 1; transform: translateX(0); }
-    .pdf-tag {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 12px; font-weight: 700; color: var(--maroon);
-      background: #f9edf1; border: 1.5px solid #e8c0cc;
-      padding: 6px 14px; border-radius: 6px; letter-spacing: 0.04em;
-      transition: background 0.2s, border-color 0.2s, color 0.2s;
-    }
-    .building-list li a:hover .pdf-tag { background: var(--maroon); border-color: var(--maroon); color: #fff; }
-    .building-list li a:hover .pdf-tag svg rect,
-    .building-list li a:hover .pdf-tag svg path { stroke: #fff; }
 
     .note {
-      margin-top: 28px; padding: 14px 18px;
-      background: #fff8e6; border: 1px solid #f0d580;
-      border-left: 4px solid var(--gold); border-radius: 0 8px 8px 0;
-      font-size: 13px; color: #7a5c00; line-height: 1.6;
+      margin-top: 32px;
+      padding: 14px 18px;
+      background: #fff8e6;
+      border-left: 4px solid var(--gold);
+      border-radius: 0 6px 6px 0;
+      font-size: 13px;
+      color: #7a5c00;
+      line-height: 1.6;
+      max-width: 960px;
     }
 
-    /* ══════════════════════════
+    /* ══════════════════════
        FOOTER
-    ══════════════════════════ */
-
-    /* Top dark section */
+    ══════════════════════ */
     .footer-dark { background: #1e1e1e; padding: 36px 40px 28px; }
 
     .footer-top-row {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 24px;
+      display: flex; align-items: flex-start;
+      justify-content: space-between; flex-wrap: wrap; gap: 24px;
     }
 
-    /* Logo: ASU box + "Ira A. Fulton Schools of Engineering" */
     .footer-logo-area { display: flex; align-items: flex-start; gap: 12px; }
 
     .footer-asu-badge {
-      background: #fff;
-      padding: 5px 9px 4px;
-      border-radius: 2px;
-      flex-shrink: 0;
+      background: #fff; padding: 5px 9px 4px; border-radius: 2px; flex-shrink: 0;
     }
     .footer-asu-badge span {
       font-size: 22px; font-weight: 900; font-style: italic;
-      color: #1e1e1e; letter-spacing: 0.04em; line-height: 1;
-      display: block;
+      color: #1e1e1e; letter-spacing: 0.04em; line-height: 1; display: block;
     }
-
     .footer-school-words { display: flex; flex-direction: column; justify-content: center; }
-    .footer-school-words .top-line {
-      font-size: 11.5px; color: rgba(255,255,255,0.65);
-      font-weight: 400; line-height: 1.3;
-    }
-    .footer-school-words .big-line {
-      font-size: 23px; font-weight: 800; color: #fff;
-      line-height: 1.1; letter-spacing: -0.01em;
-    }
-    .footer-asu-univ {
-      font-size: 13px; color: rgba(255,255,255,0.7);
-      font-weight: 400; margin-top: 5px;
-    }
+    .footer-school-words .top-line { font-size: 11.5px; color: rgba(255,255,255,0.65); font-weight: 400; line-height: 1.3; }
+    .footer-school-words .big-line { font-size: 23px; font-weight: 800; color: #fff; line-height: 1.1; letter-spacing: -0.01em; }
+    .footer-asu-univ { font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 400; margin-top: 5px; }
 
-    /* Social icons */
     .footer-social { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
     .footer-social a {
       display: flex; align-items: center; justify-content: center;
@@ -227,21 +287,11 @@
       color: rgba(255,255,255,0.65); text-decoration: none;
       transition: background 0.2s, color 0.2s, border-color 0.2s;
     }
-    .footer-social a:hover {
-      background: rgba(255,198,39,0.15); color: var(--gold);
-      border-color: rgba(255,198,39,0.3);
-    }
+    .footer-social a:hover { background: rgba(255,198,39,0.15); color: var(--gold); border-color: rgba(255,198,39,0.3); }
 
-    /* Divider */
-    .footer-dark-divider {
-      border: none; border-top: 1px solid rgba(255,255,255,0.1);
-      margin: 26px 0 22px;
-    }
+    .footer-dark-divider { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 26px 0 22px; }
 
-    /* School name + links */
-    .footer-polytechnic-name {
-      font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 10px;
-    }
+    .footer-polytechnic-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 10px; }
     .footer-contact-link {
       font-size: 13.5px; color: rgba(255,255,255,0.55);
       text-decoration: underline; text-underline-offset: 2px;
@@ -251,26 +301,19 @@
     .footer-contact-link:hover { color: #fff; }
 
     .footer-support-btn {
-      display: inline-block;
-      background: var(--gold); color: #1a1a1a;
-      font-size: 14px; font-weight: 700;
-      padding: 11px 28px; border-radius: 50px;
-      text-decoration: none; transition: background 0.2s;
+      display: inline-block; background: var(--gold); color: #1a1a1a;
+      font-size: 14px; font-weight: 700; padding: 11px 28px;
+      border-radius: 50px; text-decoration: none; transition: background 0.2s;
     }
     .footer-support-btn:hover { background: var(--gold-light); }
 
-    /* Bottom gold bar */
     .footer-gold {
-      background: var(--gold);
-      padding: 16px 40px;
-      display: flex; align-items: center;
-      justify-content: space-between;
+      background: var(--gold); padding: 16px 40px;
+      display: flex; align-items: center; justify-content: space-between;
       flex-wrap: wrap; gap: 14px;
     }
     .footer-gold-links { display: flex; flex-wrap: wrap; gap: 6px 28px; }
-    .footer-gold-links a {
-      font-size: 14px; font-weight: 600; color: #1a1a1a; text-decoration: none;
-    }
+    .footer-gold-links a { font-size: 14px; font-weight: 600; color: #1a1a1a; text-decoration: none; }
     .footer-gold-links a:hover { text-decoration: underline; }
 
     .footer-ranked { display: flex; align-items: center; gap: 10px; }
@@ -278,183 +321,133 @@
     .footer-ranked-text .line2 { font-size: 12px; color: #333; font-weight: 500; }
     .footer-ranked-badge {
       width: 46px; height: 46px; background: #1a1a1a; border-radius: 50%;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      flex-shrink: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0;
     }
     .footer-ranked-badge .hash { font-size: 9px; font-weight: 800; color: #fff; line-height: 1; margin-bottom: -2px; }
     .footer-ranked-badge .one { font-size: 22px; font-weight: 900; color: #fff; line-height: 1; }
 
     /* ── ANIMATIONS ── */
-    @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(18px); }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 640px) {
-      .header-top, main, .footer-dark, .footer-gold { padding-left: 20px; padding-right: 20px; }
-      .hero { padding: 28px 20px; }
-      .hero h1 { font-size: 26px; }
-      .breadcrumb { padding: 8px 20px; }
-      .download-hint { display: none; }
-      .footer-top-row { flex-direction: column; }
-      .footer-gold { flex-direction: column; align-items: flex-start; }
+    @media (max-width: 720px) {
+      .building-grid { grid-template-columns: repeat(2, 1fr); }
+      .header, .nav, .page-hero, main, .footer-dark, .footer-gold { padding-left: 20px; padding-right: 20px; }
+      .page-hero h1 { font-size: 36px; }
+      .top-bar { padding: 6px 20px; }
+    }
+    @media (max-width: 480px) {
+      .building-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <a href="https://www.asu.edu">ASU Home</a>
+    <a href="https://my.asu.edu">My ASU</a>
+    <a href="https://poly.engineering.asu.edu">The Polytechnic School</a>
+  </div>
+
   <!-- HEADER -->
-  <header>
-    <div class="header-top">
-      <div class="asu-logo">
-        <img
-          src="https://www.asu.edu/asuthemes/5.0/assets/arizona-state-university-logo.png"
-          alt="Arizona State University"
-          onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';"
-        />
-        <div class="asu-logo-fallback" id="logo-fallback">
-          <div class="logo-box"><span>ASU</span></div>
-          <div class="logo-sub">Arizona State<br>University</div>
+  <header class="header">
+    <a class="header-logo" href="index.html">
+      <img
+        src="https://poly.engineering.asu.edu/wp-content/uploads/2019/08/thepolytechnicschool_horiz_rgb_maroononwhite.png"
+        alt="The Polytechnic School — Arizona State University"
+        onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';"
+      />
+      <div class="logo-fallback" id="logo-fallback">
+        <div class="asu-box"><span>ASU</span></div>
+        <div class="school-name">
+          <span class="line1">Arizona State University</span>
+          <span class="line2">The Polytechnic School</span>
         </div>
       </div>
-      <div class="header-divider"></div>
-      <div class="header-site-title">The Polytechnic School Employees</div>
-    </div>
-    <div class="gold-bar"></div>
+    </a>
+    <div class="header-site-name">The Polytechnic School Employees</div>
   </header>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-inner">
-      <div class="hero-eyebrow">
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5L8 4.6l3.4.5-2.5 2.4.6 3.4L6.5 9.3 3.5 10.9l.6-3.4L1.6 5.1l3.4-.5z" stroke="#FFC627" stroke-width="1.2" fill="none"/></svg>
-        The Polytechnic School
-      </div>
-      <h1>Emergency &amp; <span>Evacuation Plans</span></h1>
-      <p class="hero-sub">Download the official emergency and evacuation plan for each building managed by The Polytechnic School. Plans are updated annually.</p>
-    </div>
-  </section>
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="index.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 7L8 2l6 5v7a1 1 0 01-1 1h-3v-4H6v4H3a1 1 0 01-1-1V7z" stroke="#444" stroke-width="1.3" fill="none"/></svg>
+    </a>
+    <a href="#" class="active">Emergency Resources</a>
+    <a href="#">Human Resources</a>
+    <a href="#">Technology Support</a>
+    <a href="#">All Support Resources</a>
+  </nav>
+
+  <!-- HERO TITLE -->
+  <div class="page-hero">
+    <h1>
+      <span class="highlight">Emergency and</span><br>
+      <span class="highlight">Evacuation Plans</span>
+    </h1>
+  </div>
 
   <!-- BREADCRUMB -->
   <div class="breadcrumb">
     <a href="index.html">Home</a>
-    <span class="sep">›</span>
-    Emergency and Evacuation Plans
+    <span class="sep">/</span>
+    Emergency and Evacuation Plans | The Polytechnic School Employee Resources
   </div>
 
   <!-- MAIN -->
   <main>
-    <div class="section-label">Buildings &amp; Facilities</div>
+    <div class="building-grid">
 
-    <ul class="building-list">
+      <!-- TO ADD PDF: replace href="#" with your PDF path e.g. href="pdfs/Peralta_2024.pdf" -->
+      <a class="building-card" href="#">
+        <div class="card-inner">
+          <span class="card-name">Peralta Hall</span>
+          <span class="card-code">PRLTA</span>
+          <div class="card-pdf">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="0.5" width="8.5" height="11" rx="1" stroke="#8C1D40" stroke-width="1.1"/><path d="M3 4h5.5M3 6h5.5M3 8h3.5" stroke="#8C1D40" stroke-width="0.9" stroke-linecap="round"/></svg>
+            PDF
+          </div>
+        </div>
+      </a>
 
-      <li>
-        <!-- TO ADD PDF: replace href="#" with your file path e.g. href="pdfs/Peralta_Evacuation_2024.pdf" -->
-        <a href="#">
-          <div class="building-left">
-            <div class="building-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <rect x="3" y="7" width="14" height="11" rx="1" stroke="#8C1D40" stroke-width="1.4"/>
-                <path d="M1 8L10 2l9 6" stroke="#8C1D40" stroke-width="1.4" stroke-linecap="round"/>
-                <rect x="7.5" y="12" width="5" height="6" rx="0.5" stroke="#8C1D40" stroke-width="1.2"/>
-              </svg>
-            </div>
-            <div class="building-info">
-              <div class="name">Peralta Hall</div>
-              <div class="code">PRLTA</div>
-            </div>
+      <a class="building-card" href="#">
+        <div class="card-inner">
+          <span class="card-name">Santa Catalina Hall</span>
+          <span class="card-code">SANCA</span>
+          <div class="card-pdf">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="0.5" width="8.5" height="11" rx="1" stroke="#8C1D40" stroke-width="1.1"/><path d="M3 4h5.5M3 6h5.5M3 8h3.5" stroke="#8C1D40" stroke-width="0.9" stroke-linecap="round"/></svg>
+            PDF
           </div>
-          <div class="building-right">
-            <span class="download-hint">Download Plan</span>
-            <div class="pdf-tag">
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1.5" y="0.5" width="9" height="12" rx="1.5" stroke="#8C1D40" stroke-width="1.2"/><path d="M3.5 4.5h6M3.5 6.5h6M3.5 8.5h4" stroke="#8C1D40" stroke-width="1" stroke-linecap="round"/></svg>
-              PDF
-            </div>
-          </div>
-        </a>
-      </li>
+        </div>
+      </a>
 
-      <li>
-        <a href="#">
-          <div class="building-left">
-            <div class="building-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <rect x="3" y="7" width="14" height="11" rx="1" stroke="#8C1D40" stroke-width="1.4"/>
-                <path d="M1 8L10 2l9 6" stroke="#8C1D40" stroke-width="1.4" stroke-linecap="round"/>
-                <rect x="7.5" y="12" width="5" height="6" rx="0.5" stroke="#8C1D40" stroke-width="1.2"/>
-              </svg>
-            </div>
-            <div class="building-info">
-              <div class="name">Santa Catalina Hall</div>
-              <div class="code">SANCA</div>
-            </div>
+      <a class="building-card" href="#">
+        <div class="card-inner">
+          <span class="card-name">Santan Hall</span>
+          <span class="card-code">STN</span>
+          <div class="card-pdf">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="0.5" width="8.5" height="11" rx="1" stroke="#8C1D40" stroke-width="1.1"/><path d="M3 4h5.5M3 6h5.5M3 8h3.5" stroke="#8C1D40" stroke-width="0.9" stroke-linecap="round"/></svg>
+            PDF
           </div>
-          <div class="building-right">
-            <span class="download-hint">Download Plan</span>
-            <div class="pdf-tag">
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1.5" y="0.5" width="9" height="12" rx="1.5" stroke="#8C1D40" stroke-width="1.2"/><path d="M3.5 4.5h6M3.5 6.5h6M3.5 8.5h4" stroke="#8C1D40" stroke-width="1" stroke-linecap="round"/></svg>
-              PDF
-            </div>
-          </div>
-        </a>
-      </li>
+        </div>
+      </a>
 
-      <li>
-        <a href="#">
-          <div class="building-left">
-            <div class="building-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <rect x="3" y="7" width="14" height="11" rx="1" stroke="#8C1D40" stroke-width="1.4"/>
-                <path d="M1 8L10 2l9 6" stroke="#8C1D40" stroke-width="1.4" stroke-linecap="round"/>
-                <rect x="7.5" y="12" width="5" height="6" rx="0.5" stroke="#8C1D40" stroke-width="1.2"/>
-              </svg>
-            </div>
-            <div class="building-info">
-              <div class="name">Santan Hall</div>
-              <div class="code">STN</div>
-            </div>
+      <a class="building-card" href="#">
+        <div class="card-inner">
+          <span class="card-name">Sutton Hall</span>
+          <span class="card-code">SUT</span>
+          <div class="card-pdf">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="0.5" width="8.5" height="11" rx="1" stroke="#8C1D40" stroke-width="1.1"/><path d="M3 4h5.5M3 6h5.5M3 8h3.5" stroke="#8C1D40" stroke-width="0.9" stroke-linecap="round"/></svg>
+            PDF
           </div>
-          <div class="building-right">
-            <span class="download-hint">Download Plan</span>
-            <div class="pdf-tag">
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1.5" y="0.5" width="9" height="12" rx="1.5" stroke="#8C1D40" stroke-width="1.2"/><path d="M3.5 4.5h6M3.5 6.5h6M3.5 8.5h4" stroke="#8C1D40" stroke-width="1" stroke-linecap="round"/></svg>
-              PDF
-            </div>
-          </div>
-        </a>
-      </li>
+        </div>
+      </a>
 
-      <li>
-        <a href="#">
-          <div class="building-left">
-            <div class="building-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <rect x="3" y="7" width="14" height="11" rx="1" stroke="#8C1D40" stroke-width="1.4"/>
-                <path d="M1 8L10 2l9 6" stroke="#8C1D40" stroke-width="1.4" stroke-linecap="round"/>
-                <rect x="7.5" y="12" width="5" height="6" rx="0.5" stroke="#8C1D40" stroke-width="1.2"/>
-              </svg>
-            </div>
-            <div class="building-info">
-              <div class="name">Sutton Hall</div>
-              <div class="code">SUT</div>
-            </div>
-          </div>
-          <div class="building-right">
-            <span class="download-hint">Download Plan</span>
-            <div class="pdf-tag">
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1.5" y="0.5" width="9" height="12" rx="1.5" stroke="#8C1D40" stroke-width="1.2"/><path d="M3.5 4.5h6M3.5 6.5h6M3.5 8.5h4" stroke="#8C1D40" stroke-width="1" stroke-linecap="round"/></svg>
-              PDF
-            </div>
-          </div>
-        </a>
-      </li>
-
-    </ul>
+    </div>
 
     <div class="note">
       <strong>PDF links coming soon.</strong> Plans are being finalized and will be linked here. For immediate assistance, contact ASU Environmental Health &amp; Safety.
@@ -463,12 +456,8 @@
 
   <!-- FOOTER -->
   <footer>
-
-    <!-- Dark top section -->
     <div class="footer-dark">
       <div class="footer-top-row">
-
-        <!-- Left: ASU + Engineering logo -->
         <div>
           <div class="footer-logo-area">
             <div class="footer-asu-badge"><span>ASU</span></div>
@@ -479,26 +468,19 @@
           </div>
           <div class="footer-asu-univ">Arizona State University</div>
         </div>
-
-        <!-- Right: Social icons -->
         <div class="footer-social">
-          <!-- Facebook -->
           <a href="https://www.facebook.com/ASUFultonEngineering" target="_blank" aria-label="Facebook">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
           </a>
-          <!-- X / Twitter -->
           <a href="https://twitter.com/ASUEngineering" target="_blank" aria-label="X">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           </a>
-          <!-- Instagram -->
           <a href="https://www.instagram.com/asuengineering" target="_blank" aria-label="Instagram">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
           </a>
-          <!-- LinkedIn -->
           <a href="https://www.linkedin.com/school/ira-a-fulton-schools-of-engineering" target="_blank" aria-label="LinkedIn">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
           </a>
-          <!-- YouTube -->
           <a href="https://www.youtube.com/user/ASUFultonEngineering" target="_blank" aria-label="YouTube">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.95A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#1e1e1e"/></svg>
           </a>
@@ -508,12 +490,10 @@
       <hr class="footer-dark-divider" />
 
       <div class="footer-polytechnic-name">The Polytechnic School</div>
-      <a href="https://poly.engineering.asu.edu/contact/" class="footer-contact-link">Contact Us</a>
-      <br />
+      <a href="https://poly.engineering.asu.edu/contact/" class="footer-contact-link">Contact Us</a><br />
       <a href="https://give.asu.edu" class="footer-support-btn">Support ASU</a>
     </div>
 
-    <!-- Gold bottom bar -->
     <div class="footer-gold">
       <div class="footer-gold-links">
         <a href="https://www.asu.edu/about/locations-maps">Maps and Locations</a>
@@ -533,7 +513,6 @@
         </div>
       </div>
     </div>
-
   </footer>
 
 </body>
