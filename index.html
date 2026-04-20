@@ -83,18 +83,31 @@
     .header-wordmark {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 1px;
+    }
+    .header-wordmark .fulton-line {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--dark);
+      line-height: 1.3;
+      transition: opacity 0.3s ease, max-height 0.3s ease;
+      overflow: hidden;
+      max-height: 30px;
+      opacity: 1;
+    }
+    .header-wordmark .fulton-line.hidden {
+      opacity: 0;
+      max-height: 0;
     }
     .header-wordmark .school {
-      font-family: 'Inter', Arial, sans-serif; letter-spacing: -0.01em;
+      font-family: 'Inter', Arial, sans-serif;
       font-size: 22px;
       font-weight: 700;
-      color: var(--maroon);
+      color: var(--dark);
       line-height: 1.2;
-      letter-spacing: 0.01em;
     }
     .header-wordmark .univ {
-      font-size: 13px;
+      font-size: 12px;
       color: #555;
       line-height: 1.3;
       font-weight: 400;
@@ -384,6 +397,38 @@
       font-family: 'Inter', Arial, sans-serif; letter-spacing: -0.01em;
     }
 
+    .map-section {
+      margin-top: 48px;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .map-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--maroon);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .map-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .campus-map {
+      width: 100%;
+      height: 500px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      display: block;
+    }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 860px) {
       .link-list { grid-template-columns: repeat(2, 1fr); }
@@ -408,22 +453,16 @@
     <a href="https://poly.engineering.asu.edu">The Polytechnic School</a>
   </div>
 
-  <!-- FULTON BANNER — fades out on scroll -->
-  <div class="fulton-banner" id="fulton-banner">
-    <img src="asu_fultonengineering_white.png" alt="Ira A. Fulton Schools of Engineering" style="height:52px; width:auto; filter: invert(1) brightness(0);" />
-  </div>
-
-  <!-- HEADER -->
+  <!-- HEADER — matches official ASU Polytechnic site -->
   <header class="header">
     <a class="header-logo-block" href="index.html">
       <img class="asu-logo-img" src="ASU-logo.webp" alt="Arizona State University" />
       <div class="header-wordmark">
+        <span class="fulton-line" id="fulton-line">Ira A. Fulton Schools of Engineering</span>
         <span class="school">The Polytechnic School</span>
         <span class="univ">Arizona State University</span>
       </div>
     </a>
-    <div class="header-divider"></div>
-    <div class="header-site-name">The Polytechnic School</div>
   </header>
 
   <!-- NAV -->
@@ -466,6 +505,18 @@
 
     <div class="note">
       <strong>PDF links coming soon.</strong> Plans are being finalized and will be linked here. For immediate assistance, contact ASU Environmental Health &amp; Safety.
+    </div>
+
+    <!-- INTERACTIVE MAP -->
+    <div class="map-section">
+      <div class="map-label">Campus Map</div>
+      <iframe
+        src="https://gis.m.asu.edu/asucampus/?extent=-12432573.744%2C3935529.8419%2C-12431688.7466%2C3936736.1138%2C102100"
+        title="ASU Polytechnic Campus Map"
+        class="campus-map"
+        allowfullscreen
+        loading="lazy"
+      ></iframe>
     </div>
   </main>
 
@@ -517,12 +568,12 @@
   </footer>
 
   <script>
-    const banner = document.getElementById('fulton-banner');
+    const fultonLine = document.getElementById('fulton-line');
     window.addEventListener('scroll', function() {
       if (window.scrollY > 60) {
-        banner.classList.add('hidden');
+        fultonLine.classList.add('hidden');
       } else {
-        banner.classList.remove('hidden');
+        fultonLine.classList.remove('hidden');
       }
     });
   </script>
