@@ -583,7 +583,7 @@
     .ar-nav-arrow {
       width: 80px; height: 80px;
       filter: drop-shadow(0 4px 24px rgba(0,0,0,0.5));
-      transition: transform 0.4s ease;
+      transition: transform 0.1s linear;
       animation: navPulse 2s ease-in-out infinite;
     }
 
@@ -1090,43 +1090,51 @@
   // ══════════════════════════════════════════
   // BUILDING DATA — GPS waypoints only
   // ══════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════
+  // BUILDING DATA
+  // Each waypoint has: label, instruction, dist (metres),
+  // bearing (degrees from north to this waypoint from prev),
+  // lat/lng = approximate coords of the waypoint itself
+  // ➜ SWAP IN REAL COORDS WHEN YOU DO SITE WALKTHROUGHS
+  // ASU Polytechnic approx center: 33.3055, -111.6790
+  // ══════════════════════════════════════════════════════════
   const AR_BUILDINGS = {
     PRLTA: {
       name: 'Peralta Hall',
       waypoints: [
-        { label:'Exit your classroom or office', arrow:'⬆', dist:'~5m',  instruction:'Leave bags — walk calmly to door' },
-        { label:'Main corridor — head north', arrow:'⬅', dist:'~22m', instruction:'Turn left at the junction' },
-        { label:'Pass the pull station', arrow:'⬆', dist:'~12m', instruction:'Continue straight down hallway' },
-        { label:'North exit doors', arrow:'⬆', dist:'~8m',  instruction:'Push the doors open' },
-        { label:'Assembly Area C — open lawn', arrow:'↗', dist:'~40m', instruction:'Bear right — proceed to marked zone' },
+        { label:'Exit classroom or office',    instruction:'Leave bags — walk to door',       dist:5,   bearing:0,   lat:33.30560, lng:-111.67890 },
+        { label:'Main corridor — turn left',   instruction:'Turn left at the junction',       dist:22,  bearing:270, lat:33.30565, lng:-111.67910 },
+        { label:'Continue past pull station',  instruction:'Keep walking straight',           dist:12,  bearing:270, lat:33.30565, lng:-111.67925 },
+        { label:'North exit doors',            instruction:'Push doors open',                 dist:8,   bearing:0,   lat:33.30572, lng:-111.67925 },
+        { label:'Assembly Area C — open lawn', instruction:'Bear right to the marked zone',   dist:40,  bearing:45,  lat:33.30595, lng:-111.67900 },
       ]
     },
     SANCA: {
       name: 'Santa Catalina Hall',
       waypoints: [
-        { label:'Power off equipment — alert others', arrow:'⬆', dist:'~3m',  instruction:'Shut down and move immediately' },
-        { label:'East corridor exit', arrow:'➡', dist:'~18m', instruction:'Turn right at the lab exit door' },
-        { label:'Emergency Exit B', arrow:'⬆', dist:'~14m', instruction:'Push the crash bar — fire exit' },
-        { label:'Assembly Area D — open area', arrow:'⬆', dist:'~35m', instruction:'Walk to the marked open zone' },
+        { label:'Power off equipment',         instruction:'Shut down — alert others',        dist:3,   bearing:0,   lat:33.30480, lng:-111.67860 },
+        { label:'East corridor exit',          instruction:'Turn right at lab exit',          dist:18,  bearing:90,  lat:33.30480, lng:-111.67840 },
+        { label:'Emergency Exit B',            instruction:'Push crash bar — fire exit',      dist:14,  bearing:90,  lat:33.30480, lng:-111.67825 },
+        { label:'Assembly Area D',             instruction:'Walk to the open zone',           dist:35,  bearing:180, lat:33.30450, lng:-111.67825 },
       ]
     },
     STN: {
       name: 'Santan Hall',
       waypoints: [
-        { label:'Exit your office or lounge', arrow:'⬆', dist:'~8m',  instruction:'Walk straight toward the hallway' },
-        { label:'South stairwell', arrow:'⬇', dist:'~15m', instruction:'Descend stairs to ground floor' },
-        { label:'South exit doors', arrow:'⬆', dist:'~10m', instruction:'Exit through the glass doors' },
-        { label:'Assembly Area A — parking area', arrow:'➡', dist:'~30m', instruction:'Turn right — proceed to open area' },
+        { label:'Exit office or lounge',       instruction:'Walk toward the hallway',         dist:8,   bearing:0,   lat:33.30510, lng:-111.67950 },
+        { label:'South stairwell',             instruction:'Descend to ground floor',         dist:15,  bearing:180, lat:33.30497, lng:-111.67950 },
+        { label:'South exit doors',            instruction:'Exit through glass doors',        dist:10,  bearing:180, lat:33.30487, lng:-111.67950 },
+        { label:'Assembly Area A — parking',   instruction:'Turn right to open area',         dist:30,  bearing:90,  lat:33.30487, lng:-111.67920 },
       ]
     },
     SUT: {
       name: 'Sutton Hall',
       waypoints: [
-        { label:'Exit your room or lab', arrow:'⬆', dist:'~6m',  instruction:'Leave calmly — do not use elevator' },
-        { label:'West corridor', arrow:'⬅', dist:'~20m', instruction:'Turn left toward west wing' },
-        { label:'Stairwell A — descend', arrow:'⬇', dist:'~12m', instruction:'Take stairs down to ground floor' },
-        { label:'West exit doors', arrow:'⬆', dist:'~10m', instruction:'Push exit doors open' },
-        { label:'Assembly Area B — grass field', arrow:'⬆', dist:'~45m', instruction:'Walk to the open grass area' },
+        { label:'Exit room or lab',            instruction:'Leave calmly — no elevator',      dist:6,   bearing:270, lat:33.30540, lng:-111.68000 },
+        { label:'West corridor',               instruction:'Turn left toward west wing',      dist:20,  bearing:270, lat:33.30540, lng:-111.68020 },
+        { label:'Stairwell A — descend',       instruction:'Take stairs to ground floor',     dist:12,  bearing:180, lat:33.30527, lng:-111.68020 },
+        { label:'West exit doors',             instruction:'Push exit doors open',            dist:10,  bearing:270, lat:33.30527, lng:-111.68032 },
+        { label:'Assembly Area B — grass',     instruction:'Walk to the open grass field',    dist:45,  bearing:270, lat:33.30527, lng:-111.68075 },
       ]
     }
   };
@@ -1134,16 +1142,19 @@
   // ══════════════════════════════════════════
   // STATE
   // ══════════════════════════════════════════
-  let arBuilding = 'PRLTA';
-  let arWPIndex = 0;
-  let arWPs = [];
-  let arStream = null;
-  let arCompassInterval = null;
-  let arWatchId = null;
-  let arAnimFrame = null;
-  let isDemo = false;
-  let gpsGranted = false;
-  let userLat = null, userLng = null;
+  let arBuilding   = 'PRLTA';
+  let arWPIndex    = 0;
+  let arWPs        = [];
+  let arStream     = null;
+  let arWatchId    = null;
+  let arAnimFrame  = null;
+  let isDemo       = false;
+  let gpsGranted   = false;
+  let userLat      = null;
+  let userLng      = null;
+  let deviceHeading = null;   // live compass heading (degrees from north)
+  let waypointBearing = 0;    // bearing from user to current waypoint
+  let arrowRotation = 0;      // current displayed rotation (smoothed)
 
   // ══════════════════════════════════════════
   // OPEN / CLOSE
@@ -1151,7 +1162,6 @@
   function openAROverlay() {
     document.getElementById('arOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
-    // Hide mode pills — GPS only now
     document.getElementById('pillQR').style.display = 'none';
     document.getElementById('pillGPS').style.display = 'none';
     document.getElementById('arBuildingPicker').style.display = 'flex';
@@ -1163,50 +1173,57 @@
   function closeAROverlay() {
     document.getElementById('arOverlay').classList.remove('open');
     document.body.style.overflow = '';
-    if (arStream) { arStream.getTracks().forEach(t => t.stop()); arStream = null; }
-    if (arCompassInterval) { clearInterval(arCompassInterval); arCompassInterval = null; }
+    if (arStream)  { arStream.getTracks().forEach(t => t.stop()); arStream = null; }
     if (arWatchId !== null) { navigator.geolocation.clearWatch(arWatchId); arWatchId = null; }
     if (arAnimFrame) { cancelAnimationFrame(arAnimFrame); arAnimFrame = null; }
+    window.removeEventListener('deviceorientationabsolute', onOrientation);
+    window.removeEventListener('deviceorientation', onOrientation);
     document.getElementById('arArrived').classList.remove('show');
     document.getElementById('arBigArrow').style.display = '';
   }
 
   // ══════════════════════════════════════════
-  // GPS REQUEST — happens immediately on open
+  // GPS — request + continuous watch
   // ══════════════════════════════════════════
   function requestGPS() {
     if (!navigator.geolocation) {
-      setGPSChip('none', 'GPS Not Available', 'Your browser does not support geolocation');
+      setGPSChip('none', 'GPS Not Available', 'Browser does not support geolocation');
       return;
     }
     setGPSChip('searching', 'Locating you…', 'Allow location access when prompted');
+
+    // First quick fix
     navigator.geolocation.getCurrentPosition(
       pos => {
         userLat = pos.coords.latitude;
         userLng = pos.coords.longitude;
         gpsGranted = true;
         const acc = Math.round(pos.coords.accuracy);
-        setGPSChip('good', 'GPS Ready ✓', `Accuracy: ±${acc}m — guidance will start automatically`);
-        // Start watching for live updates
-        arWatchId = navigator.geolocation.watchPosition(liveGPSUpdate, null, { enableHighAccuracy: true });
+        setGPSChip('good', 'GPS Ready ✓', `±${acc}m accuracy — guidance is live`);
       },
-      err => {
+      () => {
         gpsGranted = false;
-        setGPSChip('none', 'Location Denied', 'Tap "Start" to use direction-based guidance instead');
+        setGPSChip('none', 'Location Denied', 'Tap Start to use compass-only guidance');
       },
       { enableHighAccuracy: true, timeout: 8000 }
     );
-  }
 
-  function liveGPSUpdate(pos) {
-    userLat = pos.coords.latitude;
-    userLng = pos.coords.longitude;
-    // Update GPS chip in AR view
-    const gpsEl = document.getElementById('arGPS');
-    if (gpsEl) {
-      const acc = Math.round(pos.coords.accuracy);
-      document.getElementById('gpsLabel').textContent = `GPS ±${acc}m`;
-    }
+    // Continuous high-accuracy watch — this is what drives auto-advance
+    arWatchId = navigator.geolocation.watchPosition(
+      pos => {
+        userLat = pos.coords.latitude;
+        userLng = pos.coords.longitude;
+        gpsGranted = true;
+        const acc = Math.round(pos.coords.accuracy);
+        const el = document.getElementById('gpsLabel');
+        if (el) el.textContent = `GPS ±${acc}m`;
+
+        // Check distance to current waypoint → auto-advance
+        checkAutoAdvance();
+      },
+      null,
+      { enableHighAccuracy: true, maximumAge: 0 }
+    );
   }
 
   function setGPSChip(state, title, sub) {
@@ -1220,6 +1237,162 @@
   }
 
   // ══════════════════════════════════════════
+  // COMPASS / DEVICE ORIENTATION
+  // Rotates the nav arrow relative to where
+  // the user is physically pointing their phone
+  // ══════════════════════════════════════════
+  function startCompass() {
+    // iOS 13+ requires permission request
+    if (typeof DeviceOrientationEvent !== 'undefined' &&
+        typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission()
+        .then(r => { if (r === 'granted') attachOrientationListeners(); })
+        .catch(() => {});
+    } else {
+      attachOrientationListeners();
+    }
+  }
+
+  function attachOrientationListeners() {
+    // deviceorientationabsolute gives true north on Android
+    window.addEventListener('deviceorientationabsolute', onOrientation, true);
+    // deviceorientation with webkitCompassHeading works on iOS Safari
+    window.addEventListener('deviceorientation', onOrientation, true);
+  }
+
+  function onOrientation(e) {
+    let heading = null;
+    if (e.webkitCompassHeading != null) {
+      // iOS — webkitCompassHeading is degrees from magnetic north (0–360)
+      heading = e.webkitCompassHeading;
+    } else if (e.absolute && e.alpha != null) {
+      // Android absolute — alpha is degrees anticlockwise from north
+      heading = (360 - e.alpha) % 360;
+    } else if (e.alpha != null) {
+      heading = (360 - e.alpha) % 360;
+    }
+    if (heading === null) return;
+
+    deviceHeading = heading;
+
+    // Rotate compass rose widget
+    const rose = document.getElementById('compassRose');
+    if (rose) rose.style.transform = `rotate(${-heading}deg)`;
+
+    // Rotate nav arrow = bearing to waypoint minus device heading
+    // So the arrow always points the right way relative to what you see
+    updateArrowRotation();
+  }
+
+  // ══════════════════════════════════════════
+  // MATHS
+  // ══════════════════════════════════════════
+
+  // Haversine distance in metres between two lat/lng points
+  function haversineMetres(lat1, lng1, lat2, lng2) {
+    const R = 6371000;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat/2)**2 +
+              Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
+  // Bearing in degrees from point A to point B
+  function bearingDeg(lat1, lng1, lat2, lng2) {
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const y = Math.sin(dLng) * Math.cos(lat2 * Math.PI / 180);
+    const x = Math.cos(lat1 * Math.PI / 180) * Math.sin(lat2 * Math.PI / 180) -
+              Math.sin(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.cos(dLng);
+    return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+  }
+
+  // Smooth angle interpolation (handles 359→1 wrap)
+  function lerpAngle(a, b, t) {
+    let diff = ((b - a + 540) % 360) - 180;
+    return (a + diff * t + 360) % 360;
+  }
+
+  // ══════════════════════════════════════════
+  // ARROW ROTATION — combines GPS bearing
+  // with live compass so arrow tracks movement
+  // ══════════════════════════════════════════
+  function updateArrowRotation() {
+    const wp = arWPs[arWPIndex];
+    if (!wp) return;
+
+    let targetRotation;
+
+    if (userLat !== null && deviceHeading !== null) {
+      // Real mode: arrow = bearing to waypoint minus what direction phone faces
+      const bearing = bearingDeg(userLat, userLng, wp.lat, wp.lng);
+      waypointBearing = bearing;
+      targetRotation = (bearing - deviceHeading + 360) % 360;
+    } else if (deviceHeading !== null) {
+      // Compass only (no GPS): use preset bearing from data
+      targetRotation = (wp.bearing - deviceHeading + 360) % 360;
+    } else {
+      // No sensors: just show the preset bearing angle
+      targetRotation = wp.bearing;
+    }
+
+    // Smooth rotation
+    arrowRotation = lerpAngle(arrowRotation, targetRotation, 0.15);
+    const svg = document.getElementById('arNavArrow');
+    if (svg) svg.style.transform = `rotate(${arrowRotation}deg)`;
+
+    // Update live distance display on active waypoint chip
+    if (userLat !== null) {
+      const d = haversineMetres(userLat, userLng, wp.lat, wp.lng);
+      const distEl = document.getElementById('wpDist_' + arWPIndex);
+      if (distEl) distEl.textContent = d < 1000 ? `${Math.round(d)}m` : `${(d/1000).toFixed(1)}km`;
+    }
+  }
+
+  // ══════════════════════════════════════════
+  // AUTO-ADVANCE — called every GPS update
+  // Advances waypoint when user is within 12m
+  // ══════════════════════════════════════════
+  const ADVANCE_RADIUS = 12; // metres — tighten or loosen as needed
+
+  function checkAutoAdvance() {
+    if (arWPIndex >= arWPs.length) return;
+    const wp = arWPs[arWPIndex];
+    if (!wp.lat || userLat === null) return;
+
+    const dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
+
+    // Update live distance on current waypoint chip
+    const distEl = document.getElementById('wpDist_' + arWPIndex);
+    if (distEl) distEl.textContent = `${Math.round(dist)}m`;
+
+    if (dist <= ADVANCE_RADIUS) {
+      // Arrived at this waypoint — auto-advance
+      if (arWPIndex < arWPs.length - 1) {
+        arWPIndex++;
+        renderWaypoints();
+        updateARUI();
+        // Haptic feedback on mobile
+        if (navigator.vibrate) navigator.vibrate([60, 30, 60]);
+      } else {
+        showArrived();
+      }
+    }
+  }
+
+  // ══════════════════════════════════════════
+  // RENDER LOOP — runs while AR is active
+  // Keeps arrow smooth even between GPS ticks
+  // ══════════════════════════════════════════
+  function startRenderLoop() {
+    function loop() {
+      updateArrowRotation();
+      arAnimFrame = requestAnimationFrame(loop);
+    }
+    loop();
+  }
+
+  // ══════════════════════════════════════════
   // PICKER
   // ══════════════════════════════════════════
   function buildPickerList() {
@@ -1229,11 +1402,12 @@
       const el = document.createElement('div');
       el.onclick = () => selectBuilding(key);
       el.id = 'pb_' + key;
+      const selected = key === arBuilding;
       el.style.cssText = `
         padding:12px 16px;border-radius:10px;cursor:pointer;
         display:flex;align-items:center;gap:12px;
-        background:${key === arBuilding ? 'rgba(140,29,64,.4)' : 'rgba(255,255,255,.05)'};
-        border:1px solid ${key === arBuilding ? 'var(--maroon)' : 'rgba(255,255,255,.1)'};
+        background:${selected ? 'rgba(140,29,64,.4)' : 'rgba(255,255,255,.05)'};
+        border:1px solid ${selected ? 'var(--maroon)' : 'rgba(255,255,255,.1)'};
         transition:all .2s;
       `;
       el.innerHTML = `
@@ -1241,9 +1415,11 @@
           color:var(--maroon);min-width:44px;text-align:center;">${key}</div>
         <div>
           <div style="font-weight:600;font-size:.9rem;color:#fff;">${b.name}</div>
-          <div style="font-size:.7rem;color:rgba(255,255,255,.35);margin-top:2px;">${b.waypoints.length} waypoints to assembly area</div>
+          <div style="font-size:.7rem;color:rgba(255,255,255,.35);margin-top:2px;">
+            ${b.waypoints.length} waypoints · auto-advances as you walk
+          </div>
         </div>
-        ${key === arBuilding ? '<div style="margin-left:auto;font-size:.7rem;color:#FFC627;font-weight:700;">SELECTED</div>' : ''}
+        ${selected ? '<div style="margin-left:auto;font-size:.7rem;color:#FFC627;font-weight:700;">✓</div>' : ''}
       `;
       list.appendChild(el);
     });
@@ -1262,22 +1438,25 @@
     document.getElementById('arBuildingPicker').style.display = 'none';
     document.getElementById('arArrived').classList.remove('show');
 
-    arWPs = AR_BUILDINGS[arBuilding].waypoints;
+    arWPs     = AR_BUILDINGS[arBuilding].waypoints;
     arWPIndex = 0;
+    arrowRotation = 0;
 
     document.getElementById('arBuildingLabel').textContent = AR_BUILDINGS[arBuilding].name;
-    document.getElementById('arModeLabel').textContent = gpsGranted ? '🧭 GPS Guidance Active' : '📍 Direction Guidance';
-
-    // Show GPS chip in AR view
+    document.getElementById('arModeLabel').textContent = '🧭 Live GPS + Compass';
     document.getElementById('arCompass').style.display = 'flex';
     document.getElementById('arGPS').style.display = 'flex';
-    document.getElementById('gpsLabel').textContent = gpsGranted ? 'GPS Active' : 'Demo Mode';
+    document.getElementById('gpsLabel').textContent = gpsGranted ? 'GPS Active' : 'Demo';
 
     if (!demo) {
       try {
-        arStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' }, audio:false });
-        document.getElementById('arVideo').srcObject = arStream;
-        await document.getElementById('arVideo').play();
+        arStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: false
+        });
+        const vid = document.getElementById('arVideo');
+        vid.srcObject = arStream;
+        await vid.play();
       } catch(e) {
         isDemo = true;
         runDemoCanvas();
@@ -1286,14 +1465,14 @@
       runDemoCanvas();
     }
 
-    startCompassSim();
+    startCompass();
     renderWaypoints();
     updateARUI();
-    if (gpsGranted) simulateGPSProgress();
+    startRenderLoop();
   }
 
   // ══════════════════════════════════════════
-  // DEMO CANVAS BACKGROUND
+  // DEMO CANVAS
   // ══════════════════════════════════════════
   function runDemoCanvas() {
     const canvas = document.getElementById('arCanvas3d');
@@ -1306,8 +1485,7 @@
       const w = canvas.width, h = canvas.height;
       ctx.fillStyle = '#080e18';
       ctx.fillRect(0,0,w,h);
-      // Perspective grid
-      ctx.strokeStyle = 'rgba(140,29,64,.2)';
+      ctx.strokeStyle = 'rgba(140,29,64,.18)';
       ctx.lineWidth = 1;
       const vp = h * 0.42;
       for (let i = -10; i <= 10; i++) {
@@ -1318,118 +1496,56 @@
         const y = vp + (h - vp) * (d / 9);
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
       }
-      // Subtle pulse glow at center
       const grd = ctx.createRadialGradient(w/2, h*0.45, 0, w/2, h*0.45, 120);
-      grd.addColorStop(0, `rgba(255,198,39,${0.04 + 0.02*Math.sin(t*0.06)})`);
+      grd.addColorStop(0, `rgba(255,198,39,${0.03 + 0.015*Math.sin(t*0.05)})`);
       grd.addColorStop(1, 'rgba(255,198,39,0)');
       ctx.fillStyle = grd;
       ctx.fillRect(0, 0, w, h);
       t++;
-      arAnimFrame = requestAnimationFrame(draw);
     }
-    draw();
+    // Demo: render loop handles this via arAnimFrame
+    const demoLoop = () => { draw(); requestAnimationFrame(demoLoop); };
+    demoLoop();
+
+    // Simulate heading change so arrow moves in demo
+    let simHeading = 0;
+    setInterval(() => {
+      simHeading = (simHeading + 2) % 360;
+      deviceHeading = simHeading;
+      const rose = document.getElementById('compassRose');
+      if (rose) rose.style.transform = `rotate(${-simHeading}deg)`;
+    }, 50);
   }
 
   // ══════════════════════════════════════════
-  // COMPASS
-  // ══════════════════════════════════════════
-  function startCompassSim() {
-    let deg = 0;
-    if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
-      DeviceOrientationEvent.requestPermission().then(p => {
-        if (p === 'granted') listenCompass();
-      }).catch(() => simulateCompass());
-    } else if (window.DeviceOrientationEvent) {
-      listenCompass();
-    } else {
-      simulateCompass();
-    }
-  }
-
-  function listenCompass() {
-    window.addEventListener('deviceorientationabsolute', e => {
-      if (e.alpha !== null) {
-        document.getElementById('compassRose').style.transform = `rotate(${-e.alpha}deg)`;
-      }
-    });
-    window.addEventListener('deviceorientation', e => {
-      if (e.webkitCompassHeading !== undefined) {
-        document.getElementById('compassRose').style.transform = `rotate(${-e.webkitCompassHeading}deg)`;
-      }
-    });
-  }
-
-  function simulateCompass() {
-    let deg = 0;
-    arCompassInterval = setInterval(() => {
-      deg += (Math.random() - 0.5) * 4;
-      document.getElementById('compassRose').style.transform = `rotate(${deg}deg)`;
-    }, 400);
-  }
-
-  // Simulate GPS auto-advancing waypoints when GPS is active
-  function simulateGPSProgress() {
-    // In a real implementation this would compare user coords to waypoint coords
-    // For now, show GPS is working by auto-suggesting advance after 12s per waypoint
-    let tick = 0;
-    const gpsAutoInterval = setInterval(() => {
-      tick++;
-      if (tick >= 12 && arWPIndex < arWPs.length - 1) {
-        tick = 0;
-        // Flash next button to suggest advancing
-        const btn = document.querySelector('.ar-btn-next');
-        if (btn) {
-          btn.style.background = '#FFC627';
-          btn.style.transform = 'scale(1.04)';
-          setTimeout(() => { btn.style.transform = ''; }, 400);
-        }
-      }
-      if (arWPIndex >= arWPs.length) clearInterval(gpsAutoInterval);
-    }, 1000);
-  }
-
-  // ══════════════════════════════════════════
-  // WAYPOINTS
+  // WAYPOINTS UI
   // ══════════════════════════════════════════
   function renderWaypoints() {
     const list = document.getElementById('arWPList');
     list.innerHTML = '';
-    // Show max 4 upcoming to keep view clean
     const start = Math.max(0, arWPIndex - 1);
-    const slice = arWPs.slice(start, start + 4);
-    slice.forEach((wp, si) => {
+    arWPs.slice(start, start + 4).forEach((wp, si) => {
       const i = start + si;
       const el = document.createElement('div');
       el.className = 'ar-wp' + (i === arWPIndex ? ' active' : i < arWPIndex ? ' done' : '');
       el.innerHTML = `
         <div class="ar-wp-num">${i < arWPIndex ? '✓' : i + 1}</div>
         <div class="ar-wp-text">${wp.label}</div>
-        <div class="ar-wp-dist">${wp.dist}</div>
+        <div class="ar-wp-dist" id="wpDist_${i}">${wp.dist}m</div>
       `;
       list.appendChild(el);
     });
   }
 
-  // Arrow direction → SVG rotation degrees
-  const ARROW_ROTATIONS = {
-    '⬆': 0, '↗': 45, '➡': 90, '↘': 135,
-    '⬇': 180, '↙': 225, '⬅': 270, '↖': 315
-  };
-
   function updateARUI() {
     const wp = arWPs[arWPIndex];
     if (!wp) return;
-
-    // Rotate the SVG arrow smoothly
-    const deg = ARROW_ROTATIONS[wp.arrow] ?? 0;
-    const svg = document.getElementById('arNavArrow');
-    if (svg) svg.style.transform = `rotate(${deg}deg)`;
-
     document.getElementById('arArrowLabel').textContent = wp.instruction;
     const pct = Math.round((arWPIndex / arWPs.length) * 100);
     document.getElementById('arProgFill').style.width = pct + '%';
     document.getElementById('arProgLabel').textContent = `Step ${arWPIndex + 1} of ${arWPs.length}`;
     document.getElementById('arProgPct').textContent = pct + '%';
+    waypointBearing = wp.bearing;
   }
 
   function arNextWaypoint() {
@@ -1437,14 +1553,18 @@
       arWPIndex++;
       renderWaypoints();
       updateARUI();
+      if (navigator.vibrate) navigator.vibrate(40);
     } else {
-      // Arrived!
-      document.getElementById('arProgFill').style.width = '100%';
-      document.getElementById('arProgPct').textContent = '100%';
-      document.getElementById('arBigArrow').style.display = 'none';
-      document.getElementById('arArrived').classList.add('show');
-      if (arCompassInterval) { clearInterval(arCompassInterval); arCompassInterval = null; }
+      showArrived();
     }
+  }
+
+  function showArrived() {
+    document.getElementById('arProgFill').style.width = '100%';
+    document.getElementById('arProgPct').textContent = '100%';
+    document.getElementById('arBigArrow').style.display = 'none';
+    document.getElementById('arArrived').classList.add('show');
+    if (arAnimFrame) { cancelAnimationFrame(arAnimFrame); arAnimFrame = null; }
   }
   </script>
 
