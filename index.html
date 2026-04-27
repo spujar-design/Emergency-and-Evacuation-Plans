@@ -567,7 +567,7 @@
     /* ── GOOGLE MAPS STYLE DIRECTION ARROW ── */
     .ar-big-arrow {
       position: absolute;
-      bottom: 220px; /* sits above the waypoint list */
+      top: 120px; /* below HUD top bar — clear of everything */
       left: 50%;
       transform: translateX(-50%);
       text-align: center;
@@ -699,7 +699,7 @@
 
     /* Waypoint list */
     .ar-wp-list {
-      position:absolute; bottom:130px; left:1rem; right:1rem;
+      position:absolute; bottom:145px; left:1rem; right:1rem;
       display:flex; flex-direction:column; gap:6px; z-index:2;
       pointer-events:none;
     }
@@ -1274,11 +1274,10 @@
 
     SUT_F1E: {
       name: 'Sutton Hall — Floor 1 East (140)',
-      autoSkipFirst: true,
       waypoints: [
-        { label:'Exit room 140 — into corridor',
-          instruction:'You are already in the corridor — proceed to next step',
-          dist:0, bearing:270, lat:33.3063109, lng:-111.6769880 },
+        { label:'Step into the corridor',
+          instruction:'Exit your room and step into the corridor',
+          dist:3, bearing:270, lat:33.3063109, lng:-111.6769880 },
         { label:'Walk straight — 18 steps to the turn',
           instruction:'Walk straight down the corridor — count 18 steps',
           dist:18, bearing:270, lat:33.3063109, lng:-111.6769880 },
@@ -1795,12 +1794,6 @@
     arWPIndex = 0;
     arrowRotation = 0;
 
-    // If building marks first waypoint as already done (e.g. already in corridor)
-    // auto-advance past it immediately and show it as checked
-    if (AR_BUILDINGS[arBuilding].autoSkipFirst) {
-      arWPIndex = 1;
-    }
-
     document.getElementById('arBuildingLabel').textContent = AR_BUILDINGS[arBuilding].name;
     document.getElementById('arModeLabel').textContent = '🧭 Waiting for GPS…';
     document.getElementById('arCompass').style.display = 'flex';
@@ -1893,8 +1886,8 @@
   function renderWaypoints() {
     const list = document.getElementById('arWPList');
     list.innerHTML = '';
-    const start = Math.max(0, arWPIndex - 1);
-    arWPs.slice(start, start + 4).forEach((wp, si) => {
+    const start = Math.max(0, arWPIndex);
+    arWPs.slice(start, start + 2).forEach((wp, si) => {
       const i = start + si;
       const el = document.createElement('div');
       el.className = 'ar-wp' + (i === arWPIndex ? ' active' : i < arWPIndex ? ' done' : '');
