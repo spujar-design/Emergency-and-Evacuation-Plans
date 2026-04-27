@@ -1274,17 +1274,17 @@
   // GPS — request + continuous watch
   // ══════════════════════════════════════════
   // Wire the location button DIRECTLY so watchPosition is called
-  // synchronously from the tap — Safari requires this for the native popup
+  // as the very first thing on tap — before any async code
   document.getElementById('allowLocationBtn').addEventListener('click', function() {
     document.getElementById('locationPrompt').style.display = 'none';
 
-    // Launch camera + AR immediately
-    startARSession(false);
+    if (!navigator.geolocation) {
+      skipLocationAndStart();
+      return;
+    }
 
-    // Call watchPosition directly here — this IS the user gesture.
-    // Safari and Chrome will now show the native phone location popup.
-    if (!navigator.geolocation) return;
-
+    // watchPosition MUST be the first call after the tap — no async before it
+    // This is what triggers the native iPhone/Android location popup
     arWatchId = navigator.geolocation.watchPosition(
       function(pos) {
         userLat    = pos.coords.latitude;
@@ -1293,10 +1293,11 @@
         const acc  = Math.round(pos.coords.accuracy);
 
         const el = document.getElementById('gpsLabel');
-        if (el) el.textContent = 'GPS ±' + acc + 'm';
-        document.getElementById('arModeLabel').textContent = '🧭 GPS Locked';
+        if (el) el.textContent = 'GPS \xb1' + acc + 'm';
 
-        // Refresh all distances now that we have real coords
+        const ml = document.getElementById('arModeLabel');
+        if (ml) ml.textContent = '\uD83E\uDDED GPS Locked';
+
         refreshAllDistances();
         checkAutoAdvance();
       },
@@ -1308,6 +1309,9 @@
       },
       { enableHighAccuracy: true, maximumAge: 0, timeout: 30000 }
     );
+
+    // Start AR session after — order matters, GPS call must come first
+    startARSession(false);
   });
 
   function requestGPS() {
@@ -1584,7 +1588,7 @@
   // ══════════════════════════════════════════
   // START SESSION
   // ══════════════════════════════════════════
-  async function startARSession(demo = false) {
+  function startARSession(demo = false) {
     isDemo = demo;
     document.getElementById('arBuildingPicker').style.display = 'none';
     document.getElementById('arArrived').classList.remove('show');
@@ -1594,24 +1598,25 @@
     arrowRotation = 0;
 
     document.getElementById('arBuildingLabel').textContent = AR_BUILDINGS[arBuilding].name;
-    document.getElementById('arModeLabel').textContent = '🧭 Live GPS + Compass';
+    document.getElementById('arModeLabel').textContent = '🧭 Waiting for GPS…';
     document.getElementById('arCompass').style.display = 'flex';
     document.getElementById('arGPS').style.display = 'flex';
-    document.getElementById('gpsLabel').textContent = gpsGranted ? 'GPS Active' : 'Demo';
+    document.getElementById('gpsLabel').textContent = 'Locating…';
 
     if (!demo) {
-      try {
-        arStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-          audio: false
-        });
+      // Request camera non-blocking — doesn't interrupt GPS permission chain
+      navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      }).then(function(stream) {
+        arStream = stream;
         const vid = document.getElementById('arVideo');
-        vid.srcObject = arStream;
-        await vid.play();
-      } catch(e) {
+        vid.srcObject = stream;
+        vid.play();
+      }).catch(function() {
         isDemo = true;
         runDemoCanvas();
-      }
+      });
     } else {
       runDemoCanvas();
     }
