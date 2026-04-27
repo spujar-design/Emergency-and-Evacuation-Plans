@@ -1054,7 +1054,7 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:.6rem;" id="buildingPickerList"></div>
 
-      <button onclick="startARSession(false)" style="
+      <button onclick="showLocationPrompt()" style="
         margin-top:1.5rem;padding:1rem;border-radius:8px;
         background:var(--maroon);color:#fff;border:none;
         font-family:'Inter',Arial,sans-serif;font-weight:700;font-size:1rem;
@@ -1083,6 +1083,103 @@
         <button class="abtn abtn-primary" onclick="alert('ASU Police: (480) 965-3456')">📞 Call ASU Police</button>
         <button class="abtn abtn-secondary" onclick="closeAROverlay()">← Back to Evacuation Plans</button>
       </div>
+    </div>
+
+    <!-- ── LOCATION PERMISSION PROMPT ── -->
+    <div id="locationPrompt" style="
+      display:none; position:absolute; inset:0; z-index:20;
+      background:rgba(0,0,0,.92);
+      flex-direction:column; align-items:center; justify-content:center;
+      padding:2rem; text-align:center;">
+
+      <div style="font-size:4rem; margin-bottom:1.25rem;">📍</div>
+
+      <div style="font-family:'Inter',Arial,sans-serif; font-weight:800;
+        font-size:1.4rem; color:#fff; margin-bottom:.75rem; line-height:1.2;">
+        Allow Precise Location
+      </div>
+
+      <p style="font-size:.9rem; color:rgba(255,255,255,.55); line-height:1.7;
+        max-width:300px; margin-bottom:.5rem;">
+        This AR guide needs your <strong style="color:#FFC627;">precise location</strong>
+        to calculate real distances and automatically guide you to the exit as you walk.
+      </p>
+
+      <div style="
+        background:rgba(255,198,39,.1); border:1px solid rgba(255,198,39,.3);
+        border-radius:10px; padding:.85rem 1.1rem; margin-bottom:2rem;
+        font-size:.8rem; color:rgba(255,255,255,.65); line-height:1.6; max-width:300px;">
+        ⚠️ When your browser asks <em>"Allow location access?"</em> —
+        tap <strong style="color:#FFC627;">Allow</strong> and select
+        <strong style="color:#FFC627;">Precise</strong> if given the option.
+      </div>
+
+      <button onclick="grantLocationAndStart()" style="
+        width:100%; max-width:300px; padding:1rem; border-radius:10px;
+        background:var(--maroon); color:#fff; border:none;
+        font-family:'Inter',Arial,sans-serif; font-weight:700; font-size:1rem;
+        cursor:pointer; display:flex; align-items:center;
+        justify-content:center; gap:8px; margin-bottom:.75rem;">
+        📍 Share My Location &amp; Start
+      </button>
+
+      <button onclick="skipLocationAndStart()" style="
+        width:100%; max-width:300px; padding:.85rem; border-radius:10px;
+        background:rgba(255,255,255,.06); color:rgba(255,255,255,.5);
+        border:1px solid rgba(255,255,255,.12);
+        font-family:'Inter',Arial,sans-serif; font-weight:600; font-size:.88rem;
+        cursor:pointer;">
+        Skip — use compass only (no auto-advance)
+      </button>
+    </div>
+
+    <!-- ── LOCATION DENIED HELP ── -->
+    <div id="locationHelp" style="
+      display:none; position:absolute; inset:0; z-index:21;
+      background:rgba(0,0,0,.95);
+      flex-direction:column; align-items:center; justify-content:center;
+      padding:2rem; text-align:center;">
+
+      <div style="font-size:3.5rem; margin-bottom:1rem;">🔒</div>
+
+      <div style="font-family:'Inter',Arial,sans-serif; font-weight:800;
+        font-size:1.3rem; color:#fff; margin-bottom:.75rem;">
+        Location Access Blocked
+      </div>
+
+      <p style="font-size:.85rem; color:rgba(255,255,255,.55); line-height:1.7;
+        max-width:300px; margin-bottom:1.5rem;">
+        Your browser blocked location access. To fix this:
+      </p>
+
+      <div style="
+        background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+        border-radius:12px; padding:1.1rem; max-width:300px; width:100%;
+        text-align:left; margin-bottom:2rem;">
+        <div style="font-size:.82rem; color:rgba(255,255,255,.7); line-height:1.9;">
+          <div>1️⃣ &nbsp;Tap <strong style="color:#FFC627;">AA</strong> or the lock icon in Safari's address bar</div>
+          <div>2️⃣ &nbsp;Tap <strong style="color:#FFC627;">Website Settings</strong></div>
+          <div>3️⃣ &nbsp;Set Location to <strong style="color:#FFC627;">Allow</strong></div>
+          <div>4️⃣ &nbsp;Reload this page and try again</div>
+        </div>
+      </div>
+
+      <button onclick="document.getElementById('locationHelp').style.display='none'; skipLocationAndStart();" style="
+        width:100%; max-width:300px; padding:1rem; border-radius:10px;
+        background:var(--maroon); color:#fff; border:none;
+        font-family:'Inter',Arial,sans-serif; font-weight:700; font-size:.95rem;
+        cursor:pointer; margin-bottom:.75rem;">
+        Continue Without GPS
+      </button>
+
+      <button onclick="closeAROverlay()" style="
+        width:100%; max-width:300px; padding:.85rem; border-radius:10px;
+        background:transparent; color:rgba(255,255,255,.4);
+        border:1px solid rgba(255,255,255,.1);
+        font-family:'Inter',Arial,sans-serif; font-weight:600; font-size:.88rem;
+        cursor:pointer;">
+        ← Go Back
+      </button>
     </div>
   </div>
 
@@ -1167,7 +1264,8 @@
     document.getElementById('arBuildingPicker').style.display = 'flex';
     document.getElementById('arArrived').classList.remove('show');
     buildPickerList();
-    requestGPS();
+    // Don't request GPS yet — wait for user to tap Start button
+    // which shows the location prompt first
   }
 
   function closeAROverlay() {
@@ -1190,40 +1288,83 @@
       setGPSChip('none', 'GPS Not Available', 'Browser does not support geolocation');
       return;
     }
-    setGPSChip('searching', 'Locating you…', 'Allow location access when prompted');
 
-    // First quick fix
+    // Show a clear in-app prompt before the browser asks
+    showLocationPrompt();
+  }
+
+  function showLocationPrompt() {
+    document.getElementById('arBuildingPicker').style.display = 'none';
+    const prompt = document.getElementById('locationPrompt');
+    if (prompt) prompt.style.display = 'flex';
+  }
+
+  function grantLocationAndStart() {
+    const prompt = document.getElementById('locationPrompt');
+    if (prompt) prompt.style.display = 'none';
+
+    setGPSChip('searching', 'Getting your location…', 'Please wait…');
+
     navigator.geolocation.getCurrentPosition(
       pos => {
-        userLat = pos.coords.latitude;
-        userLng = pos.coords.longitude;
+        userLat    = pos.coords.latitude;
+        userLng    = pos.coords.longitude;
         gpsGranted = true;
-        const acc = Math.round(pos.coords.accuracy);
-        setGPSChip('good', 'GPS Ready ✓', `±${acc}m accuracy — guidance is live`);
+        const acc  = Math.round(pos.coords.accuracy);
+        setGPSChip('good', 'GPS Locked ✓', `±${acc}m — tracking your position`);
+
+        // Start continuous watch
+        arWatchId = navigator.geolocation.watchPosition(
+          pos => {
+            userLat = pos.coords.latitude;
+            userLng = pos.coords.longitude;
+            const acc = Math.round(pos.coords.accuracy);
+            const el = document.getElementById('gpsLabel');
+            if (el) el.textContent = `GPS ±${acc}m`;
+            checkAutoAdvance();
+            refreshAllDistances();
+          },
+          null,
+          { enableHighAccuracy: true, maximumAge: 0 }
+        );
+
+        // Launch session now that we have real position
+        startARSession(false);
       },
-      () => {
+      err => {
         gpsGranted = false;
-        setGPSChip('none', 'Location Denied', 'Tap Start to use compass-only guidance');
+        if (err.code === 1) {
+          showSettingsHelp();
+        } else {
+          setGPSChip('none', 'GPS Unavailable', 'Move to an open area and try again');
+          startARSession(false); // launch anyway with compass only
+        }
       },
-      { enableHighAccuracy: true, timeout: 8000 }
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
+  }
 
-    // Continuous high-accuracy watch — this is what drives auto-advance
-    arWatchId = navigator.geolocation.watchPosition(
-      pos => {
-        userLat = pos.coords.latitude;
-        userLng = pos.coords.longitude;
-        gpsGranted = true;
-        const acc = Math.round(pos.coords.accuracy);
-        const el = document.getElementById('gpsLabel');
-        if (el) el.textContent = `GPS ±${acc}m`;
+  // Hide distances until GPS is real
+  function hidePlaceholderDistances() {
+    document.querySelectorAll('[id^="wpDist_"]').forEach(el => {
+      el.textContent = '—';
+    });
+  }
 
-        // Check distance to current waypoint → auto-advance
-        checkAutoAdvance();
-      },
-      null,
-      { enableHighAccuracy: true, maximumAge: 0 }
-    );
+  // Recalculate all visible waypoint distances from real GPS
+  function refreshAllDistances() {
+    if (userLat === null) return;
+    arWPs.forEach((wp, i) => {
+      const el = document.getElementById('wpDist_' + i);
+      if (!el) return;
+      const dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
+      el.textContent = dist > 2000 ? `~${wp.dist}m` : `${Math.round(dist)}m`;
+    });
+  }
+
+  function showSettingsHelp() {
+    const help = document.getElementById('locationHelp');
+    if (help) help.style.display = 'flex';
   }
 
   function setGPSChip(state, title, sub) {
@@ -1547,6 +1688,14 @@
     }, 50);
   }
 
+  function skipLocationAndStart() {
+    document.getElementById('locationPrompt').style.display = 'none';
+    document.getElementById('locationHelp').style.display = 'none';
+    gpsGranted = false;
+    // Start session without GPS — compass only
+    startARSession(false);
+  }
+
   // ══════════════════════════════════════════
   // WAYPOINTS UI
   // ══════════════════════════════════════════
@@ -1558,10 +1707,18 @@
       const i = start + si;
       const el = document.createElement('div');
       el.className = 'ar-wp' + (i === arWPIndex ? ' active' : i < arWPIndex ? ' done' : '');
+
+      // Only show distance if GPS is locked AND it's a real distance
+      let distLabel = '—';
+      if (gpsGranted && userLat !== null) {
+        const dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
+        distLabel = dist > 2000 ? `~${wp.dist}m` : `${Math.round(dist)}m`;
+      }
+
       el.innerHTML = `
         <div class="ar-wp-num">${i < arWPIndex ? '✓' : i + 1}</div>
         <div class="ar-wp-text">${wp.label}</div>
-        <div class="ar-wp-dist" id="wpDist_${i}">${wp.dist}m</div>
+        <div class="ar-wp-dist" id="wpDist_${i}">${distLabel}</div>
       `;
       list.appendChild(el);
     });
