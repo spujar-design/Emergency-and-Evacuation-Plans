@@ -1088,48 +1088,38 @@
     <!-- ── LOCATION PERMISSION PROMPT ── -->
     <div id="locationPrompt" style="
       display:none; position:absolute; inset:0; z-index:20;
-      background:rgba(0,0,0,.92);
+      background:rgba(0,0,0,.94);
       flex-direction:column; align-items:center; justify-content:center;
       padding:2rem; text-align:center;">
 
       <div style="font-size:4rem; margin-bottom:1.25rem;">📍</div>
 
       <div style="font-family:'Inter',Arial,sans-serif; font-weight:800;
-        font-size:1.4rem; color:#fff; margin-bottom:.75rem; line-height:1.2;">
-        Allow Precise Location
+        font-size:1.3rem; color:#fff; margin-bottom:.6rem; line-height:1.2;">
+        Location Access Needed
       </div>
 
-      <p style="font-size:.9rem; color:rgba(255,255,255,.55); line-height:1.7;
-        max-width:300px; margin-bottom:.5rem;">
-        This AR guide needs your <strong style="color:#FFC627;">precise location</strong>
-        to calculate real distances and automatically guide you to the exit as you walk.
+      <p style="font-size:.88rem; color:rgba(255,255,255,.5); line-height:1.7;
+        max-width:280px; margin-bottom:1.75rem;">
+        The AR guide uses your live GPS position to point the arrow and automatically advance waypoints as you walk — just like Google Maps navigation.
       </p>
-
-      <div style="
-        background:rgba(255,198,39,.1); border:1px solid rgba(255,198,39,.3);
-        border-radius:10px; padding:.85rem 1.1rem; margin-bottom:2rem;
-        font-size:.8rem; color:rgba(255,255,255,.65); line-height:1.6; max-width:300px;">
-        ⚠️ When your browser asks <em>"Allow location access?"</em> —
-        tap <strong style="color:#FFC627;">Allow</strong> and select
-        <strong style="color:#FFC627;">Precise</strong> if given the option.
-      </div>
 
       <button onclick="grantLocationAndStart()" style="
         width:100%; max-width:300px; padding:1rem; border-radius:10px;
         background:var(--maroon); color:#fff; border:none;
         font-family:'Inter',Arial,sans-serif; font-weight:700; font-size:1rem;
         cursor:pointer; display:flex; align-items:center;
-        justify-content:center; gap:8px; margin-bottom:.75rem;">
-        📍 Share My Location &amp; Start
+        justify-content:center; gap:10px; margin-bottom:.75rem;">
+        <span style="font-size:1.2rem;">📍</span> Allow Location &amp; Start AR
       </button>
 
       <button onclick="skipLocationAndStart()" style="
         width:100%; max-width:300px; padding:.85rem; border-radius:10px;
-        background:rgba(255,255,255,.06); color:rgba(255,255,255,.5);
-        border:1px solid rgba(255,255,255,.12);
-        font-family:'Inter',Arial,sans-serif; font-weight:600; font-size:.88rem;
+        background:transparent; color:rgba(255,255,255,.4);
+        border:1px solid rgba(255,255,255,.1);
+        font-family:'Inter',Arial,sans-serif; font-weight:500; font-size:.85rem;
         cursor:pointer;">
-        Skip — use compass only (no auto-advance)
+        Skip — compass only
       </button>
     </div>
 
@@ -1303,44 +1293,47 @@
     const prompt = document.getElementById('locationPrompt');
     if (prompt) prompt.style.display = 'none';
 
-    setGPSChip('searching', 'Getting your location…', 'Please wait…');
+    // Launch the AR session immediately — camera + compass start
+    // Distances stay hidden as '—' until GPS fires
+    startARSession(false);
 
-    navigator.geolocation.getCurrentPosition(
+    // Now fire the native browser location permission popup
+    // This is the same native prompt as camera — no custom UI needed
+    if (!navigator.geolocation) {
+      setGPSChip('none', 'GPS Not Available', 'Browser does not support geolocation');
+      return;
+    }
+
+    // watchPosition triggers the native browser permission popup immediately
+    // and keeps firing as user moves — this drives everything
+    arWatchId = navigator.geolocation.watchPosition(
       pos => {
         userLat    = pos.coords.latitude;
         userLng    = pos.coords.longitude;
         gpsGranted = true;
         const acc  = Math.round(pos.coords.accuracy);
-        setGPSChip('good', 'GPS Locked ✓', `±${acc}m — tracking your position`);
 
-        // Start continuous watch
-        arWatchId = navigator.geolocation.watchPosition(
-          pos => {
-            userLat = pos.coords.latitude;
-            userLng = pos.coords.longitude;
-            const acc = Math.round(pos.coords.accuracy);
-            const el = document.getElementById('gpsLabel');
-            if (el) el.textContent = `GPS ±${acc}m`;
-            checkAutoAdvance();
-            refreshAllDistances();
-          },
-          null,
-          { enableHighAccuracy: true, maximumAge: 0 }
-        );
+        // Update GPS chip in AR view
+        const el = document.getElementById('gpsLabel');
+        if (el) el.textContent = `GPS ±${acc}m`;
+        document.getElementById('arModeLabel').textContent = '🧭 GPS Locked';
 
-        // Launch session now that we have real position
-        startARSession(false);
+        // Now that we have real coords, update ALL distances from real position
+        refreshAllDistances();
+
+        // Check if close enough to auto-advance
+        checkAutoAdvance();
       },
       err => {
         gpsGranted = false;
         if (err.code === 1) {
+          // Denied — show settings help
           showSettingsHelp();
-        } else {
-          setGPSChip('none', 'GPS Unavailable', 'Move to an open area and try again');
-          startARSession(false); // launch anyway with compass only
         }
+        const el = document.getElementById('gpsLabel');
+        if (el) el.textContent = 'No GPS';
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 30000 }
     );
   }
 
@@ -1351,14 +1344,16 @@
     });
   }
 
-  // Recalculate all visible waypoint distances from real GPS
+  // Recalculate ALL waypoint distances from real GPS and update displayed chips
   function refreshAllDistances() {
     if (userLat === null) return;
     arWPs.forEach((wp, i) => {
       const el = document.getElementById('wpDist_' + i);
       if (!el) return;
       const dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
-      el.textContent = dist > 2000 ? `~${wp.dist}m` : `${Math.round(dist)}m`;
+      // If waypoint coords are real (within 2km), show real distance
+      // Otherwise placeholder coords are far away — just show the preset label
+      el.textContent = dist <= 2000 ? `${Math.round(dist)}m` : `~${wp.dist}m`;
     });
   }
 
