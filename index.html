@@ -1226,16 +1226,16 @@
       waypoints: [
         { label:'Exit room 101 — into corridor',
           instruction:'Leave your room — do NOT use elevator',
-          dist:15, bearing:270, lat:33.3063361, lng:-111.6773115 },
+          dist:20, bearing:270, lat:33.3063361, lng:-111.6773115 },
         { label:'Walk to front door',
           instruction:'Head toward the main front entrance doors',
-          dist:22, bearing:270, lat:33.3063369, lng:-111.6773038 },
+          dist:29, bearing:270, lat:33.3063369, lng:-111.6773038 },
         { label:'Exit through front doors',
           instruction:'Push through the main front doors',
           dist:5, bearing:180, lat:33.3063369, lng:-111.6773038 },
         { label:'Walk down front path',
           instruction:'Follow the path away from the building',
-          dist:22, bearing:180, lat:33.3060965, lng:-111.6772052 },
+          dist:29, bearing:180, lat:33.3060965, lng:-111.6772052 },
         { label:'Assembly area — NW corner',
           instruction:'Proceed to northwest corner of Sutton Hall',
           dist:20, bearing:315, lat:33.3060965, lng:-111.6772052 },
@@ -1247,16 +1247,16 @@
       waypoints: [
         { label:'Exit room 140 — into corridor',
           instruction:'Leave your room — do NOT use elevator',
-          dist:15, bearing:270, lat:33.3063109, lng:-111.6769880 },
+          dist:20, bearing:270, lat:33.3063109, lng:-111.6769880 },
         { label:'Walk to front door',
           instruction:'Head west along corridor toward front of building',
-          dist:22, bearing:270, lat:33.3063369, lng:-111.6773038 },
+          dist:29, bearing:270, lat:33.3063369, lng:-111.6773038 },
         { label:'Exit through front doors',
           instruction:'Push through the main front doors',
           dist:5, bearing:180, lat:33.3063369, lng:-111.6773038 },
         { label:'Walk down front path',
           instruction:'Follow the path away from the building',
-          dist:22, bearing:180, lat:33.3060965, lng:-111.6772052 },
+          dist:29, bearing:180, lat:33.3060965, lng:-111.6772052 },
         { label:'Assembly area — NW corner',
           instruction:'Proceed to northwest corner of Sutton Hall',
           dist:20, bearing:315, lat:33.3060965, lng:-111.6772052 },
@@ -1555,17 +1555,15 @@
   // ══════════════════════════════════════════
   const STRIDE_LENGTH = 0.76; // metres per step (avg adult)
   let stepCount        = 0;
-  let distWalked       = 0;   // metres walked since waypoint started
-  let wpStartDist      = 0;   // preset dist of current waypoint in metres
-  let remainingDist    = 0;   // counts down as you walk
+  let distWalked       = 0;   // steps walked since waypoint started
+  let wpStartSteps     = 0;   // preset steps for current waypoint
+  let remainingSteps   = 0;   // counts down as you walk
   let lastAccelMag     = 0;
   let stepCooldown     = false;
-  const STEP_THRESHOLD = 1.2; // accel spike threshold
+  const STEP_THRESHOLD = 1.2;
 
   function startPedometer() {
     if (!window.DeviceMotionEvent) return;
-
-    // iOS 13+ needs permission
     if (typeof DeviceMotionEvent.requestPermission === 'function') {
       DeviceMotionEvent.requestPermission()
         .then(r => { if (r === 'granted') listenMotion(); })
@@ -1583,37 +1581,35 @@
       const delta = Math.abs(mag - lastAccelMag);
       lastAccelMag = mag;
 
-      // Detect a step: spike above threshold, with cooldown to avoid double count
       if (delta > STEP_THRESHOLD && !stepCooldown) {
         stepCooldown = true;
         stepCount++;
-        distWalked += STRIDE_LENGTH;
+        distWalked++;
 
-        // Reduce remaining distance
-        remainingDist = Math.max(0, wpStartDist - distWalked);
+        remainingSteps = Math.max(0, wpStartSteps - distWalked);
 
-        // Update displayed distance on active waypoint chip
-        const distEl = document.getElementById('wpDist_' + arWPIndex);
-        if (distEl) distEl.textContent = Math.round(remainingDist) + 'm';
+        // Update display — show steps remaining
+        updateDistDisplay(arWPIndex, remainingSteps);
 
-        // Auto-advance when remaining distance hits 0
-        if (remainingDist <= 0) autoAdvanceWaypoint();
+        if (remainingSteps <= 0) autoAdvanceWaypoint();
 
         setTimeout(() => { stepCooldown = false; }, 350);
       }
     }, true);
   }
 
+  function updateDistDisplay(index, steps) {
+    const distEl = document.getElementById('wpDist_' + index);
+    if (distEl) distEl.textContent = steps <= 0 ? '✓' : steps + ' steps';
+  }
+
   function resetWaypointDistance() {
-    // Called each time we move to a new waypoint
     const wp = arWPs[arWPIndex];
     if (!wp) return;
-    wpStartDist  = wp.dist;
-    distWalked   = 0;
-    remainingDist = wp.dist;
-
-    const distEl = document.getElementById('wpDist_' + arWPIndex);
-    if (distEl) distEl.textContent = Math.round(remainingDist) + 'm';
+    wpStartSteps   = wp.dist;  // dist field now = number of steps
+    distWalked     = 0;
+    remainingSteps = wp.dist;
+    updateDistDisplay(arWPIndex, remainingSteps);
   }
 
   function autoAdvanceWaypoint() {
@@ -1860,11 +1856,16 @@
       const el = document.createElement('div');
       el.className = 'ar-wp' + (i === arWPIndex ? ' active' : i < arWPIndex ? ' done' : '');
 
-      // Only show distance if GPS is locked AND it's a real distance
-      let distLabel = '—';
-      if (gpsGranted && userLat !== null) {
-        const dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
-        distLabel = dist > 2000 ? `~${wp.dist}m` : `${Math.round(dist)}m`;
+      // Active waypoint: show live step countdown (set by pedometer)
+      // Future waypoints: show preset step count
+      // Done waypoints: show checkmark
+      let distLabel;
+      if (i < arWPIndex) {
+        distLabel = '✓';
+      } else if (i === arWPIndex) {
+        distLabel = remainingSteps + ' steps';
+      } else {
+        distLabel = wp.dist + ' steps';
       }
 
       el.innerHTML = `
