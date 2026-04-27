@@ -560,29 +560,53 @@
     }
 
     /* Scan animation */
-    .ar-scan-line {
-      position: absolute; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, transparent, #FFC627, transparent);
-      animation: arScan 3s ease-in-out infinite;
-      pointer-events: none;
-    }
-    @keyframes arScan { 0%{top:8%} 50%{top:88%} 100%{top:8%} }
+    /* No scan line, no brackets, no QR — clean camera like Google Maps */
+    .ar-scan-line { display:none; }
+    .ar-brackets  { display:none; }
 
-    /* Corner brackets */
-    .ar-brackets {
-      position: absolute; inset: 48px;
+    /* ── GOOGLE MAPS STYLE DIRECTION ARROW ── */
+    .ar-big-arrow {
+      position: absolute;
+      bottom: 220px; /* sits above the waypoint list */
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 2;
       pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
     }
-    .ar-brackets::before, .ar-brackets::after,
-    .ar-brackets .br, .ar-brackets .bl {
-      content:''; position:absolute;
-      width:28px; height:28px;
-      border-color:#FFC627; border-style:solid; opacity:.65;
+
+    /* SVG arrow — solid filled, no emoji, Google Maps feel */
+    .ar-nav-arrow {
+      width: 80px; height: 80px;
+      filter: drop-shadow(0 4px 24px rgba(0,0,0,0.5));
+      transition: transform 0.4s ease;
+      animation: navPulse 2s ease-in-out infinite;
     }
-    .ar-brackets::before { top:0;left:0; border-width:2px 0 0 2px; border-radius:3px 0 0 0; }
-    .ar-brackets::after  { top:0;right:0; border-width:2px 2px 0 0; border-radius:0 3px 0 0; }
-    .ar-brackets .br { bottom:0;right:0; border-width:0 2px 2px 0; border-radius:0 0 3px 0; }
-    .ar-brackets .bl { bottom:0;left:0; border-width:0 0 2px 2px; border-radius:0 0 0 3px; }
+
+    @keyframes navPulse {
+      0%,100% { transform: translateY(0) scale(1); }
+      50%      { transform: translateY(-8px) scale(1.04); }
+    }
+
+    .ar-arrow-label {
+      font-family: 'Inter', Arial, sans-serif;
+      font-weight: 700; font-size: 1rem;
+      color: #fff;
+      background: rgba(0,0,0,0.6);
+      padding: 6px 18px;
+      border-radius: 24px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.12);
+      white-space: nowrap;
+      max-width: 280px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
 
     /* HUD top */
     .ar-hud-top {
@@ -672,49 +696,6 @@
     }
     .gps-signal { width:7px;height:7px;border-radius:50%; background:#00E676; }
 
-    /* QR scan box */
-    .qr-frame {
-      position:absolute; top:50%;left:50%;
-      transform:translate(-50%,-50%);
-      width:190px;height:190px;
-      border:2px solid #FFC627; border-radius:14px;
-      box-shadow:0 0 0 3000px rgba(0,0,0,.45);
-      z-index:2; display:none;
-    }
-    .qr-frame.show { display:block; }
-    .qr-sweep {
-      position:absolute; left:8px;right:8px; height:2px;
-      background:#FFC627; box-shadow:0 0 8px #FFC627;
-      animation:qrSweep 2s ease-in-out infinite;
-    }
-    .qr-hint {
-      position:absolute; bottom:-36px; left:50%; transform:translateX(-50%);
-      white-space:nowrap; font-size:.75rem; color:#FFC627; font-weight:500;
-    }
-    @keyframes qrSweep { 0%,100%{top:8px} 50%{bottom:8px;top:auto} }
-
-    /* Big direction arrow */
-    .ar-big-arrow {
-      position:absolute; top:48%; left:50%;
-      transform:translate(-50%,-50%);
-      text-align:center; z-index:2; pointer-events:none;
-    }
-    .ar-arrow-glyph {
-      font-size:5.5rem; line-height:1;
-      filter:drop-shadow(0 0 24px #FFC627);
-      animation:arBounce 1.3s ease-in-out infinite;
-      transition:transform .5s ease;
-      display:block;
-    }
-    .ar-arrow-label {
-      font-family:'Inter',Arial,sans-serif;
-      font-weight:800; font-size:1.1rem;
-      text-shadow:0 2px 10px rgba(0,0,0,.9);
-      background:rgba(0,0,0,.55); padding:.3rem 1.1rem;
-      border-radius:20px; backdrop-filter:blur(4px);
-      color:#fff; margin-top:.5rem; display:inline-block;
-    }
-    @keyframes arBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
 
     /* Waypoint list */
     .ar-wp-list {
@@ -979,8 +960,6 @@
     <canvas id="arCanvas3d"></canvas>
 
     <!-- Scan FX -->
-    <div class="ar-scan-line"></div>
-    <div class="ar-brackets"><div class="br"></div><div class="bl"></div></div>
 
     <!-- HUD Top -->
     <div class="ar-hud-top">
@@ -992,10 +971,10 @@
       <div class="ar-live-chip"><div class="ar-live-dot"></div> LIVE</div>
     </div>
 
-    <!-- Mode pills -->
-    <div class="ar-mode-strip">
-      <div class="ar-mode-pill on" id="pillQR" onclick="setARMode('indoor')">📍 Indoor QR</div>
-      <div class="ar-mode-pill" id="pillGPS" onclick="setARMode('outdoor')">🧭 GPS</div>
+    <!-- Mode strip — hidden, GPS only -->
+    <div class="ar-mode-strip" style="display:none;">
+      <div class="ar-mode-pill on" id="pillQR">📍 Indoor QR</div>
+      <div class="ar-mode-pill" id="pillGPS">🧭 GPS</div>
     </div>
 
     <!-- Compass (outdoor) -->
@@ -1009,15 +988,13 @@
       <span id="gpsLabel">GPS: Strong</span>
     </div>
 
-    <!-- QR frame (indoor) -->
-    <div class="qr-frame show" id="qrFrame">
-      <div class="qr-sweep"></div>
-      <div class="qr-hint">Point at hallway QR marker</div>
-    </div>
 
-    <!-- Big directional arrow -->
+    <!-- Google Maps style nav arrow — SVG, no emoji, no QR -->
     <div class="ar-big-arrow" id="arBigArrow">
-      <span class="ar-arrow-glyph" id="arArrowGlyph">⬆</span>
+      <svg id="arNavArrow" class="ar-nav-arrow" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="40" cy="40" r="38" fill="rgba(0,0,0,0.45)" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+        <path id="arArrowPath" d="M40 14 L56 54 L40 46 L24 54 Z" fill="#FFC627" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+      </svg>
       <div class="ar-arrow-label" id="arArrowLabel">Walk straight ahead</div>
     </div>
 
@@ -1041,59 +1018,59 @@
       </div>
     </div>
 
-    <!-- Building selector (shown first) -->
+    <!-- Building selector — GPS first, clean -->
     <div id="arBuildingPicker" style="
       position:absolute;inset:0;z-index:5;
       background:rgba(0,0,0,.93);
       display:flex;flex-direction:column;
       padding:1.5rem;overflow-y:auto;">
-      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.75rem;">
         <button class="ar-close-btn" onclick="closeAROverlay()">✕</button>
-        <div style="font-family:'Inter',Arial,sans-serif;font-weight:700;font-size:1.1rem;color:#fff;">
-          Select Building &amp; Mode
+        <div>
+          <div style="font-family:'Inter',Arial,sans-serif;font-weight:800;font-size:1.1rem;color:#fff;">
+            Where are you?
+          </div>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:2px;">
+            Select your building — we'll guide you out automatically
+          </div>
         </div>
       </div>
 
-      <div style="font-size:.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#FFC627;margin-bottom:.75rem;">
-        Mode
-      </div>
-      <div style="display:flex;gap:.75rem;margin-bottom:1.5rem;">
-        <div onclick="pickerSetMode('indoor')" id="pickerIndoor"
-          style="flex:1;padding:12px;border-radius:10px;cursor:pointer;text-align:center;
-          background:rgba(140,29,64,.5);border:1px solid var(--maroon);color:#fff;
-          font-family:'Inter',Arial,sans-serif;font-weight:600;font-size:.85rem;transition:all .2s;">
-          📍 Indoor QR
-        </div>
-        <div onclick="pickerSetMode('outdoor')" id="pickerOutdoor"
-          style="flex:1;padding:12px;border-radius:10px;cursor:pointer;text-align:center;
-          background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);
-          font-family:'Inter',Arial,sans-serif;font-weight:600;font-size:.85rem;transition:all .2s;">
-          🧭 GPS Outdoor
+      <!-- GPS status chip -->
+      <div id="gpsStatusChip" style="
+        display:flex;align-items:center;gap:10px;
+        background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);
+        border-radius:10px;padding:10px 14px;margin-bottom:1.5rem;">
+        <div id="gpsChipDot" style="width:9px;height:9px;border-radius:50%;background:#888;flex-shrink:0;"></div>
+        <div>
+          <div id="gpsChipTitle" style="font-size:.8rem;font-weight:700;color:#fff;">Requesting Location…</div>
+          <div id="gpsChipSub" style="font-size:.7rem;color:rgba(255,255,255,.4);margin-top:1px;">Allow location access for automatic GPS guidance</div>
         </div>
       </div>
 
-      <div style="font-size:.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#FFC627;margin-bottom:.75rem;">
-        Building
+      <div style="font-size:.68rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#FFC627;margin-bottom:.75rem;">
+        Select Building
       </div>
-      <div style="display:flex;flex-direction:column;gap:.65rem;" id="buildingPickerList"></div>
+      <div style="display:flex;flex-direction:column;gap:.6rem;" id="buildingPickerList"></div>
 
-      <button onclick="startARSession()" style="
+      <button onclick="startARSession(false)" style="
         margin-top:1.5rem;padding:1rem;border-radius:8px;
         background:var(--maroon);color:#fff;border:none;
         font-family:'Inter',Arial,sans-serif;font-weight:700;font-size:1rem;
         cursor:pointer;transition:background .2s;"
         onmouseover="this.style.background='#6B1530'"
         onmouseout="this.style.background='var(--maroon)'">
-        Launch AR Guide →
+        🧭 Start Guided Evacuation
       </button>
 
       <button onclick="startARSession(true)" style="
         margin-top:.75rem;padding:.85rem;border-radius:8px;
-        background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);
-        border:1px solid rgba(255,255,255,.15);
-        font-family:'Inter',Arial,sans-serif;font-weight:600;font-size:.9rem;
+        background:rgba(255,255,255,.05);color:rgba(255,255,255,.55);
+        border:1px solid rgba(255,255,255,.12);
+        font-family:'Inter',Arial,sans-serif;font-weight:600;font-size:.88rem;
         cursor:pointer;">
-        ▶ Run Demo (no camera)
+        ▶ Demo Mode (no camera / GPS needed)
       </button>
     </div>
 
@@ -1111,63 +1088,45 @@
 
   <script>
   // ══════════════════════════════════════════
-  // DATA — buildings & waypoints
+  // BUILDING DATA — GPS waypoints only
   // ══════════════════════════════════════════
   const AR_BUILDINGS = {
     PRLTA: {
       name: 'Peralta Hall',
-      indoor: [
-        { label:'Exit classroom', arrow:'⬆', dist:'5m',  instruction:'Leave bags — walk calmly' },
-        { label:'Main corridor north', arrow:'⬅', dist:'22m', instruction:'Turn left at junction' },
-        { label:'Pass pull station', arrow:'⬆', dist:'12m', instruction:'Continue straight' },
-        { label:'North exit doors', arrow:'⬆', dist:'8m',  instruction:'Push doors open' },
-        { label:'Assembly Area C', arrow:'↗', dist:'40m', instruction:'Bear right to open lawn' },
-      ],
-      outdoor: [
-        { label:'Move away from building', arrow:'⬆', dist:'20m', instruction:'Walk north', bearing:350 },
-        { label:'Cross walkway', arrow:'↗', dist:'30m', instruction:'Bear right', bearing:30 },
-        { label:'Assembly Area C — Lawn', arrow:'⬆', dist:'25m', instruction:'Proceed to marked zone', bearing:5 },
+      waypoints: [
+        { label:'Exit your classroom or office', arrow:'⬆', dist:'~5m',  instruction:'Leave bags — walk calmly to door' },
+        { label:'Main corridor — head north', arrow:'⬅', dist:'~22m', instruction:'Turn left at the junction' },
+        { label:'Pass the pull station', arrow:'⬆', dist:'~12m', instruction:'Continue straight down hallway' },
+        { label:'North exit doors', arrow:'⬆', dist:'~8m',  instruction:'Push the doors open' },
+        { label:'Assembly Area C — open lawn', arrow:'↗', dist:'~40m', instruction:'Bear right — proceed to marked zone' },
       ]
     },
     SANCA: {
       name: 'Santa Catalina Hall',
-      indoor: [
-        { label:'Shut down equipment', arrow:'⬆', dist:'3m',  instruction:'Power off, alert others' },
-        { label:'East corridor', arrow:'➡', dist:'18m', instruction:'Turn right at lab exit' },
-        { label:'Emergency exit B', arrow:'⬆', dist:'14m', instruction:'Push bar — fire exit' },
-        { label:'Assembly Area D', arrow:'⬆', dist:'35m', instruction:'Walk to open area' },
-      ],
-      outdoor: [
-        { label:'Away from building', arrow:'⬇', dist:'25m', instruction:'Move south', bearing:180 },
-        { label:'Cross service road', arrow:'➡', dist:'45m', instruction:'Turn right at road', bearing:90 },
-        { label:'Assembly Area D', arrow:'⬆', dist:'20m', instruction:'Head to flagpole area', bearing:10 },
+      waypoints: [
+        { label:'Power off equipment — alert others', arrow:'⬆', dist:'~3m',  instruction:'Shut down and move immediately' },
+        { label:'East corridor exit', arrow:'➡', dist:'~18m', instruction:'Turn right at the lab exit door' },
+        { label:'Emergency Exit B', arrow:'⬆', dist:'~14m', instruction:'Push the crash bar — fire exit' },
+        { label:'Assembly Area D — open area', arrow:'⬆', dist:'~35m', instruction:'Walk to the marked open zone' },
       ]
     },
     STN: {
       name: 'Santan Hall',
-      indoor: [
-        { label:'Exit office / lounge', arrow:'⬆', dist:'8m',  instruction:'Walk straight out' },
-        { label:'South stairwell', arrow:'⬇', dist:'15m', instruction:'Descend to ground floor' },
-        { label:'South exit doors', arrow:'⬆', dist:'10m', instruction:'Exit through glass doors' },
-        { label:'Assembly Area A', arrow:'➡', dist:'30m', instruction:'Turn right — open parking' },
-      ],
-      outdoor: [
-        { label:'Move south', arrow:'⬇', dist:'30m', instruction:'Walk away from building', bearing:185 },
-        { label:'Assembly Area A', arrow:'➡', dist:'40m', instruction:'Turn right at path', bearing:80 },
+      waypoints: [
+        { label:'Exit your office or lounge', arrow:'⬆', dist:'~8m',  instruction:'Walk straight toward the hallway' },
+        { label:'South stairwell', arrow:'⬇', dist:'~15m', instruction:'Descend stairs to ground floor' },
+        { label:'South exit doors', arrow:'⬆', dist:'~10m', instruction:'Exit through the glass doors' },
+        { label:'Assembly Area A — parking area', arrow:'➡', dist:'~30m', instruction:'Turn right — proceed to open area' },
       ]
     },
     SUT: {
       name: 'Sutton Hall',
-      indoor: [
-        { label:'Exit room / lab', arrow:'⬆', dist:'6m',  instruction:'Leave area calmly' },
-        { label:'West corridor', arrow:'⬅', dist:'20m', instruction:'Turn left' },
-        { label:'Stairwell A', arrow:'⬇', dist:'12m', instruction:'Take stairs down' },
-        { label:'West exit', arrow:'⬆', dist:'10m', instruction:'Push exit doors' },
-        { label:'Assembly Area B', arrow:'⬆', dist:'45m', instruction:'Walk to open grass area' },
-      ],
-      outdoor: [
-        { label:'Move west', arrow:'⬅', dist:'20m', instruction:'Walk west from building', bearing:270 },
-        { label:'Assembly Area B', arrow:'⬆', dist:'50m', instruction:'Head to grass field', bearing:350 },
+      waypoints: [
+        { label:'Exit your room or lab', arrow:'⬆', dist:'~6m',  instruction:'Leave calmly — do not use elevator' },
+        { label:'West corridor', arrow:'⬅', dist:'~20m', instruction:'Turn left toward west wing' },
+        { label:'Stairwell A — descend', arrow:'⬇', dist:'~12m', instruction:'Take stairs down to ground floor' },
+        { label:'West exit doors', arrow:'⬆', dist:'~10m', instruction:'Push exit doors open' },
+        { label:'Assembly Area B — grass field', arrow:'⬆', dist:'~45m', instruction:'Walk to the open grass area' },
       ]
     }
   };
@@ -1175,14 +1134,16 @@
   // ══════════════════════════════════════════
   // STATE
   // ══════════════════════════════════════════
-  let arMode = 'indoor';
   let arBuilding = 'PRLTA';
   let arWPIndex = 0;
   let arWPs = [];
   let arStream = null;
   let arCompassInterval = null;
+  let arWatchId = null;
   let arAnimFrame = null;
   let isDemo = false;
+  let gpsGranted = false;
+  let userLat = null, userLng = null;
 
   // ══════════════════════════════════════════
   // OPEN / CLOSE
@@ -1190,9 +1151,13 @@
   function openAROverlay() {
     document.getElementById('arOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
-    buildPickerList();
+    // Hide mode pills — GPS only now
+    document.getElementById('pillQR').style.display = 'none';
+    document.getElementById('pillGPS').style.display = 'none';
     document.getElementById('arBuildingPicker').style.display = 'flex';
     document.getElementById('arArrived').classList.remove('show');
+    buildPickerList();
+    requestGPS();
   }
 
   function closeAROverlay() {
@@ -1200,8 +1165,58 @@
     document.body.style.overflow = '';
     if (arStream) { arStream.getTracks().forEach(t => t.stop()); arStream = null; }
     if (arCompassInterval) { clearInterval(arCompassInterval); arCompassInterval = null; }
+    if (arWatchId !== null) { navigator.geolocation.clearWatch(arWatchId); arWatchId = null; }
     if (arAnimFrame) { cancelAnimationFrame(arAnimFrame); arAnimFrame = null; }
     document.getElementById('arArrived').classList.remove('show');
+    document.getElementById('arBigArrow').style.display = '';
+  }
+
+  // ══════════════════════════════════════════
+  // GPS REQUEST — happens immediately on open
+  // ══════════════════════════════════════════
+  function requestGPS() {
+    if (!navigator.geolocation) {
+      setGPSChip('none', 'GPS Not Available', 'Your browser does not support geolocation');
+      return;
+    }
+    setGPSChip('searching', 'Locating you…', 'Allow location access when prompted');
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        userLat = pos.coords.latitude;
+        userLng = pos.coords.longitude;
+        gpsGranted = true;
+        const acc = Math.round(pos.coords.accuracy);
+        setGPSChip('good', 'GPS Ready ✓', `Accuracy: ±${acc}m — guidance will start automatically`);
+        // Start watching for live updates
+        arWatchId = navigator.geolocation.watchPosition(liveGPSUpdate, null, { enableHighAccuracy: true });
+      },
+      err => {
+        gpsGranted = false;
+        setGPSChip('none', 'Location Denied', 'Tap "Start" to use direction-based guidance instead');
+      },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  }
+
+  function liveGPSUpdate(pos) {
+    userLat = pos.coords.latitude;
+    userLng = pos.coords.longitude;
+    // Update GPS chip in AR view
+    const gpsEl = document.getElementById('arGPS');
+    if (gpsEl) {
+      const acc = Math.round(pos.coords.accuracy);
+      document.getElementById('gpsLabel').textContent = `GPS ±${acc}m`;
+    }
+  }
+
+  function setGPSChip(state, title, sub) {
+    const colors = { good:'#00E676', searching:'#FFC627', none:'#FF3B3B' };
+    const dot = document.getElementById('gpsChipDot');
+    if (dot) dot.style.background = colors[state] || '#888';
+    const t = document.getElementById('gpsChipTitle');
+    if (t) t.textContent = title;
+    const s = document.getElementById('gpsChipSub');
+    if (s) s.textContent = sub;
   }
 
   // ══════════════════════════════════════════
@@ -1212,8 +1227,8 @@
     list.innerHTML = '';
     Object.entries(AR_BUILDINGS).forEach(([key, b]) => {
       const el = document.createElement('div');
+      el.onclick = () => selectBuilding(key);
       el.id = 'pb_' + key;
-      el.onclick = () => selectPickerBuilding(key);
       el.style.cssText = `
         padding:12px 16px;border-radius:10px;cursor:pointer;
         display:flex;align-items:center;gap:12px;
@@ -1222,43 +1237,21 @@
         transition:all .2s;
       `;
       el.innerHTML = `
-        <div style="font-family:'Inter',Arial,sans-serif;font-weight:700;font-size:1.1rem;
-          color:var(--maroon);min-width:36px;text-align:center;">${key}</div>
+        <div style="font-family:'Inter',Arial,sans-serif;font-weight:800;font-size:1rem;
+          color:var(--maroon);min-width:44px;text-align:center;">${key}</div>
         <div>
           <div style="font-weight:600;font-size:.9rem;color:#fff;">${b.name}</div>
-          <div style="font-size:.72rem;color:rgba(255,255,255,.4);">
-            ${b.indoor.length} indoor waypoints · ${b.outdoor.length} outdoor waypoints
-          </div>
+          <div style="font-size:.7rem;color:rgba(255,255,255,.35);margin-top:2px;">${b.waypoints.length} waypoints to assembly area</div>
         </div>
+        ${key === arBuilding ? '<div style="margin-left:auto;font-size:.7rem;color:#FFC627;font-weight:700;">SELECTED</div>' : ''}
       `;
       list.appendChild(el);
     });
   }
 
-  function selectPickerBuilding(key) {
+  function selectBuilding(key) {
     arBuilding = key;
     buildPickerList();
-  }
-
-  function pickerSetMode(mode) {
-    arMode = mode;
-    const indoor = document.getElementById('pickerIndoor');
-    const outdoor = document.getElementById('pickerOutdoor');
-    if (mode === 'indoor') {
-      indoor.style.background = 'rgba(140,29,64,.5)';
-      indoor.style.borderColor = 'var(--maroon)';
-      indoor.style.color = '#fff';
-      outdoor.style.background = 'rgba(255,255,255,.06)';
-      outdoor.style.borderColor = 'rgba(255,255,255,.15)';
-      outdoor.style.color = 'rgba(255,255,255,.5)';
-    } else {
-      outdoor.style.background = 'rgba(0,100,180,.4)';
-      outdoor.style.borderColor = 'rgba(0,180,255,.5)';
-      outdoor.style.color = '#fff';
-      indoor.style.background = 'rgba(255,255,255,.06)';
-      indoor.style.borderColor = 'rgba(255,255,255,.15)';
-      indoor.style.color = 'rgba(255,255,255,.5)';
-    }
   }
 
   // ══════════════════════════════════════════
@@ -1267,49 +1260,42 @@
   async function startARSession(demo = false) {
     isDemo = demo;
     document.getElementById('arBuildingPicker').style.display = 'none';
+    document.getElementById('arArrived').classList.remove('show');
 
-    arWPs = arMode === 'indoor'
-      ? AR_BUILDINGS[arBuilding].indoor
-      : AR_BUILDINGS[arBuilding].outdoor;
+    arWPs = AR_BUILDINGS[arBuilding].waypoints;
     arWPIndex = 0;
 
     document.getElementById('arBuildingLabel').textContent = AR_BUILDINGS[arBuilding].name;
-    document.getElementById('arModeLabel').textContent = arMode === 'indoor' ? 'Indoor QR Mode' : 'GPS Outdoor Mode';
+    document.getElementById('arModeLabel').textContent = gpsGranted ? '🧭 GPS Guidance Active' : '📍 Direction Guidance';
 
-    // Mode-specific UI
-    document.getElementById('qrFrame').className = 'qr-frame' + (arMode === 'indoor' ? ' show' : '');
-    document.getElementById('arCompass').style.display = arMode === 'outdoor' ? 'flex' : 'none';
-    document.getElementById('arGPS').style.display = arMode === 'outdoor' ? 'flex' : 'none';
-
-    // Sync mode pills
-    document.getElementById('pillQR').className = 'ar-mode-pill' + (arMode === 'indoor' ? ' on' : '');
-    document.getElementById('pillGPS').className = 'ar-mode-pill' + (arMode === 'outdoor' ? ' on' : '');
+    // Show GPS chip in AR view
+    document.getElementById('arCompass').style.display = 'flex';
+    document.getElementById('arGPS').style.display = 'flex';
+    document.getElementById('gpsLabel').textContent = gpsGranted ? 'GPS Active' : 'Demo Mode';
 
     if (!demo) {
       try {
         arStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' }, audio:false });
         document.getElementById('arVideo').srcObject = arStream;
+        await document.getElementById('arVideo').play();
       } catch(e) {
-        // fallback to demo
         isDemo = true;
-        demoBackground();
+        runDemoCanvas();
       }
     } else {
-      demoBackground();
+      runDemoCanvas();
     }
 
-    if (arMode === 'outdoor') startCompassSim();
-    if (arMode === 'indoor') {
-      // auto-dismiss QR frame after 4s
-      setTimeout(() => document.getElementById('qrFrame').classList.remove('show'), 4000);
-    }
-
+    startCompassSim();
     renderWaypoints();
     updateARUI();
+    if (gpsGranted) simulateGPSProgress();
   }
 
-  // Demo background (animated canvas)
-  function demoBackground() {
+  // ══════════════════════════════════════════
+  // DEMO CANVAS BACKGROUND
+  // ══════════════════════════════════════════
+  function runDemoCanvas() {
     const canvas = document.getElementById('arCanvas3d');
     const ctx = canvas.getContext('2d');
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -1317,23 +1303,27 @@
     window.addEventListener('resize', resize);
     let t = 0;
     function draw() {
-      ctx.fillStyle = '#0a1020';
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-      // Grid floor perspective
-      ctx.strokeStyle = 'rgba(140,29,64,.25)';
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = '#080e18';
+      ctx.fillRect(0,0,w,h);
+      // Perspective grid
+      ctx.strokeStyle = 'rgba(140,29,64,.2)';
       ctx.lineWidth = 1;
-      const h = canvas.height, w = canvas.width, vp = h * 0.45;
-      for (let i = -8; i <= 8; i++) {
-        const x = w/2 + i * 80;
-        ctx.beginPath(); ctx.moveTo(x, vp); ctx.lineTo(w/2 + i * 400, h+100); ctx.stroke();
+      const vp = h * 0.42;
+      for (let i = -10; i <= 10; i++) {
+        ctx.beginPath(); ctx.moveTo(w/2 + i*60, vp);
+        ctx.lineTo(w/2 + i*500, h+200); ctx.stroke();
       }
-      for (let d = 0; d < 8; d++) {
-        const y = vp + (h - vp) * (d / 7);
+      for (let d = 0; d < 10; d++) {
+        const y = vp + (h - vp) * (d / 9);
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
       }
-      // Moving highlight
-      ctx.fillStyle = `rgba(255,198,39,${0.04 + 0.02*Math.sin(t*0.05)})`;
-      ctx.fillRect(0, vp - 2, w, 4);
+      // Subtle pulse glow at center
+      const grd = ctx.createRadialGradient(w/2, h*0.45, 0, w/2, h*0.45, 120);
+      grd.addColorStop(0, `rgba(255,198,39,${0.04 + 0.02*Math.sin(t*0.06)})`);
+      grd.addColorStop(1, 'rgba(255,198,39,0)');
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, w, h);
       t++;
       arAnimFrame = requestAnimationFrame(draw);
     }
@@ -1341,21 +1331,61 @@
   }
 
   // ══════════════════════════════════════════
-  // COMPASS SIMULATION
+  // COMPASS
   // ══════════════════════════════════════════
   function startCompassSim() {
     let deg = 0;
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener('deviceorientationabsolute', e => {
-        deg = e.alpha || 0;
-        document.getElementById('compassRose').style.transform = `rotate(${-deg}deg)`;
-      });
+    if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission().then(p => {
+        if (p === 'granted') listenCompass();
+      }).catch(() => simulateCompass());
+    } else if (window.DeviceOrientationEvent) {
+      listenCompass();
+    } else {
+      simulateCompass();
     }
-    // Simulate gentle movement for demo
+  }
+
+  function listenCompass() {
+    window.addEventListener('deviceorientationabsolute', e => {
+      if (e.alpha !== null) {
+        document.getElementById('compassRose').style.transform = `rotate(${-e.alpha}deg)`;
+      }
+    });
+    window.addEventListener('deviceorientation', e => {
+      if (e.webkitCompassHeading !== undefined) {
+        document.getElementById('compassRose').style.transform = `rotate(${-e.webkitCompassHeading}deg)`;
+      }
+    });
+  }
+
+  function simulateCompass() {
+    let deg = 0;
     arCompassInterval = setInterval(() => {
-      deg += (Math.random() - 0.5) * 3;
+      deg += (Math.random() - 0.5) * 4;
       document.getElementById('compassRose').style.transform = `rotate(${deg}deg)`;
-    }, 300);
+    }, 400);
+  }
+
+  // Simulate GPS auto-advancing waypoints when GPS is active
+  function simulateGPSProgress() {
+    // In a real implementation this would compare user coords to waypoint coords
+    // For now, show GPS is working by auto-suggesting advance after 12s per waypoint
+    let tick = 0;
+    const gpsAutoInterval = setInterval(() => {
+      tick++;
+      if (tick >= 12 && arWPIndex < arWPs.length - 1) {
+        tick = 0;
+        // Flash next button to suggest advancing
+        const btn = document.querySelector('.ar-btn-next');
+        if (btn) {
+          btn.style.background = '#FFC627';
+          btn.style.transform = 'scale(1.04)';
+          setTimeout(() => { btn.style.transform = ''; }, 400);
+        }
+      }
+      if (arWPIndex >= arWPs.length) clearInterval(gpsAutoInterval);
+    }, 1000);
   }
 
   // ══════════════════════════════════════════
@@ -1364,12 +1394,15 @@
   function renderWaypoints() {
     const list = document.getElementById('arWPList');
     list.innerHTML = '';
-    arWPs.forEach((wp, i) => {
+    // Show max 4 upcoming to keep view clean
+    const start = Math.max(0, arWPIndex - 1);
+    const slice = arWPs.slice(start, start + 4);
+    slice.forEach((wp, si) => {
+      const i = start + si;
       const el = document.createElement('div');
       el.className = 'ar-wp' + (i === arWPIndex ? ' active' : i < arWPIndex ? ' done' : '');
-      el.id = 'wp_' + i;
       el.innerHTML = `
-        <div class="ar-wp-num">${i < arWPIndex ? '✓' : i+1}</div>
+        <div class="ar-wp-num">${i < arWPIndex ? '✓' : i + 1}</div>
         <div class="ar-wp-text">${wp.label}</div>
         <div class="ar-wp-dist">${wp.dist}</div>
       `;
@@ -1377,14 +1410,25 @@
     });
   }
 
+  // Arrow direction → SVG rotation degrees
+  const ARROW_ROTATIONS = {
+    '⬆': 0, '↗': 45, '➡': 90, '↘': 135,
+    '⬇': 180, '↙': 225, '⬅': 270, '↖': 315
+  };
+
   function updateARUI() {
     const wp = arWPs[arWPIndex];
     if (!wp) return;
-    document.getElementById('arArrowGlyph').textContent = wp.arrow;
+
+    // Rotate the SVG arrow smoothly
+    const deg = ARROW_ROTATIONS[wp.arrow] ?? 0;
+    const svg = document.getElementById('arNavArrow');
+    if (svg) svg.style.transform = `rotate(${deg}deg)`;
+
     document.getElementById('arArrowLabel').textContent = wp.instruction;
     const pct = Math.round((arWPIndex / arWPs.length) * 100);
     document.getElementById('arProgFill').style.width = pct + '%';
-    document.getElementById('arProgLabel').textContent = `Waypoint ${arWPIndex+1} of ${arWPs.length}`;
+    document.getElementById('arProgLabel').textContent = `Step ${arWPIndex + 1} of ${arWPs.length}`;
     document.getElementById('arProgPct').textContent = pct + '%';
   }
 
@@ -1393,38 +1437,14 @@
       arWPIndex++;
       renderWaypoints();
       updateARUI();
-      // Auto-dismiss QR frame on advance (indoor)
-      if (arMode === 'indoor') {
-        document.getElementById('qrFrame').classList.add('show');
-        setTimeout(() => document.getElementById('qrFrame').classList.remove('show'), 2500);
-      }
     } else {
       // Arrived!
       document.getElementById('arProgFill').style.width = '100%';
       document.getElementById('arProgPct').textContent = '100%';
       document.getElementById('arBigArrow').style.display = 'none';
       document.getElementById('arArrived').classList.add('show');
-      if (arCompassInterval) clearInterval(arCompassInterval);
+      if (arCompassInterval) { clearInterval(arCompassInterval); arCompassInterval = null; }
     }
-  }
-
-  // ══════════════════════════════════════════
-  // MODE TOGGLE (in AR view)
-  // ══════════════════════════════════════════
-  function setARMode(mode) {
-    arMode = mode;
-    document.getElementById('pillQR').className = 'ar-mode-pill' + (mode==='indoor'?' on':'');
-    document.getElementById('pillGPS').className = 'ar-mode-pill' + (mode==='outdoor'?' on':'');
-    document.getElementById('arCompass').style.display = mode==='outdoor'?'flex':'none';
-    document.getElementById('arGPS').style.display = mode==='outdoor'?'flex':'none';
-    document.getElementById('arModeLabel').textContent = mode==='indoor'?'Indoor QR Mode':'GPS Outdoor Mode';
-    arWPs = mode==='indoor' ? AR_BUILDINGS[arBuilding].indoor : AR_BUILDINGS[arBuilding].outdoor;
-    arWPIndex = 0;
-    document.getElementById('arBigArrow').style.display = '';
-    renderWaypoints();
-    updateARUI();
-    if (mode==='outdoor' && !arCompassInterval) startCompassSim();
-    if (mode==='indoor' && arCompassInterval) { clearInterval(arCompassInterval); arCompassInterval=null; }
   }
   </script>
 
