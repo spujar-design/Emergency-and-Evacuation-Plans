@@ -1550,6 +1550,85 @@
   }
 
   // ══════════════════════════════════════════
+  // PEDOMETER — accelerometer step detection
+  // Works indoors where GPS fails
+  // ══════════════════════════════════════════
+  const STRIDE_LENGTH = 0.76; // metres per step (avg adult)
+  let stepCount        = 0;
+  let distWalked       = 0;   // metres walked since waypoint started
+  let wpStartDist      = 0;   // preset dist of current waypoint in metres
+  let remainingDist    = 0;   // counts down as you walk
+  let lastAccelMag     = 0;
+  let stepCooldown     = false;
+  const STEP_THRESHOLD = 1.2; // accel spike threshold
+
+  function startPedometer() {
+    if (!window.DeviceMotionEvent) return;
+
+    // iOS 13+ needs permission
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+      DeviceMotionEvent.requestPermission()
+        .then(r => { if (r === 'granted') listenMotion(); })
+        .catch(() => {});
+    } else {
+      listenMotion();
+    }
+  }
+
+  function listenMotion() {
+    window.addEventListener('devicemotion', function(e) {
+      const acc = e.accelerationIncludingGravity;
+      if (!acc) return;
+      const mag = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
+      const delta = Math.abs(mag - lastAccelMag);
+      lastAccelMag = mag;
+
+      // Detect a step: spike above threshold, with cooldown to avoid double count
+      if (delta > STEP_THRESHOLD && !stepCooldown) {
+        stepCooldown = true;
+        stepCount++;
+        distWalked += STRIDE_LENGTH;
+
+        // Reduce remaining distance
+        remainingDist = Math.max(0, wpStartDist - distWalked);
+
+        // Update displayed distance on active waypoint chip
+        const distEl = document.getElementById('wpDist_' + arWPIndex);
+        if (distEl) distEl.textContent = Math.round(remainingDist) + 'm';
+
+        // Auto-advance when remaining distance hits 0
+        if (remainingDist <= 0) autoAdvanceWaypoint();
+
+        setTimeout(() => { stepCooldown = false; }, 350);
+      }
+    }, true);
+  }
+
+  function resetWaypointDistance() {
+    // Called each time we move to a new waypoint
+    const wp = arWPs[arWPIndex];
+    if (!wp) return;
+    wpStartDist  = wp.dist;
+    distWalked   = 0;
+    remainingDist = wp.dist;
+
+    const distEl = document.getElementById('wpDist_' + arWPIndex);
+    if (distEl) distEl.textContent = Math.round(remainingDist) + 'm';
+  }
+
+  function autoAdvanceWaypoint() {
+    if (arWPIndex < arWPs.length - 1) {
+      arWPIndex++;
+      renderWaypoints();
+      updateARUI();
+      resetWaypointDistance();
+      if (navigator.vibrate) navigator.vibrate([60, 30, 60]);
+    } else {
+      showArrived();
+    }
+  }
+
+  // ══════════════════════════════════════════
   // MATHS
   // ══════════════════════════════════════════
 
@@ -1579,7 +1658,7 @@
   }
 
   // ══════════════════════════════════════════
-  // ARROW ROTATION — real GPS bearing + compass, runs every frame
+  // ARROW ROTATION — compass only, no GPS needed
   // ══════════════════════════════════════════
   function updateArrowRotation() {
     const wp = arWPs[arWPIndex];
@@ -1587,21 +1666,8 @@
 
     let targetRotation;
 
-    if (userLat !== null) {
-      // Always use real bearing from actual GPS position — no fallback
-      const bearing = bearingDeg(userLat, userLng, wp.lat, wp.lng);
-      waypointBearing = bearing;
-
-      targetRotation = deviceHeading !== null
-        ? (bearing - deviceHeading + 360) % 360
-        : bearing;
-
-      // Always show real distance in metres
-      const dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
-      const distEl = document.getElementById('wpDist_' + arWPIndex);
-      if (distEl) distEl.textContent = Math.round(dist) + 'm';
-
-    } else if (deviceHeading !== null) {
+    if (deviceHeading !== null) {
+      // Arrow = preset bearing to waypoint minus which way phone faces
       targetRotation = (wp.bearing - deviceHeading + 360) % 360;
     } else {
       targetRotation = wp.bearing;
@@ -1613,34 +1679,19 @@
   }
 
   // ══════════════════════════════════════════
-  // AUTO-ADVANCE — called every GPS update
-  // Advances waypoint when user is within 12m
+  // AUTO-ADVANCE — GPS fallback (outdoor only)
   // ══════════════════════════════════════════
-  const ADVANCE_RADIUS = 20; // metres — wider for indoor GPS drift
+  const ADVANCE_RADIUS = 20;
 
   function checkAutoAdvance() {
     if (arWPIndex >= arWPs.length || userLat === null) return;
     const wp = arWPs[arWPIndex];
     const dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
-
-    const distEl = document.getElementById('wpDist_' + arWPIndex);
-    if (distEl) distEl.textContent = Math.round(dist) + 'm';
-
-    if (dist <= ADVANCE_RADIUS) {
-      if (arWPIndex < arWPs.length - 1) {
-        arWPIndex++;
-        renderWaypoints();
-        updateARUI();
-        if (navigator.vibrate) navigator.vibrate([60, 30, 60]);
-      } else {
-        showArrived();
-      }
-    }
+    if (dist <= ADVANCE_RADIUS) autoAdvanceWaypoint();
   }
 
   // ══════════════════════════════════════════
-  // RENDER LOOP — runs while AR is active
-  // Keeps arrow smooth even between GPS ticks
+  // RENDER LOOP
   // ══════════════════════════════════════════
   function startRenderLoop() {
     function loop() {
@@ -1736,8 +1787,10 @@
     }
 
     startCompass();
+    startPedometer();
     renderWaypoints();
     updateARUI();
+    resetWaypointDistance();
     startRenderLoop();
   }
 
@@ -1839,6 +1892,7 @@
       arWPIndex++;
       renderWaypoints();
       updateARUI();
+      resetWaypointDistance();
       if (navigator.vibrate) navigator.vibrate(40);
     } else {
       showArrived();
