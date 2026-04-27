@@ -1214,22 +1214,168 @@
         { label:'Assembly Area A — parking',   instruction:'Turn right to open area',         dist:30,  bearing:90,  lat:33.30487, lng:-111.67920 },
       ]
     },
-    SUT: {
-      name: 'Sutton Hall',
+
+    // ─── SUTTON HALL — 3 floors, West & East wings ───────────────────────────
+    // Assembly area: NORTHWEST corner of Sutton Hall
+    // Sutton Hall center: 33.30542, -111.67891
+    // NW assembly area:   33.30558, -111.67910
+
+    SUT_F1W: {
+      name: 'Sutton Hall — Floor 1 West (101)',
       waypoints: [
-        { label:'Exit room or lab',            instruction:'Leave calmly — no elevator',      dist:6,   bearing:270, lat:33.30540, lng:-111.68000 },
-        { label:'West corridor',               instruction:'Turn left toward west wing',      dist:20,  bearing:270, lat:33.30540, lng:-111.68020 },
-        { label:'Stairwell A — descend',       instruction:'Take stairs to ground floor',     dist:12,  bearing:180, lat:33.30527, lng:-111.68020 },
-        { label:'West exit doors',             instruction:'Push exit doors open',            dist:10,  bearing:270, lat:33.30527, lng:-111.68032 },
-        { label:'Assembly Area B — grass',     instruction:'Walk to the open grass field',    dist:45,  bearing:270, lat:33.30527, lng:-111.68075 },
+        // From rooms 101F–101N: head east along main corridor to stairwell/exit
+        { label:'Exit your room into corridor 101',
+          instruction:'Step into the main corridor — do NOT use elevator',
+          dist:5, bearing:270, lat:33.30542, lng:-111.67898 },
+        { label:'Turn left — head west down corridor',
+          instruction:'Walk west past rooms 101E, 101D, 101C',
+          dist:18, bearing:270, lat:33.30542, lng:-111.67905 },
+        { label:'West stairwell — door on left',
+          instruction:'Take stairs down if above ground — or push west exit door',
+          dist:10, bearing:270, lat:33.30542, lng:-111.67912 },
+        { label:'West exit — out of building',
+          instruction:'Push exit door open — walk out to the west',
+          dist:8, bearing:315, lat:33.30546, lng:-111.67918 },
+        { label:'Northwest assembly area',
+          instruction:'Gather at northwest corner of Sutton Hall',
+          dist:25, bearing:315, lat:33.30558, lng:-111.67910 },
       ]
-    }
+    },
+
+    SUT_F1E: {
+      name: 'Sutton Hall — Floor 1 East (140)',
+      waypoints: [
+        // From rooms 140A–140K: two routes shown — west or east stairwell
+        { label:'Exit your room into corridor',
+          instruction:'Step into the main corridor 140 — do NOT use elevator',
+          dist:5, bearing:0, lat:33.30542, lng:-111.67880 },
+        { label:'Head west along corridor',
+          instruction:'Walk west past 140B, 140D, 140E, 140F toward pull station',
+          dist:20, bearing:270, lat:33.30542, lng:-111.67888 },
+        { label:'Pass fire alarm pull station',
+          instruction:'Continue west — fire extinguisher on your left',
+          dist:10, bearing:270, lat:33.30542, lng:-111.67895 },
+        { label:'West stairwell — turn left',
+          instruction:'Turn left at stairwell — descend if above ground floor',
+          dist:8, bearing:180, lat:33.30538, lng:-111.67900 },
+        { label:'South exit doors — ground floor',
+          instruction:'Push south exit doors open — walk out',
+          dist:10, bearing:180, lat:33.30530, lng:-111.67900 },
+        { label:'Northwest assembly area',
+          instruction:'Walk around to northwest corner of Sutton Hall',
+          dist:35, bearing:315, lat:33.30558, lng:-111.67910 },
+      ]
+    },
+
+    SUT_F2W: {
+      name: 'Sutton Hall — Floor 2 West (201)',
+      waypoints: [
+        // Floor plan: from 201B area head west along corridor past 201C, D, E, F
+        // to west stairwell exit — arrow goes left (west) to exit
+        { label:'Exit your room — corridor 201',
+          instruction:'Leave your office — step into the main corridor',
+          dist:5, bearing:270, lat:33.30542, lng:-111.67898 },
+        { label:'Head west past 201C, 201D, 201E, 201F',
+          instruction:'Walk west along corridor — do NOT use elevator',
+          dist:22, bearing:270, lat:33.30542, lng:-111.67906 },
+        { label:'Fire alarm pull station on left',
+          instruction:'Continue past the pull station toward stairwell',
+          dist:8, bearing:270, lat:33.30542, lng:-111.67911 },
+        { label:'West stairwell — descend to floor 1',
+          instruction:'Take stairs DOWN — do not use elevator',
+          dist:6, bearing:270, lat:33.30542, lng:-111.67915 },
+        { label:'Ground floor — west exit',
+          instruction:'Exit through west door — walk out of building',
+          dist:8, bearing:315, lat:33.30546, lng:-111.67918 },
+        { label:'Northwest assembly area',
+          instruction:'Gather at northwest corner of Sutton Hall',
+          dist:25, bearing:315, lat:33.30558, lng:-111.67910 },
+      ]
+    },
+
+    SUT_F2E: {
+      name: 'Sutton Hall — Floor 2 East (230–240)',
+      waypoints: [
+        // Floor plan: from 230A area west along corridor past 230B–230P
+        // then south exit or continue west to stairwell
+        { label:'Exit your room — corridor 230',
+          instruction:'Step out into the main corridor — do NOT use elevator',
+          dist:5, bearing:270, lat:33.30542, lng:-111.67880 },
+        { label:'Head west along corridor',
+          instruction:'Walk west past 230B, 230C, 230D, 230F, 230G',
+          dist:22, bearing:270, lat:33.30542, lng:-111.67890 },
+        { label:'Fire alarm & extinguisher on right',
+          instruction:'Continue past — keep heading west',
+          dist:10, bearing:270, lat:33.30542, lng:-111.67897 },
+        { label:'West stairwell — turn right',
+          instruction:'Turn right into west stairwell — descend to floor 1',
+          dist:8, bearing:315, lat:33.30546, lng:-111.67902 },
+        { label:'Ground floor — west exit',
+          instruction:'Exit through west door — walk out of building',
+          dist:8, bearing:315, lat:33.30546, lng:-111.67918 },
+        { label:'Northwest assembly area',
+          instruction:'Gather at northwest corner of Sutton Hall',
+          dist:25, bearing:315, lat:33.30558, lng:-111.67910 },
+      ]
+    },
+
+    SUT_F3W: {
+      name: 'Sutton Hall — Floor 3 West (301)',
+      waypoints: [
+        // Floor plan: from 301B area, west along corridor past 301C, D, E, F
+        // left at stairwell → down 2 floors → west exit
+        { label:'Exit your room — corridor 301',
+          instruction:'Leave your office — step into corridor 301',
+          dist:5, bearing:270, lat:33.30542, lng:-111.67898 },
+        { label:'Head west — past 301C, 301D, 301E, 301F',
+          instruction:'Walk west along corridor — do NOT use elevator',
+          dist:22, bearing:270, lat:33.30542, lng:-111.67908 },
+        { label:'Fire alarm pull station — keep going west',
+          instruction:'Continue past pull station to west stairwell',
+          dist:8, bearing:270, lat:33.30542, lng:-111.67913 },
+        { label:'West stairwell — descend 2 floors',
+          instruction:'Take stairs DOWN 2 floors to ground level',
+          dist:6, bearing:270, lat:33.30542, lng:-111.67916 },
+        { label:'Ground floor — west exit',
+          instruction:'Exit through west door — walk out of building',
+          dist:8, bearing:315, lat:33.30546, lng:-111.67918 },
+        { label:'Northwest assembly area',
+          instruction:'Gather at northwest corner of Sutton Hall',
+          dist:25, bearing:315, lat:33.30558, lng:-111.67910 },
+      ]
+    },
+
+    SUT_F3E: {
+      name: 'Sutton Hall — Floor 3 East (330–340)',
+      waypoints: [
+        // Floor plan: from 340A/B area, west along corridor
+        // west stairwell exit (arrow goes west and south/down)
+        { label:'Exit your room — corridor 340',
+          instruction:'Step into the main corridor — do NOT use elevator',
+          dist:5, bearing:270, lat:33.30542, lng:-111.67880 },
+        { label:'Head west — past 340B, 340D, 340F, 340G, 340J',
+          instruction:'Walk west along corridor 340',
+          dist:22, bearing:270, lat:33.30542, lng:-111.67890 },
+        { label:'Fire alarm & extinguisher — keep going',
+          instruction:'Continue west past fire alarm pull station',
+          dist:10, bearing:270, lat:33.30542, lng:-111.67897 },
+        { label:'West stairwell — descend 2 floors',
+          instruction:'Take stairs DOWN 2 floors to ground level',
+          dist:6, bearing:315, lat:33.30546, lng:-111.67902 },
+        { label:'Ground floor — west exit',
+          instruction:'Exit through west door — walk out of building',
+          dist:8, bearing:315, lat:33.30546, lng:-111.67918 },
+        { label:'Northwest assembly area',
+          instruction:'Gather at northwest corner of Sutton Hall',
+          dist:25, bearing:315, lat:33.30558, lng:-111.67910 },
+      ]
+    },
   };
 
   // ══════════════════════════════════════════
   // STATE
   // ══════════════════════════════════════════
-  let arBuilding   = 'PRLTA';
+  let arBuilding   = 'SUT_F1W';
   let arWPIndex    = 0;
   let arWPs        = [];
   let arStream     = null;
@@ -1553,30 +1699,41 @@
   function buildPickerList() {
     const list = document.getElementById('buildingPickerList');
     list.innerHTML = '';
-    Object.entries(AR_BUILDINGS).forEach(([key, b]) => {
-      const el = document.createElement('div');
-      el.onclick = () => selectBuilding(key);
-      el.id = 'pb_' + key;
-      const selected = key === arBuilding;
-      el.style.cssText = `
-        padding:12px 16px;border-radius:10px;cursor:pointer;
-        display:flex;align-items:center;gap:12px;
-        background:${selected ? 'rgba(140,29,64,.4)' : 'rgba(255,255,255,.05)'};
-        border:1px solid ${selected ? 'var(--maroon)' : 'rgba(255,255,255,.1)'};
-        transition:all .2s;
-      `;
-      el.innerHTML = `
-        <div style="font-family:'Inter',Arial,sans-serif;font-weight:800;font-size:1rem;
-          color:var(--maroon);min-width:44px;text-align:center;">${key}</div>
-        <div>
-          <div style="font-weight:600;font-size:.9rem;color:#fff;">${b.name}</div>
-          <div style="font-size:.7rem;color:rgba(255,255,255,.35);margin-top:2px;">
-            ${b.waypoints.length} waypoints · auto-advances as you walk
-          </div>
-        </div>
-        ${selected ? '<div style="margin-left:auto;font-size:.7rem;color:#FFC627;font-weight:700;">✓</div>' : ''}
-      `;
-      list.appendChild(el);
+
+    // Group definitions
+    const groups = [
+      { header: 'Sutton Hall — Select Your Floor & Wing', keys: ['SUT_F1W','SUT_F1E','SUT_F2W','SUT_F2E','SUT_F3W','SUT_F3E'] },
+      { header: 'Other TPS Buildings', keys: ['PRLTA','SANCA','STN'] },
+    ];
+
+    groups.forEach(group => {
+      // Section label
+      const lbl = document.createElement('div');
+      lbl.style.cssText = 'font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#FFC627;margin:1rem 0 .5rem;';
+      lbl.textContent = group.header;
+      list.appendChild(lbl);
+
+      group.keys.forEach(key => {
+        const b = AR_BUILDINGS[key];
+        if (!b) return;
+        const el = document.createElement('div');
+        el.onclick = () => selectBuilding(key);
+        el.id = 'pb_' + key;
+        const selected = key === arBuilding;
+        el.style.cssText = `
+          padding:10px 14px;border-radius:10px;cursor:pointer;
+          display:flex;align-items:center;gap:10px;
+          background:${selected ? 'rgba(140,29,64,.4)' : 'rgba(255,255,255,.05)'};
+          border:1px solid ${selected ? 'var(--maroon)' : 'rgba(255,255,255,.1)'};
+          transition:all .2s; margin-bottom:6px;
+        `;
+        el.innerHTML = `
+          <div style="font-size:.85rem;font-weight:600;color:#fff;flex:1;">${b.name}</div>
+          <div style="font-size:.68rem;color:rgba(255,255,255,.35);">${b.waypoints.length} steps</div>
+          ${selected ? '<div style="font-size:.7rem;color:#FFC627;font-weight:700;">✓</div>' : ''}
+        `;
+        list.appendChild(el);
+      });
     });
   }
 
