@@ -1215,159 +1215,153 @@
       ]
     },
 
-    // ─── SUTTON HALL — 3 floors, West & East wings ───────────────────────────
-    // Assembly area: NORTHWEST corner of Sutton Hall
-    // Sutton Hall center: 33.30542, -111.67891
-    // NW assembly area:   33.30558, -111.67910
+    // ─── SUTTON HALL — real GPS coordinates ───────────────────────────────────
+    // Front door:  33.3063369, -111.6773038
+    // Front path:  33.3060965, -111.6772052
+    // Assembly NW: TBD — will update when you send it
+    // Stairwell coords same as front door entry point (inside near stairs)
 
     SUT_F1W: {
       name: 'Sutton Hall — Floor 1 West (101)',
       waypoints: [
-        // From rooms 101F–101N: head east along main corridor to stairwell/exit
-        { label:'Exit your room into corridor 101',
-          instruction:'Step into the main corridor — do NOT use elevator',
-          dist:5, bearing:270, lat:33.30542, lng:-111.67898 },
-        { label:'Turn left — head west down corridor',
-          instruction:'Walk west past rooms 101E, 101D, 101C',
-          dist:18, bearing:270, lat:33.30542, lng:-111.67905 },
-        { label:'West stairwell — door on left',
-          instruction:'Take stairs down if above ground — or push west exit door',
-          dist:10, bearing:270, lat:33.30542, lng:-111.67912 },
-        { label:'West exit — out of building',
-          instruction:'Push exit door open — walk out to the west',
-          dist:8, bearing:315, lat:33.30546, lng:-111.67918 },
-        { label:'Northwest assembly area',
-          instruction:'Gather at northwest corner of Sutton Hall',
-          dist:25, bearing:315, lat:33.30558, lng:-111.67910 },
+        { label:'Exit room 101 — into corridor',
+          instruction:'Leave your room — do NOT use elevator',
+          dist:5, bearing:270, lat:33.3063361, lng:-111.6773115 },
+        { label:'Walk west to front entrance',
+          instruction:'Head toward the main front entrance doors',
+          dist:18, bearing:270, lat:33.3063369, lng:-111.6773038 },
+        { label:'Exit through front doors',
+          instruction:'Push through the main front doors',
+          dist:8, bearing:180, lat:33.3063369, lng:-111.6773038 },
+        { label:'Walk down front path',
+          instruction:'Follow the path away from the building',
+          dist:30, bearing:180, lat:33.3060965, lng:-111.6772052 },
+        { label:'Assembly area — NW corner',
+          instruction:'Proceed to northwest corner of Sutton Hall',
+          dist:20, bearing:315, lat:33.3060965, lng:-111.6772052 },
       ]
     },
 
     SUT_F1E: {
       name: 'Sutton Hall — Floor 1 East (140)',
       waypoints: [
-        // From rooms 140A–140K: two routes shown — west or east stairwell
-        { label:'Exit your room into corridor',
-          instruction:'Step into the main corridor 140 — do NOT use elevator',
-          dist:5, bearing:0, lat:33.30542, lng:-111.67880 },
-        { label:'Head west along corridor',
-          instruction:'Walk west past 140B, 140D, 140E, 140F toward pull station',
-          dist:20, bearing:270, lat:33.30542, lng:-111.67888 },
-        { label:'Pass fire alarm pull station',
-          instruction:'Continue west — fire extinguisher on your left',
-          dist:10, bearing:270, lat:33.30542, lng:-111.67895 },
-        { label:'West stairwell — turn left',
-          instruction:'Turn left at stairwell — descend if above ground floor',
-          dist:8, bearing:180, lat:33.30538, lng:-111.67900 },
-        { label:'South exit doors — ground floor',
-          instruction:'Push south exit doors open — walk out',
-          dist:10, bearing:180, lat:33.30530, lng:-111.67900 },
-        { label:'Northwest assembly area',
-          instruction:'Walk around to northwest corner of Sutton Hall',
-          dist:35, bearing:315, lat:33.30558, lng:-111.67910 },
+        { label:'Exit room 140 — into corridor',
+          instruction:'Leave your room — do NOT use elevator',
+          dist:5, bearing:270, lat:33.3063109, lng:-111.6769880 },
+        { label:'Walk west toward front entrance',
+          instruction:'Head west along corridor toward front of building',
+          dist:25, bearing:270, lat:33.3063369, lng:-111.6773038 },
+        { label:'Exit through front doors',
+          instruction:'Push through the main front doors',
+          dist:8, bearing:180, lat:33.3063369, lng:-111.6773038 },
+        { label:'Walk down front path',
+          instruction:'Follow the path away from the building',
+          dist:30, bearing:180, lat:33.3060965, lng:-111.6772052 },
+        { label:'Assembly area — NW corner',
+          instruction:'Proceed to northwest corner of Sutton Hall',
+          dist:20, bearing:315, lat:33.3060965, lng:-111.6772052 },
       ]
     },
 
     SUT_F2W: {
       name: 'Sutton Hall — Floor 2 West (201)',
       waypoints: [
-        // Floor plan: from 201B area head west along corridor past 201C, D, E, F
-        // to west stairwell exit — arrow goes left (west) to exit
-        { label:'Exit your room — corridor 201',
-          instruction:'Leave your office — step into the main corridor',
-          dist:5, bearing:270, lat:33.30542, lng:-111.67898 },
-        { label:'Head west past 201C, 201D, 201E, 201F',
-          instruction:'Walk west along corridor — do NOT use elevator',
-          dist:22, bearing:270, lat:33.30542, lng:-111.67906 },
-        { label:'Fire alarm pull station on left',
-          instruction:'Continue past the pull station toward stairwell',
-          dist:8, bearing:270, lat:33.30542, lng:-111.67911 },
-        { label:'West stairwell — descend to floor 1',
-          instruction:'Take stairs DOWN — do not use elevator',
-          dist:6, bearing:270, lat:33.30542, lng:-111.67915 },
-        { label:'Ground floor — west exit',
-          instruction:'Exit through west door — walk out of building',
-          dist:8, bearing:315, lat:33.30546, lng:-111.67918 },
-        { label:'Northwest assembly area',
-          instruction:'Gather at northwest corner of Sutton Hall',
-          dist:25, bearing:315, lat:33.30558, lng:-111.67910 },
+        { label:'Exit room 201 — into corridor',
+          instruction:'Leave your room — do NOT use elevator',
+          dist:5, bearing:270, lat:33.3063361, lng:-111.6773115 },
+        { label:'Find stairwell — descend to floor 1',
+          instruction:'Take stairs DOWN one floor — do not use elevator',
+          dist:10, bearing:270, lat:33.3063361, lng:-111.6773115 },
+        { label:'Walk to front entrance',
+          instruction:'Head toward the main front entrance doors',
+          dist:15, bearing:270, lat:33.3063369, lng:-111.6773038 },
+        { label:'Exit through front doors',
+          instruction:'Push through the main front doors',
+          dist:8, bearing:180, lat:33.3063369, lng:-111.6773038 },
+        { label:'Walk down front path',
+          instruction:'Follow the path away from the building',
+          dist:30, bearing:180, lat:33.3060965, lng:-111.6772052 },
+        { label:'Assembly area — NW corner',
+          instruction:'Proceed to northwest corner of Sutton Hall',
+          dist:20, bearing:315, lat:33.3060965, lng:-111.6772052 },
       ]
     },
 
     SUT_F2E: {
       name: 'Sutton Hall — Floor 2 East (230–240)',
       waypoints: [
-        // Floor plan: from 230A area west along corridor past 230B–230P
-        // then south exit or continue west to stairwell
-        { label:'Exit your room — corridor 230',
-          instruction:'Step out into the main corridor — do NOT use elevator',
-          dist:5, bearing:270, lat:33.30542, lng:-111.67880 },
-        { label:'Head west along corridor',
-          instruction:'Walk west past 230B, 230C, 230D, 230F, 230G',
-          dist:22, bearing:270, lat:33.30542, lng:-111.67890 },
-        { label:'Fire alarm & extinguisher on right',
-          instruction:'Continue past — keep heading west',
-          dist:10, bearing:270, lat:33.30542, lng:-111.67897 },
-        { label:'West stairwell — turn right',
-          instruction:'Turn right into west stairwell — descend to floor 1',
-          dist:8, bearing:315, lat:33.30546, lng:-111.67902 },
-        { label:'Ground floor — west exit',
-          instruction:'Exit through west door — walk out of building',
-          dist:8, bearing:315, lat:33.30546, lng:-111.67918 },
-        { label:'Northwest assembly area',
-          instruction:'Gather at northwest corner of Sutton Hall',
-          dist:25, bearing:315, lat:33.30558, lng:-111.67910 },
+        { label:'Exit room 230/240 — into corridor',
+          instruction:'Leave your room — do NOT use elevator',
+          dist:5, bearing:270, lat:33.3063109, lng:-111.6769880 },
+        { label:'Walk west toward stairwell',
+          instruction:'Head west along corridor 230 toward stairs',
+          dist:20, bearing:270, lat:33.3063361, lng:-111.6773115 },
+        { label:'Descend stairwell to floor 1',
+          instruction:'Take stairs DOWN one floor — do not use elevator',
+          dist:10, bearing:270, lat:33.3063361, lng:-111.6773115 },
+        { label:'Walk to front entrance',
+          instruction:'Head toward the main front entrance doors',
+          dist:15, bearing:270, lat:33.3063369, lng:-111.6773038 },
+        { label:'Exit through front doors',
+          instruction:'Push through the main front doors',
+          dist:8, bearing:180, lat:33.3063369, lng:-111.6773038 },
+        { label:'Walk down front path',
+          instruction:'Follow the path away from the building',
+          dist:30, bearing:180, lat:33.3060965, lng:-111.6772052 },
+        { label:'Assembly area — NW corner',
+          instruction:'Proceed to northwest corner of Sutton Hall',
+          dist:20, bearing:315, lat:33.3060965, lng:-111.6772052 },
       ]
     },
 
     SUT_F3W: {
       name: 'Sutton Hall — Floor 3 West (301)',
       waypoints: [
-        // Floor plan: from 301B area, west along corridor past 301C, D, E, F
-        // left at stairwell → down 2 floors → west exit
-        { label:'Exit your room — corridor 301',
-          instruction:'Leave your office — step into corridor 301',
-          dist:5, bearing:270, lat:33.30542, lng:-111.67898 },
-        { label:'Head west — past 301C, 301D, 301E, 301F',
-          instruction:'Walk west along corridor — do NOT use elevator',
-          dist:22, bearing:270, lat:33.30542, lng:-111.67908 },
-        { label:'Fire alarm pull station — keep going west',
-          instruction:'Continue past pull station to west stairwell',
-          dist:8, bearing:270, lat:33.30542, lng:-111.67913 },
-        { label:'West stairwell — descend 2 floors',
-          instruction:'Take stairs DOWN 2 floors to ground level',
-          dist:6, bearing:270, lat:33.30542, lng:-111.67916 },
-        { label:'Ground floor — west exit',
-          instruction:'Exit through west door — walk out of building',
-          dist:8, bearing:315, lat:33.30546, lng:-111.67918 },
-        { label:'Northwest assembly area',
-          instruction:'Gather at northwest corner of Sutton Hall',
-          dist:25, bearing:315, lat:33.30558, lng:-111.67910 },
+        { label:'Exit room 301 — into corridor',
+          instruction:'Leave your room — do NOT use elevator',
+          dist:5, bearing:270, lat:33.3063361, lng:-111.6773115 },
+        { label:'Find stairwell — descend 2 floors',
+          instruction:'Take stairs DOWN two floors to ground level',
+          dist:15, bearing:270, lat:33.3063361, lng:-111.6773115 },
+        { label:'Walk to front entrance',
+          instruction:'Head toward the main front entrance doors',
+          dist:15, bearing:270, lat:33.3063369, lng:-111.6773038 },
+        { label:'Exit through front doors',
+          instruction:'Push through the main front doors',
+          dist:8, bearing:180, lat:33.3063369, lng:-111.6773038 },
+        { label:'Walk down front path',
+          instruction:'Follow the path away from the building',
+          dist:30, bearing:180, lat:33.3060965, lng:-111.6772052 },
+        { label:'Assembly area — NW corner',
+          instruction:'Proceed to northwest corner of Sutton Hall',
+          dist:20, bearing:315, lat:33.3060965, lng:-111.6772052 },
       ]
     },
 
     SUT_F3E: {
       name: 'Sutton Hall — Floor 3 East (330–340)',
       waypoints: [
-        // Floor plan: from 340A/B area, west along corridor
-        // west stairwell exit (arrow goes west and south/down)
-        { label:'Exit your room — corridor 340',
-          instruction:'Step into the main corridor — do NOT use elevator',
-          dist:5, bearing:270, lat:33.30542, lng:-111.67880 },
-        { label:'Head west — past 340B, 340D, 340F, 340G, 340J',
-          instruction:'Walk west along corridor 340',
-          dist:22, bearing:270, lat:33.30542, lng:-111.67890 },
-        { label:'Fire alarm & extinguisher — keep going',
-          instruction:'Continue west past fire alarm pull station',
-          dist:10, bearing:270, lat:33.30542, lng:-111.67897 },
-        { label:'West stairwell — descend 2 floors',
-          instruction:'Take stairs DOWN 2 floors to ground level',
-          dist:6, bearing:315, lat:33.30546, lng:-111.67902 },
-        { label:'Ground floor — west exit',
-          instruction:'Exit through west door — walk out of building',
-          dist:8, bearing:315, lat:33.30546, lng:-111.67918 },
-        { label:'Northwest assembly area',
-          instruction:'Gather at northwest corner of Sutton Hall',
-          dist:25, bearing:315, lat:33.30558, lng:-111.67910 },
+        { label:'Exit room 330/340 — into corridor',
+          instruction:'Leave your room — do NOT use elevator',
+          dist:5, bearing:270, lat:33.3063109, lng:-111.6769880 },
+        { label:'Walk west toward stairwell',
+          instruction:'Head west along corridor 340 toward stairs',
+          dist:20, bearing:270, lat:33.3063361, lng:-111.6773115 },
+        { label:'Descend stairwell 2 floors',
+          instruction:'Take stairs DOWN two floors to ground level',
+          dist:15, bearing:270, lat:33.3063361, lng:-111.6773115 },
+        { label:'Walk to front entrance',
+          instruction:'Head toward the main front entrance doors',
+          dist:15, bearing:270, lat:33.3063369, lng:-111.6773038 },
+        { label:'Exit through front doors',
+          instruction:'Push through the main front doors',
+          dist:8, bearing:180, lat:33.3063369, lng:-111.6773038 },
+        { label:'Walk down front path',
+          instruction:'Follow the path away from the building',
+          dist:30, bearing:180, lat:33.3060965, lng:-111.6772052 },
+        { label:'Assembly area — NW corner',
+          instruction:'Proceed to northwest corner of Sutton Hall',
+          dist:20, bearing:315, lat:33.3060965, lng:-111.6772052 },
       ]
     },
   };
@@ -1585,8 +1579,7 @@
   }
 
   // ══════════════════════════════════════════
-  // ARROW ROTATION — combines GPS bearing
-  // with live compass so arrow tracks movement
+  // ARROW ROTATION — real GPS bearing + compass, runs every frame
   // ══════════════════════════════════════════
   function updateArrowRotation() {
     const wp = arWPs[arWPIndex];
@@ -1595,79 +1588,43 @@
     let targetRotation;
 
     if (userLat !== null) {
-      // Always calculate real bearing from user's actual position to waypoint
-      const dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
-
-      let bearing;
-      if (dist > 500) {
-        // Placeholder coords — fall back to preset bearing from data
-        bearing = wp.bearing;
-      } else {
-        // Real bearing from user's actual GPS to this waypoint
-        bearing = bearingDeg(userLat, userLng, wp.lat, wp.lng);
-      }
-
+      // Always use real bearing from actual GPS position — no fallback
+      const bearing = bearingDeg(userLat, userLng, wp.lat, wp.lng);
       waypointBearing = bearing;
 
-      if (deviceHeading !== null) {
-        // Subtract device heading so arrow is relative to what camera sees
-        targetRotation = (bearing - deviceHeading + 360) % 360;
-      } else {
-        targetRotation = bearing;
-      }
+      targetRotation = deviceHeading !== null
+        ? (bearing - deviceHeading + 360) % 360
+        : bearing;
+
+      // Always show real distance in metres
+      const dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
+      const distEl = document.getElementById('wpDist_' + arWPIndex);
+      if (distEl) distEl.textContent = Math.round(dist) + 'm';
+
     } else if (deviceHeading !== null) {
-      // No GPS yet — use preset bearing offset by compass
       targetRotation = (wp.bearing - deviceHeading + 360) % 360;
     } else {
       targetRotation = wp.bearing;
     }
 
-    // Smooth rotation interpolation
-    arrowRotation = lerpAngle(arrowRotation, targetRotation, 0.15);
+    arrowRotation = lerpAngle(arrowRotation, targetRotation, 0.25);
     const svg = document.getElementById('arNavArrow');
     if (svg) svg.style.transform = `rotate(${arrowRotation}deg)`;
-
-    // Update live distance label on active chip
-    if (userLat !== null) {
-      const dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
-      const distEl = document.getElementById('wpDist_' + arWPIndex);
-      if (distEl) distEl.textContent = dist > 500 ? `~${wp.dist}m` : `${Math.round(dist)}m`;
-    }
   }
 
   // ══════════════════════════════════════════
   // AUTO-ADVANCE — called every GPS update
   // Advances waypoint when user is within 12m
   // ══════════════════════════════════════════
-  const ADVANCE_RADIUS = 12; // metres
+  const ADVANCE_RADIUS = 20; // metres — wider for indoor GPS drift
 
   function checkAutoAdvance() {
     if (arWPIndex >= arWPs.length || userLat === null) return;
     const wp = arWPs[arWPIndex];
+    const dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
 
-    let dist;
-
-    if (arWPIndex === 0) {
-      // Waypoint 1: distance is from user's real position to the EXIT,
-      // not to a fake placeholder. Use the preset dist as a fallback label
-      // but for auto-advance, just use the real GPS-to-waypoint distance.
-      // If coords are still placeholder (far away), trust the user is there
-      // and use bearing only — auto-advance manually via Next button.
-      dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
-
-      // If dist is unrealistically large (>500m) the coords are placeholders —
-      // show a sensible label and skip auto-advance for wp 0
-      const distEl = document.getElementById('wpDist_0');
-      if (dist > 500) {
-        if (distEl) distEl.textContent = `~${wp.dist}m`;
-        return; // don't auto-advance — user taps Next manually
-      }
-      if (distEl) distEl.textContent = `${Math.round(dist)}m`;
-    } else {
-      dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
-      const distEl = document.getElementById('wpDist_' + arWPIndex);
-      if (distEl) distEl.textContent = dist > 500 ? `~${wp.dist}m` : `${Math.round(dist)}m`;
-    }
+    const distEl = document.getElementById('wpDist_' + arWPIndex);
+    if (distEl) distEl.textContent = Math.round(dist) + 'm';
 
     if (dist <= ADVANCE_RADIUS) {
       if (arWPIndex < arWPs.length - 1) {
