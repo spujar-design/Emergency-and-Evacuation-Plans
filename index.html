@@ -1101,10 +1101,10 @@
 
       <p style="font-size:.88rem; color:rgba(255,255,255,.5); line-height:1.7;
         max-width:280px; margin-bottom:1.75rem;">
-        The AR guide uses your live GPS position to point the arrow and automatically advance waypoints as you walk — just like Google Maps navigation.
+        The AR guide uses your live GPS to point the arrow and advance waypoints as you walk — just like Google Maps.
       </p>
 
-      <button onclick="grantLocationAndStart()" style="
+      <button id="allowLocationBtn" style="
         width:100%; max-width:300px; padding:1rem; border-radius:10px;
         background:var(--maroon); color:#fff; border:none;
         font-family:'Inter',Arial,sans-serif; font-weight:700; font-size:1rem;
@@ -1273,13 +1273,45 @@
   // ══════════════════════════════════════════
   // GPS — request + continuous watch
   // ══════════════════════════════════════════
-  function requestGPS() {
-    if (!navigator.geolocation) {
-      setGPSChip('none', 'GPS Not Available', 'Browser does not support geolocation');
-      return;
-    }
+  // Wire the location button DIRECTLY so watchPosition is called
+  // synchronously from the tap — Safari requires this for the native popup
+  document.getElementById('allowLocationBtn').addEventListener('click', function() {
+    document.getElementById('locationPrompt').style.display = 'none';
 
-    // Show a clear in-app prompt before the browser asks
+    // Launch camera + AR immediately
+    startARSession(false);
+
+    // Call watchPosition directly here — this IS the user gesture.
+    // Safari and Chrome will now show the native phone location popup.
+    if (!navigator.geolocation) return;
+
+    arWatchId = navigator.geolocation.watchPosition(
+      function(pos) {
+        userLat    = pos.coords.latitude;
+        userLng    = pos.coords.longitude;
+        gpsGranted = true;
+        const acc  = Math.round(pos.coords.accuracy);
+
+        const el = document.getElementById('gpsLabel');
+        if (el) el.textContent = 'GPS ±' + acc + 'm';
+        document.getElementById('arModeLabel').textContent = '🧭 GPS Locked';
+
+        // Refresh all distances now that we have real coords
+        refreshAllDistances();
+        checkAutoAdvance();
+      },
+      function(err) {
+        gpsGranted = false;
+        const el = document.getElementById('gpsLabel');
+        if (el) el.textContent = 'No GPS';
+        if (err.code === 1) showSettingsHelp();
+      },
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 30000 }
+    );
+  });
+
+  function requestGPS() {
+    // Show our in-app screen first — button click fires native popup directly
     showLocationPrompt();
   }
 
@@ -1289,53 +1321,6 @@
     if (prompt) prompt.style.display = 'flex';
   }
 
-  function grantLocationAndStart() {
-    const prompt = document.getElementById('locationPrompt');
-    if (prompt) prompt.style.display = 'none';
-
-    // Launch the AR session immediately — camera + compass start
-    // Distances stay hidden as '—' until GPS fires
-    startARSession(false);
-
-    // Now fire the native browser location permission popup
-    // This is the same native prompt as camera — no custom UI needed
-    if (!navigator.geolocation) {
-      setGPSChip('none', 'GPS Not Available', 'Browser does not support geolocation');
-      return;
-    }
-
-    // watchPosition triggers the native browser permission popup immediately
-    // and keeps firing as user moves — this drives everything
-    arWatchId = navigator.geolocation.watchPosition(
-      pos => {
-        userLat    = pos.coords.latitude;
-        userLng    = pos.coords.longitude;
-        gpsGranted = true;
-        const acc  = Math.round(pos.coords.accuracy);
-
-        // Update GPS chip in AR view
-        const el = document.getElementById('gpsLabel');
-        if (el) el.textContent = `GPS ±${acc}m`;
-        document.getElementById('arModeLabel').textContent = '🧭 GPS Locked';
-
-        // Now that we have real coords, update ALL distances from real position
-        refreshAllDistances();
-
-        // Check if close enough to auto-advance
-        checkAutoAdvance();
-      },
-      err => {
-        gpsGranted = false;
-        if (err.code === 1) {
-          // Denied — show settings help
-          showSettingsHelp();
-        }
-        const el = document.getElementById('gpsLabel');
-        if (el) el.textContent = 'No GPS';
-      },
-      { enableHighAccuracy: true, maximumAge: 0, timeout: 30000 }
-    );
-  }
 
   // Hide distances until GPS is real
   function hidePlaceholderDistances() {
