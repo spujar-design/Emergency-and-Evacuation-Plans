@@ -1323,29 +1323,44 @@
 
     let targetRotation;
 
-    if (userLat !== null && deviceHeading !== null) {
-      // Real mode: arrow = bearing to waypoint minus what direction phone faces
-      const bearing = bearingDeg(userLat, userLng, wp.lat, wp.lng);
+    if (userLat !== null) {
+      // Always calculate real bearing from user's actual position to waypoint
+      const dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
+
+      let bearing;
+      if (dist > 500) {
+        // Placeholder coords — fall back to preset bearing from data
+        bearing = wp.bearing;
+      } else {
+        // Real bearing from user's actual GPS to this waypoint
+        bearing = bearingDeg(userLat, userLng, wp.lat, wp.lng);
+      }
+
       waypointBearing = bearing;
-      targetRotation = (bearing - deviceHeading + 360) % 360;
+
+      if (deviceHeading !== null) {
+        // Subtract device heading so arrow is relative to what camera sees
+        targetRotation = (bearing - deviceHeading + 360) % 360;
+      } else {
+        targetRotation = bearing;
+      }
     } else if (deviceHeading !== null) {
-      // Compass only (no GPS): use preset bearing from data
+      // No GPS yet — use preset bearing offset by compass
       targetRotation = (wp.bearing - deviceHeading + 360) % 360;
     } else {
-      // No sensors: just show the preset bearing angle
       targetRotation = wp.bearing;
     }
 
-    // Smooth rotation
+    // Smooth rotation interpolation
     arrowRotation = lerpAngle(arrowRotation, targetRotation, 0.15);
     const svg = document.getElementById('arNavArrow');
     if (svg) svg.style.transform = `rotate(${arrowRotation}deg)`;
 
-    // Update live distance display on active waypoint chip
+    // Update live distance label on active chip
     if (userLat !== null) {
-      const d = haversineMetres(userLat, userLng, wp.lat, wp.lng);
+      const dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
       const distEl = document.getElementById('wpDist_' + arWPIndex);
-      if (distEl) distEl.textContent = d < 1000 ? `${Math.round(d)}m` : `${(d/1000).toFixed(1)}km`;
+      if (distEl) distEl.textContent = dist > 500 ? `~${wp.dist}m` : `${Math.round(dist)}m`;
     }
   }
 
@@ -1353,26 +1368,41 @@
   // AUTO-ADVANCE — called every GPS update
   // Advances waypoint when user is within 12m
   // ══════════════════════════════════════════
-  const ADVANCE_RADIUS = 12; // metres — tighten or loosen as needed
+  const ADVANCE_RADIUS = 12; // metres
 
   function checkAutoAdvance() {
-    if (arWPIndex >= arWPs.length) return;
+    if (arWPIndex >= arWPs.length || userLat === null) return;
     const wp = arWPs[arWPIndex];
-    if (!wp.lat || userLat === null) return;
 
-    const dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
+    let dist;
 
-    // Update live distance on current waypoint chip
-    const distEl = document.getElementById('wpDist_' + arWPIndex);
-    if (distEl) distEl.textContent = `${Math.round(dist)}m`;
+    if (arWPIndex === 0) {
+      // Waypoint 1: distance is from user's real position to the EXIT,
+      // not to a fake placeholder. Use the preset dist as a fallback label
+      // but for auto-advance, just use the real GPS-to-waypoint distance.
+      // If coords are still placeholder (far away), trust the user is there
+      // and use bearing only — auto-advance manually via Next button.
+      dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
+
+      // If dist is unrealistically large (>500m) the coords are placeholders —
+      // show a sensible label and skip auto-advance for wp 0
+      const distEl = document.getElementById('wpDist_0');
+      if (dist > 500) {
+        if (distEl) distEl.textContent = `~${wp.dist}m`;
+        return; // don't auto-advance — user taps Next manually
+      }
+      if (distEl) distEl.textContent = `${Math.round(dist)}m`;
+    } else {
+      dist = haversineMetres(userLat, userLng, wp.lat, wp.lng);
+      const distEl = document.getElementById('wpDist_' + arWPIndex);
+      if (distEl) distEl.textContent = dist > 500 ? `~${wp.dist}m` : `${Math.round(dist)}m`;
+    }
 
     if (dist <= ADVANCE_RADIUS) {
-      // Arrived at this waypoint — auto-advance
       if (arWPIndex < arWPs.length - 1) {
         arWPIndex++;
         renderWaypoints();
         updateARUI();
-        // Haptic feedback on mobile
         if (navigator.vibrate) navigator.vibrate([60, 30, 60]);
       } else {
         showArrived();
