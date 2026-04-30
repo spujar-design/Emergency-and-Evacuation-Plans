@@ -1503,33 +1503,41 @@
       // Close dropdown
       incidentMenuOpen = false;
       document.getElementById('incidentMenu').style.display = 'none';
-      document.getElementById('incidentChevron').style.transform = '';
+      document.getElementById('incidentChevron').style.transform = 'rotate(0deg)';
 
-      const inc  = INCIDENTS[type];
-      const now  = new Date();
-      const time = now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+      const inc      = INCIDENTS[type];
+      const now      = new Date();
+      const time     = now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+      const building = selectedBuildingName || 'Unknown Building';
+      const floor    = selectedFloor        || 'Unknown Floor';
 
-      // Show modal
-      document.getElementById('modalIcon').textContent         = inc.icon;
-      document.getElementById('modalTitle').textContent        = inc.label + ' Reported';
-      document.getElementById('modalSub').textContent          = selectedBuildingName + ' — ' + selectedFloor;
-      document.getElementById('modalInstructions').textContent = inc.instructions;
-      document.getElementById('modalHeader').style.borderTop   = '4px solid ' + inc.color;
-      document.getElementById('emergencyModal').style.display  = 'flex';
+      // Show emergency modal
+      const iconBox = document.getElementById('modalIconBox');
+      if (iconBox) {
+        iconBox.style.background = inc.color + '22';
+        iconBox.style.border     = '1px solid ' + inc.color + '55';
+      }
+      const modalTitle = document.getElementById('modalTitle');
+      if (modalTitle) modalTitle.textContent = inc.label + ' Reported';
+      const modalSub = document.getElementById('modalSub');
+      if (modalSub) modalSub.textContent = building + ' — ' + floor;
+      const modalInstr = document.getElementById('modalInstructions');
+      if (modalInstr) modalInstr.textContent = inc.instructions;
+      document.getElementById('emergencyModal').style.display = 'flex';
 
       // Activate site-wide alert banner
       document.getElementById('alertHeadline').textContent = 'DO NOT ENTER — ' + inc.label.toUpperCase() + ' IN PROGRESS';
-      document.getElementById('alertSubline').textContent  = selectedBuildingName + ', ' + selectedFloor + ' — Emergency reported at ' + time;
-      document.getElementById('alertBuilding').textContent = selectedBuildingName;
-      document.getElementById('alertFloor').textContent    = selectedFloor;
-      document.getElementById('alertType').textContent     = inc.icon + ' ' + inc.label;
+      document.getElementById('alertSubline').textContent  = building + ', ' + floor + ' — Reported at ' + time;
+      document.getElementById('alertBuilding').textContent = building;
+      document.getElementById('alertFloor').textContent    = floor;
+      document.getElementById('alertType').textContent     = inc.label;
       document.getElementById('alertTime').textContent     = time;
       document.getElementById('siteAlert').classList.add('show');
       document.body.style.paddingTop = document.getElementById('siteAlert').offsetHeight + 'px';
 
-      // Broadcast to ALL visitors via Firebase realtime
+      // Broadcast to ALL visitors via Firebase
       if (window.broadcastAlert) {
-        window.broadcastAlert(selectedBuildingName, selectedFloor, inc.icon + ' ' + inc.label, type);
+        window.broadcastAlert(building, floor, inc.label, type);
       }
 
       if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
@@ -1550,21 +1558,33 @@
     let sosTimer   = null;
     let sosHolding = false;
 
+    const SOS_INNER_HTML = `
+      <div style="width:36px;height:36px;border-radius:50%;
+        background:rgba(204,0,0,0.15);border:1.5px solid rgba(204,0,0,0.4);
+        display:flex;align-items:center;justify-content:center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CC0000" stroke-width="2.5" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <div style="font-family:Arial,sans-serif;font-weight:900;font-size:16px;color:#CC0000;line-height:1;letter-spacing:0.06em;">SOS</div>
+      <div style="font-family:Arial,sans-serif;font-size:9px;font-weight:600;letter-spacing:0.14em;color:rgba(255,255,255,0.3);text-transform:uppercase;">Hold 3s</div>
+    `;
+
     const sosBtn = document.getElementById('sosBtn');
     if (sosBtn) {
       function startSOS(e) {
         e.preventDefault();
         sosHolding = true;
-        sosBtn.style.background = '#CC0000';
-        sosBtn.innerHTML = '<div style="font-size:13px;font-weight:700;color:#fff;font-family:Arial,sans-serif;">Hold...</div>';
+        sosBtn.style.background = '#330000';
+        sosBtn.innerHTML = '<div style="font-family:Arial,sans-serif;font-size:12px;font-weight:700;color:#CC0000;letter-spacing:0.06em;">Hold...</div>';
         sosTimer = setTimeout(function() { if (sosHolding) triggerSOS(); }, 3000);
       }
       function cancelSOS() {
         if (!sosHolding) return;
         sosHolding = false;
         clearTimeout(sosTimer);
-        sosBtn.style.background = '#000';
-        sosBtn.innerHTML = '<div style="font-size:22px;font-weight:900;color:#CC0000;line-height:1;">SOS</div><div style="font-size:8px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.5);text-transform:uppercase;">Distress</div>';
+        sosBtn.style.background = '#0d0d0d';
+        sosBtn.innerHTML = SOS_INNER_HTML;
       }
       sosBtn.addEventListener('mousedown',  startSOS);
       sosBtn.addEventListener('touchstart', startSOS, { passive: false });
@@ -1584,8 +1604,8 @@
       clearTimeout(sosTimer);
       const b = document.getElementById('sosBtn');
       if (b) {
-        b.style.background = '#000';
-        b.innerHTML = '<div style="font-size:22px;font-weight:900;color:#CC0000;line-height:1;">SOS</div><div style="font-size:8px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.5);text-transform:uppercase;">Distress</div>';
+        b.style.background = '#0d0d0d';
+        b.innerHTML = SOS_INNER_HTML;
       }
     }
   </script>
