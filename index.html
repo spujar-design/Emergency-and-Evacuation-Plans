@@ -1763,9 +1763,12 @@
       document.getElementById('alertType').textContent     = inc.icon + ' ' + inc.label;
       document.getElementById('alertTime').textContent     = time;
       document.getElementById('siteAlert').classList.add('show');
-
-      // Push page content down so alert is visible
       document.body.style.paddingTop = document.getElementById('siteAlert').offsetHeight + 'px';
+
+      // Broadcast to ALL visitors via Firebase realtime
+      if (window.broadcastAlert) {
+        window.broadcastAlert(selectedBuildingName, selectedFloor, inc.icon + ' ' + inc.label, type);
+      }
 
       if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
     }
@@ -1773,6 +1776,8 @@
     function dismissAlert() {
       document.getElementById('siteAlert').classList.remove('show');
       document.body.style.paddingTop = '';
+      // Clear from Firebase so alert disappears for everyone
+      if (window.clearAlert) window.clearAlert();
     }
 
     function closeEmergencyModal() {
@@ -2939,6 +2944,70 @@
     gpsGranted = false;
     startARSession(false);
   }
+  </script>
+
+  <!-- FIREBASE REALTIME DATABASE — broadcasts alerts to all visitors -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getDatabase, ref, set, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0gTstlQG6FpoZQy-mTeQXXjcNjACYFH0",
+      authDomain: "tps-emergency.firebaseapp.com",
+      databaseURL: "https://tps-emergency-default-rtdb.firebaseio.com",
+      projectId: "tps-emergency",
+      storageBucket: "tps-emergency.firebasestorage.app",
+      messagingSenderId: "349680838922",
+      appId: "1:349680838922:web:d7b0780510dd41d1c332f3",
+      measurementId: "G-HD9D74EYX7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getDatabase(app);
+    const alertRef = ref(db, 'activeAlert');
+
+    // ── LISTEN — show alert to ALL visitors the moment one is reported ──
+    onValue(alertRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data && data.active) {
+        // Show the banner for everyone
+        document.getElementById('alertHeadline').textContent =
+          'DO NOT ENTER — ' + data.incidentLabel.toUpperCase() + ' IN PROGRESS';
+        document.getElementById('alertSubline').textContent =
+          data.building + ', ' + data.floor + ' — Reported at ' + data.time;
+        document.getElementById('alertBuilding').textContent = data.building;
+        document.getElementById('alertFloor').textContent    = data.floor;
+        document.getElementById('alertType').textContent     = data.incidentLabel;
+        document.getElementById('alertTime').textContent     = data.time;
+        document.getElementById('siteAlert').classList.add('show');
+        document.body.style.paddingTop =
+          document.getElementById('siteAlert').offsetHeight + 'px';
+      } else {
+        // Alert was cleared — hide for everyone
+        document.getElementById('siteAlert').classList.remove('show');
+        document.body.style.paddingTop = '';
+      }
+    });
+
+    // ── WRITE — called when someone reports an incident ──
+    window.broadcastAlert = function(building, floor, incidentLabel, incidentType) {
+      const now  = new Date();
+      const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      set(alertRef, {
+        active: true,
+        building,
+        floor,
+        incidentLabel,
+        incidentType,
+        time,
+        reportedAt: now.toISOString()
+      });
+    };
+
+    // ── CLEAR — called when Dismiss is tapped ──
+    window.clearAlert = function() {
+      remove(alertRef);
+    };
   </script>
 
 </body>
