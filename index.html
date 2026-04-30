@@ -529,6 +529,147 @@
     .ar-mode-tag span { font-size: 14px; }
 
     @keyframes arPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+    @keyframes sosPulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(204,0,0,0.7); }
+      50%      { box-shadow: 0 0 0 12px rgba(204,0,0,0); }
+    }
+    @keyframes alertSlide {
+      from { transform: translateY(-100%); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    @keyframes alertPulse {
+      0%,100% { background: #CC0000; }
+      50%     { background: #8C0000; }
+    }
+
+    .inc-row {
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .inc-row:hover { background: rgba(140,29,64,0.3); border-color: var(--maroon); }
+
+    .inc-type-row {
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.15s;
+    }
+    .inc-type-row:hover { background: rgba(204,0,0,0.15); }
+
+    /* Site-wide alert banner */
+    #siteAlert {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 99999;
+      animation: alertSlide 0.4s ease;
+    }
+    #siteAlert.show { display: block; }
+    .alert-bar {
+      background: #CC0000;
+      animation: alertPulse 1.5s ease-in-out infinite;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 56px;
+    }
+    .alert-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+    .alert-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #fff;
+      flex-shrink: 0;
+      animation: arPulse 1s infinite;
+    }
+    .alert-text {
+      font-family: Arial, sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      color: #fff;
+      line-height: 1.3;
+    }
+    .alert-text span {
+      display: block;
+      font-size: 10px;
+      font-weight: 400;
+      opacity: 0.75;
+      margin-top: 1px;
+    }
+    .alert-dismiss {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      flex-shrink: 0;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .alert-detail {
+      background: #8C0000;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .alert-detail-item {
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      color: rgba(255,255,255,0.75);
+    }
+    .alert-detail-item strong {
+      color: #FFC627;
+      display: block;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1px;
+    }
+    .alert-call {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .alert-call a {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      text-decoration: none;
+      letter-spacing: 0.06em;
+    }
+    .alert-call-911 { background: #fff; color: #CC0000; }
+    .alert-call-asu { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.25); }
 
     @media (max-width: 640px) {
       .ar-banner-grid { grid-template-columns: 1fr; gap: 1.25rem; padding: 1.5rem; }
@@ -796,6 +937,30 @@
 </head>
 <body>
 
+  <!-- SITE-WIDE EMERGENCY ALERT BANNER -->
+  <div id="siteAlert">
+    <div class="alert-bar">
+      <div class="alert-main">
+        <div class="alert-dot"></div>
+        <div class="alert-text">
+          <span id="alertHeadline">DO NOT ENTER — EMERGENCY IN PROGRESS</span>
+          <span id="alertSubline">Loading details...</span>
+        </div>
+      </div>
+      <button class="alert-dismiss" onclick="dismissAlert()">Dismiss</button>
+    </div>
+    <div class="alert-detail">
+      <div class="alert-detail-item"><strong>Building</strong><span id="alertBuilding">—</span></div>
+      <div class="alert-detail-item"><strong>Floor</strong><span id="alertFloor">—</span></div>
+      <div class="alert-detail-item"><strong>Incident</strong><span id="alertType">—</span></div>
+      <div class="alert-detail-item"><strong>Reported</strong><span id="alertTime">—</span></div>
+      <div class="alert-call">
+        <a href="tel:911" class="alert-call-911">Call 911</a>
+        <a href="tel:4809653456" class="alert-call-asu">ASU Police</a>
+      </div>
+    </div>
+  </div>
+
   <!-- TOP BAR -->
   <div class="top-bar">
     <a href="https://www.asu.edu">ASU Home</a>
@@ -892,6 +1057,254 @@
         loading="lazy"
       ></iframe>
     </div>
+
+    <!-- EMERGENCY RESPONSE SECTION -->
+    <div style="width:100%;max-width:900px;margin-top:48px;">
+
+      <div style="font-family:Arial,sans-serif;font-size:11px;font-weight:700;
+        letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);
+        margin-bottom:12px;">Emergency Response</div>
+
+      <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:stretch;">
+
+        <!-- INCIDENT REPORT BUTTON -->
+        <div style="position:relative;">
+          <button id="incidentBtn" onclick="toggleIncidentMenu()" style="
+            width:100%;padding:18px 20px;
+            background:var(--maroon);color:#fff;border:none;
+            border-radius:8px;cursor:pointer;
+            font-family:Arial,sans-serif;font-weight:700;font-size:15px;
+            display:flex;align-items:center;justify-content:space-between;gap:12px;
+            border-bottom:3px solid rgba(0,0,0,0.25);">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:36px;height:36px;border-radius:50%;
+                background:rgba(255,255,255,0.15);
+                display:flex;align-items:center;justify-content:center;
+                font-size:18px;">⚠</div>
+              <div style="text-align:left;">
+                <div style="font-size:15px;font-weight:700;">Report Emergency</div>
+                <div style="font-size:11px;font-weight:400;color:rgba(255,255,255,0.6);margin-top:2px;">
+                  Select building, floor and incident type
+                </div>
+              </div>
+            </div>
+            <div id="incidentChevron" style="font-size:12px;transition:transform 0.2s;">▼</div>
+          </button>
+
+          <!-- DROPDOWN MENU -->
+          <div id="incidentMenu" style="
+            display:none;
+            position:absolute;top:100%;left:0;right:0;z-index:200;
+            background:#1a1a1a;border:1px solid rgba(255,255,255,0.1);
+            border-radius:0 0 10px 10px;overflow:hidden;
+            box-shadow:0 16px 48px rgba(0,0,0,0.6);">
+
+            <!-- Step 1: Building -->
+            <div id="stepBuilding" style="padding:16px;">
+              <div style="font-family:Arial,sans-serif;font-size:10px;font-weight:700;
+                letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.35);
+                margin-bottom:10px;">Step 1 — Select Building</div>
+              <div style="display:flex;flex-direction:column;gap:6px;" id="buildingList">
+                <div onclick="selectBuilding2('Sutton Hall','SUT')" class="inc-row">Sutton Hall</div>
+                <div onclick="selectBuilding2('Peralta Hall','PRLTA')" class="inc-row">Peralta Hall</div>
+                <div onclick="selectBuilding2('Santa Catalina Hall','SANCA')" class="inc-row">Santa Catalina Hall</div>
+                <div onclick="selectBuilding2('Santan Hall','STN')" class="inc-row">Santan Hall</div>
+              </div>
+            </div>
+
+            <!-- Step 2: Floor (hidden until building picked) -->
+            <div id="stepFloor" style="display:none;padding:16px;border-top:1px solid rgba(255,255,255,0.07);">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <button onclick="backToBuilding()" style="
+                  background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.5);
+                  padding:4px 10px;border-radius:4px;cursor:pointer;
+                  font-family:Arial,sans-serif;font-size:11px;">← Back</button>
+                <div style="font-family:Arial,sans-serif;font-size:10px;font-weight:700;
+                  letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.35);">
+                  Step 2 — Select Floor</div>
+              </div>
+              <div id="selectedBuildingLabel" style="font-family:Arial,sans-serif;
+                font-weight:700;font-size:13px;color:#FFC627;margin-bottom:10px;"></div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;" id="floorList"></div>
+            </div>
+
+            <!-- Step 3: Incident type (hidden until floor picked) -->
+            <div id="stepType" style="display:none;padding:16px;border-top:1px solid rgba(255,255,255,0.07);">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <button onclick="backToFloor()" style="
+                  background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.5);
+                  padding:4px 10px;border-radius:4px;cursor:pointer;
+                  font-family:Arial,sans-serif;font-size:11px;">← Back</button>
+                <div style="font-family:Arial,sans-serif;font-size:10px;font-weight:700;
+                  letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.35);">
+                  Step 3 — What is happening?</div>
+              </div>
+              <div id="locationSummary" style="font-family:Arial,sans-serif;
+                font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:12px;"></div>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div onclick="triggerEmergency('fire')" class="inc-type-row" style="border-color:rgba(255,100,0,0.3);">
+                  <span style="font-size:18px;">🔥</span>
+                  <div><div style="font-weight:700;color:#fff;">Fire</div><div style="font-size:11px;color:rgba(255,255,255,.4);">Smoke or fire detected</div></div>
+                </div>
+                <div onclick="triggerEmergency('shooter')" class="inc-type-row" style="border-color:rgba(204,0,0,0.4);">
+                  <span style="font-size:18px;">🚨</span>
+                  <div><div style="font-weight:700;color:#fff;">Active Threat</div><div style="font-size:11px;color:rgba(255,255,255,.4);">Armed or dangerous individual</div></div>
+                </div>
+                <div onclick="triggerEmergency('medical')" class="inc-type-row" style="border-color:rgba(0,180,100,0.3);">
+                  <span style="font-size:18px;">🏥</span>
+                  <div><div style="font-weight:700;color:#fff;">Medical Emergency</div><div style="font-size:11px;color:rgba(255,255,255,.4);">Person injured or unresponsive</div></div>
+                </div>
+                <div onclick="triggerEmergency('hazmat')" class="inc-type-row" style="border-color:rgba(255,180,0,0.3);">
+                  <span style="font-size:18px;">☣</span>
+                  <div><div style="font-weight:700;color:#fff;">Hazmat / Chemical Spill</div><div style="font-size:11px;color:rgba(255,255,255,.4);">Hazardous material or gas leak</div></div>
+                </div>
+                <div onclick="triggerEmergency('other')" class="inc-type-row" style="border-color:rgba(255,255,255,0.1);">
+                  <span style="font-size:18px;">📞</span>
+                  <div><div style="font-weight:700;color:#fff;">Other Emergency</div><div style="font-size:11px;color:rgba(255,255,255,.4);">Any other urgent situation</div></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SOS BUTTON -->
+        <button id="sosBtn" onclick="triggerSOS()" style="
+          width:90px;
+          background:#000;color:#fff;border:3px solid #CC0000;
+          border-radius:8px;cursor:pointer;
+          font-family:Arial,sans-serif;font-weight:900;font-size:20px;
+          letter-spacing:0.1em;
+          display:flex;flex-direction:column;
+          align-items:center;justify-content:center;gap:4px;
+          position:relative;overflow:hidden;
+          animation:sosPulse 2s ease-in-out infinite;">
+          <div style="font-size:22px;font-weight:900;color:#CC0000;line-height:1;">SOS</div>
+          <div style="font-size:8px;font-weight:700;letter-spacing:0.12em;
+            color:rgba(255,255,255,0.5);text-transform:uppercase;">Distress</div>
+        </button>
+
+      </div>
+
+      <!-- Info note -->
+      <div style="margin-top:10px;font-family:Arial,sans-serif;font-size:11px;
+        color:rgba(255,255,255,0.35);line-height:1.6;">
+        Tapping any emergency option will show emergency contact numbers. 
+        SOS is for immediate life-threatening distress — hold for 3 seconds to activate.
+      </div>
+    </div>
+
+    <!-- EMERGENCY MODAL -->
+    <div id="emergencyModal" style="
+      display:none;position:fixed;inset:0;z-index:9000;
+      background:rgba(0,0,0,0.88);
+      align-items:center;justify-content:center;padding:2rem;">
+      <div style="
+        background:#111;border-radius:16px;width:100%;max-width:380px;
+        overflow:hidden;border:1px solid rgba(255,255,255,0.1);">
+
+        <div id="modalHeader" style="
+          padding:24px 24px 16px;
+          border-bottom:1px solid rgba(255,255,255,0.08);">
+          <div id="modalIcon" style="font-size:3rem;margin-bottom:10px;"></div>
+          <div id="modalTitle" style="
+            font-family:Arial,sans-serif;font-weight:900;font-size:22px;
+            color:#fff;margin-bottom:4px;"></div>
+          <div id="modalSub" style="
+            font-family:Arial,sans-serif;font-size:13px;
+            color:rgba(255,255,255,0.5);"></div>
+        </div>
+
+        <div style="padding:20px 24px;">
+          <div style="font-family:Arial,sans-serif;font-size:11px;font-weight:700;
+            letter-spacing:0.14em;text-transform:uppercase;
+            color:rgba(255,255,255,0.4);margin-bottom:14px;">Call Immediately</div>
+
+          <a href="tel:911" style="
+            display:flex;align-items:center;justify-content:space-between;
+            padding:14px 16px;border-radius:10px;
+            background:rgba(204,0,0,0.15);border:1px solid rgba(204,0,0,0.35);
+            text-decoration:none;margin-bottom:10px;">
+            <div>
+              <div style="font-family:Arial,sans-serif;font-weight:700;font-size:16px;color:#fff;">911</div>
+              <div style="font-family:Arial,sans-serif;font-size:11px;color:rgba(255,255,255,0.45);">Fire, Medical, Police</div>
+            </div>
+            <div style="font-family:Arial,sans-serif;font-weight:700;font-size:12px;
+              color:#CC0000;letter-spacing:0.08em;">CALL NOW</div>
+          </a>
+
+          <a href="tel:4809653456" style="
+            display:flex;align-items:center;justify-content:space-between;
+            padding:14px 16px;border-radius:10px;
+            background:rgba(140,29,64,0.2);border:1px solid rgba(140,29,64,0.4);
+            text-decoration:none;margin-bottom:20px;">
+            <div>
+              <div style="font-family:Arial,sans-serif;font-weight:700;font-size:16px;color:#fff;">(480) 965-3456</div>
+              <div style="font-family:Arial,sans-serif;font-size:11px;color:rgba(255,255,255,0.45);">ASU Police — Polytechnic Campus</div>
+            </div>
+            <div style="font-family:Arial,sans-serif;font-weight:700;font-size:12px;
+              color:var(--gold);letter-spacing:0.08em;">CALL NOW</div>
+          </a>
+
+          <div id="modalInstructions" style="
+            font-family:Arial,sans-serif;font-size:12px;
+            color:rgba(255,255,255,0.55);line-height:1.7;
+            background:rgba(255,255,255,0.05);border-radius:8px;
+            padding:12px;margin-bottom:20px;"></div>
+
+          <button onclick="closeEmergencyModal()" style="
+            width:100%;padding:14px;border-radius:8px;
+            background:rgba(255,255,255,0.08);
+            border:1px solid rgba(255,255,255,0.12);
+            color:rgba(255,255,255,0.6);
+            font-family:Arial,sans-serif;font-weight:700;font-size:14px;
+            cursor:pointer;">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOS MODAL -->
+    <div id="sosModal" style="
+      display:none;position:fixed;inset:0;z-index:9001;
+      background:rgba(150,0,0,0.92);
+      align-items:center;justify-content:center;
+      flex-direction:column;padding:2rem;text-align:center;">
+      <div style="font-family:Arial,sans-serif;font-weight:900;
+        font-size:72px;color:#fff;line-height:1;margin-bottom:8px;
+        animation:sosPulse 0.8s ease-in-out infinite;">SOS</div>
+      <div style="font-family:Arial,sans-serif;font-weight:700;font-size:18px;
+        color:rgba(255,255,255,0.8);margin-bottom:6px;">DISTRESS SIGNAL ACTIVATED</div>
+      <div style="font-family:Arial,sans-serif;font-size:13px;
+        color:rgba(255,255,255,0.55);margin-bottom:40px;line-height:1.7;">
+        Stay calm. Call for help immediately.<br>Stay in place if it is safe to do so.
+      </div>
+
+      <a href="tel:911" style="
+        display:block;width:100%;max-width:300px;
+        padding:18px;border-radius:10px;margin-bottom:12px;
+        background:#fff;color:#CC0000;text-decoration:none;
+        font-family:Arial,sans-serif;font-weight:900;font-size:20px;
+        text-align:center;">
+        CALL 911
+      </a>
+
+      <a href="tel:4809653456" style="
+        display:block;width:100%;max-width:300px;
+        padding:18px;border-radius:10px;margin-bottom:24px;
+        background:rgba(255,255,255,0.15);color:#fff;text-decoration:none;
+        font-family:Arial,sans-serif;font-weight:700;font-size:16px;
+        text-align:center;border:2px solid rgba(255,255,255,0.3);">
+        ASU Police: (480) 965-3456
+      </a>
+
+      <button onclick="closeSOS()" style="
+        background:transparent;border:1px solid rgba(255,255,255,0.3);
+        color:rgba(255,255,255,0.5);padding:12px 32px;border-radius:8px;
+        font-family:Arial,sans-serif;font-size:14px;cursor:pointer;">
+        Cancel SOS
+      </button>
+    </div>
+
   </main>
 
   <!-- FOOTER -->
@@ -950,6 +1363,169 @@
         fultonLine.classList.remove('hidden');
       }
     });
+
+    // ── EMERGENCY RESPONSE ───────────────────────────────
+    const BUILDINGS_INFO = {
+      SUT:   { name: 'Sutton Hall',        floors: ['Floor 1 West (101)','Floor 1 East (140)','Floor 2 West (201)','Floor 2 East (230–240)','Floor 3 West (301)','Floor 3 East (330–340)'] },
+      PRLTA: { name: 'Peralta Hall',        floors: ['Floor 1','Floor 2','Floor 3'] },
+      SANCA: { name: 'Santa Catalina Hall', floors: ['Floor 1','Floor 2','Floor 3'] },
+      STN:   { name: 'Santan Hall',         floors: ['Floor 1','Floor 2','Floor 3'] },
+    };
+
+    const INCIDENTS = {
+      fire:    { icon:'🔥', label:'Fire',                color:'#FF6600', instructions:'Pull the nearest fire alarm. Evacuate via the nearest stairwell. Do not use elevators. Gather at the assembly area. If someone is trapped, notify firefighters immediately.' },
+      shooter: { icon:'🚨', label:'Active Threat',       color:'#CC0000', instructions:'RUN if there is a clear escape path. HIDE in a locked room — turn off lights, silence phone. FIGHT only as a last resort. Call 911 when safe. Do not pull fire alarms.' },
+      medical: { icon:'🏥', label:'Medical Emergency',   color:'#00CC66', instructions:'Call 911 immediately. Do not move the person unless in immediate danger. Note the exact location and floor. If trained, begin CPR if person is unresponsive and not breathing.' },
+      hazmat:  { icon:'☣',  label:'Hazmat / Spill',      color:'#FFAA00', instructions:'Leave the area immediately without touching the substance. Alert others nearby. Do not use elevators. Call 911 and ASU Police. Note the substance name if known.' },
+      other:   { icon:'📞', label:'Other Emergency',     color:'#8C1D40', instructions:'ASU Police are available 24/7. Describe your location, the situation, and any injuries. Stay on the line with the dispatcher.' },
+    };
+
+    let selectedBuildingKey  = null;
+    let selectedBuildingName = null;
+    let selectedFloor        = null;
+    let incidentMenuOpen     = false;
+
+    function toggleIncidentMenu() {
+      incidentMenuOpen = !incidentMenuOpen;
+      const menu = document.getElementById('incidentMenu');
+      menu.style.display = incidentMenuOpen ? 'block' : 'none';
+      document.getElementById('incidentChevron').style.transform = incidentMenuOpen ? 'rotate(180deg)' : '';
+      if (incidentMenuOpen) {
+        // Reset to step 1
+        showStep('building');
+        selectedBuildingKey = selectedBuildingName = selectedFloor = null;
+      }
+    }
+
+    document.addEventListener('click', function(e) {
+      const btn  = document.getElementById('incidentBtn');
+      const menu = document.getElementById('incidentMenu');
+      if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
+        incidentMenuOpen = false;
+        menu.style.display = 'none';
+        document.getElementById('incidentChevron').style.transform = '';
+      }
+    });
+
+    function showStep(step) {
+      document.getElementById('stepBuilding').style.display = step === 'building' ? 'block' : 'none';
+      document.getElementById('stepFloor').style.display    = step === 'floor'    ? 'block' : 'none';
+      document.getElementById('stepType').style.display     = step === 'type'     ? 'block' : 'none';
+    }
+
+    function selectBuilding2(name, key) {
+      selectedBuildingKey  = key;
+      selectedBuildingName = name;
+      document.getElementById('selectedBuildingLabel').textContent = name;
+
+      const floorList = document.getElementById('floorList');
+      floorList.innerHTML = '';
+      BUILDINGS_INFO[key].floors.forEach(function(floor) {
+        const btn = document.createElement('button');
+        btn.textContent = floor;
+        btn.style.cssText = 'padding:8px 14px;border-radius:6px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-family:Arial,sans-serif;font-size:12px;font-weight:600;transition:background 0.15s;';
+        btn.onmouseover = function(){ btn.style.background='rgba(140,29,64,0.4)'; };
+        btn.onmouseout  = function(){ btn.style.background='rgba(255,255,255,0.06)'; };
+        btn.onclick = function(){ selectFloor(floor); };
+        floorList.appendChild(btn);
+      });
+
+      showStep('floor');
+    }
+
+    function selectFloor(floor) {
+      selectedFloor = floor;
+      document.getElementById('locationSummary').textContent = selectedBuildingName + ' — ' + floor;
+      showStep('type');
+    }
+
+    function backToBuilding() { showStep('building'); }
+    function backToFloor()    { showStep('floor'); }
+
+    function triggerEmergency(type) {
+      // Close dropdown
+      incidentMenuOpen = false;
+      document.getElementById('incidentMenu').style.display = 'none';
+      document.getElementById('incidentChevron').style.transform = '';
+
+      const inc  = INCIDENTS[type];
+      const now  = new Date();
+      const time = now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+
+      // Show modal
+      document.getElementById('modalIcon').textContent         = inc.icon;
+      document.getElementById('modalTitle').textContent        = inc.label + ' Reported';
+      document.getElementById('modalSub').textContent          = selectedBuildingName + ' — ' + selectedFloor;
+      document.getElementById('modalInstructions').textContent = inc.instructions;
+      document.getElementById('modalHeader').style.borderTop   = '4px solid ' + inc.color;
+      document.getElementById('emergencyModal').style.display  = 'flex';
+
+      // Activate site-wide alert banner
+      document.getElementById('alertHeadline').textContent = 'DO NOT ENTER — ' + inc.label.toUpperCase() + ' IN PROGRESS';
+      document.getElementById('alertSubline').textContent  = selectedBuildingName + ', ' + selectedFloor + ' — Emergency reported at ' + time;
+      document.getElementById('alertBuilding').textContent = selectedBuildingName;
+      document.getElementById('alertFloor').textContent    = selectedFloor;
+      document.getElementById('alertType').textContent     = inc.icon + ' ' + inc.label;
+      document.getElementById('alertTime').textContent     = time;
+      document.getElementById('siteAlert').classList.add('show');
+
+      // Push page content down so alert is visible
+      document.body.style.paddingTop = document.getElementById('siteAlert').offsetHeight + 'px';
+
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
+    }
+
+    function dismissAlert() {
+      document.getElementById('siteAlert').classList.remove('show');
+      document.body.style.paddingTop = '';
+    }
+
+    function closeEmergencyModal() {
+      document.getElementById('emergencyModal').style.display = 'none';
+    }
+
+    // SOS — hold for 3 seconds
+    let sosTimer   = null;
+    let sosHolding = false;
+
+    const sosBtn = document.getElementById('sosBtn');
+    if (sosBtn) {
+      function startSOS(e) {
+        e.preventDefault();
+        sosHolding = true;
+        sosBtn.style.background = '#CC0000';
+        sosBtn.innerHTML = '<div style="font-size:13px;font-weight:700;color:#fff;font-family:Arial,sans-serif;">Hold...</div>';
+        sosTimer = setTimeout(function() { if (sosHolding) triggerSOS(); }, 3000);
+      }
+      function cancelSOS() {
+        if (!sosHolding) return;
+        sosHolding = false;
+        clearTimeout(sosTimer);
+        sosBtn.style.background = '#000';
+        sosBtn.innerHTML = '<div style="font-size:22px;font-weight:900;color:#CC0000;line-height:1;">SOS</div><div style="font-size:8px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.5);text-transform:uppercase;">Distress</div>';
+      }
+      sosBtn.addEventListener('mousedown',  startSOS);
+      sosBtn.addEventListener('touchstart', startSOS, { passive: false });
+      sosBtn.addEventListener('mouseup',    cancelSOS);
+      sosBtn.addEventListener('mouseleave', cancelSOS);
+      sosBtn.addEventListener('touchend',   cancelSOS);
+    }
+
+    function triggerSOS() {
+      if (navigator.vibrate) navigator.vibrate([200,100,200,100,200]);
+      document.getElementById('sosModal').style.display = 'flex';
+    }
+
+    function closeSOS() {
+      document.getElementById('sosModal').style.display = 'none';
+      sosHolding = false;
+      clearTimeout(sosTimer);
+      const b = document.getElementById('sosBtn');
+      if (b) {
+        b.style.background = '#000';
+        b.innerHTML = '<div style="font-size:22px;font-weight:900;color:#CC0000;line-height:1;">SOS</div><div style="font-size:8px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.5);text-transform:uppercase;">Distress</div>';
+      }
+    }
   </script>
 
   <!-- ══════════════════════════════════════
