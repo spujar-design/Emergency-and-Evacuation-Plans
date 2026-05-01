@@ -543,34 +543,53 @@
     }
 
     .inc-row {
-      padding: 11px 14px;
+      padding: 14px 16px;
       background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: space-between;
       transition: background 0.15s, border-color 0.15s;
     }
-    .inc-row:hover { background: rgba(140,29,64,0.25); border-color: rgba(140,29,64,0.4); }
+    .inc-row:hover { background: rgba(140,29,64,0.2); border-color: rgba(140,29,64,0.35); }
+    .inc-row span:first-child {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
 
     .inc-type-row {
-      padding: 11px 14px;
+      padding: 14px 16px;
       background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 9px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       transition: background 0.15s, border-color 0.15s;
     }
-    .inc-type-row:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.15); }
+    .inc-type-row:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.14); }
+    .inc-type-row > div:nth-child(2) > div:first-child {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.01em;
+    }
+    .inc-type-row > div:nth-child(2) > div:last-child {
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      color: rgba(255,255,255,0.38);
+      margin-top: 3px;
+    }
 
     .inc-icon {
-      width: 34px; height: 34px;
-      border-radius: 8px; flex-shrink: 0;
+      width: 38px; height: 38px;
+      border-radius: 10px; flex-shrink: 0;
       border: 1px solid;
       display: flex; align-items: center; justify-content: center;
     }
@@ -1100,9 +1119,9 @@
               </div>
               <div style="text-align:left;">
                 <div style="font-family:Arial,sans-serif;font-weight:700;font-size:15px;
-                  color:#fff;margin-bottom:3px;">Report Emergency</div>
-                <div style="font-family:Arial,sans-serif;font-size:12px;
-                  color:rgba(255,255,255,0.45);">Building · Floor · Incident type</div>
+                  color:#fff;letter-spacing:0.01em;margin-bottom:4px;">Report Emergency</div>
+                <div style="font-family:Arial,sans-serif;font-size:12px;font-weight:400;
+                  color:rgba(255,255,255,0.4);letter-spacing:0.02em;">Building · Floor · Incident type</div>
               </div>
             </div>
             <svg id="incidentChevron" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -1183,35 +1202,35 @@
                   <div class="inc-icon" style="background:rgba(255,100,0,0.15);border-color:rgba(255,100,0,0.3);">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="#FF6600"><path d="M17.66 11.2c-.23-.3-.51-.56-.77-.82-.67-.6-1.43-1.03-2.07-1.67C13.33 7.15 13 4.65 13.95 2c-.95.23-1.78.75-2.49 1.32A10.9 10.9 0 008 11c-.27 0-.52-.02-.79-.05-.2-.03-.53-.09-.63-.28a1.02 1.02 0 00-.08-.6C6.28 9.46 5.28 9 4.62 9.27c.79 1.28.56 3.17.57 4.72 0 .25.01.5.03.74.04.46.1.93.2 1.38.37 1.82 1.35 3.48 2.76 4.7C9.63 21.89 11.24 22.5 13 22.5c2.9 0 5.46-1.47 6.93-3.93.77-1.32 1.07-2.9.93-4.47-.11-1.19-.47-2.26-.93-3.21-.23.04-.47.1-.71.18-.87.26-1.56.88-1.56.88z"/></svg>
                   </div>
-                  <div><div style="font-family:Arial,sans-serif;font-weight:700;font-size:13px;color:#fff;">Fire</div><div style="font-family:Arial,sans-serif;font-size:11px;color:rgba(255,255,255,.38);margin-top:1px;">Smoke or fire detected</div></div>
+                  <div><div style="font-family:Arial,sans-serif;font-weight:700;font-size:14px;color:#fff;font-weight:700;letter-spacing:0.01em;">Fire</div><div style="font-family:Arial,sans-serif;font-size:12px;color:rgba(255,255,255,.4);margin-top:3px;">Smoke or fire detected</div></div>
                   <svg style="margin-left:auto;flex-shrink:0;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
                 </div>
                 <div onclick="triggerEmergency('shooter')" class="inc-type-row" data-color="#CC0000">
                   <div class="inc-icon" style="background:rgba(204,0,0,0.15);border-color:rgba(204,0,0,0.35);">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CC0000" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                   </div>
-                  <div><div style="font-family:Arial,sans-serif;font-weight:700;font-size:13px;color:#fff;">Active Threat</div><div style="font-family:Arial,sans-serif;font-size:11px;color:rgba(255,255,255,.38);margin-top:1px;">Armed or dangerous individual</div></div>
+                  <div><div style="font-family:Arial,sans-serif;font-weight:700;font-size:14px;color:#fff;font-weight:700;letter-spacing:0.01em;">Active Threat</div><div style="font-family:Arial,sans-serif;font-size:12px;color:rgba(255,255,255,.4);margin-top:3px;">Armed or dangerous individual</div></div>
                   <svg style="margin-left:auto;flex-shrink:0;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
                 </div>
                 <div onclick="triggerEmergency('medical')" class="inc-type-row" data-color="#00AA55">
                   <div class="inc-icon" style="background:rgba(0,170,85,0.15);border-color:rgba(0,170,85,0.3);">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00AA55" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
                   </div>
-                  <div><div style="font-family:Arial,sans-serif;font-weight:700;font-size:13px;color:#fff;">Medical Emergency</div><div style="font-family:Arial,sans-serif;font-size:11px;color:rgba(255,255,255,.38);margin-top:1px;">Person injured or unresponsive</div></div>
+                  <div><div style="font-family:Arial,sans-serif;font-weight:700;font-size:14px;color:#fff;font-weight:700;letter-spacing:0.01em;">Medical Emergency</div><div style="font-family:Arial,sans-serif;font-size:12px;color:rgba(255,255,255,.4);margin-top:3px;">Person injured or unresponsive</div></div>
                   <svg style="margin-left:auto;flex-shrink:0;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
                 </div>
                 <div onclick="triggerEmergency('hazmat')" class="inc-type-row" data-color="#FFAA00">
                   <div class="inc-icon" style="background:rgba(255,170,0,0.15);border-color:rgba(255,170,0,0.3);">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFAA00" stroke-width="2.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                   </div>
-                  <div><div style="font-family:Arial,sans-serif;font-weight:700;font-size:13px;color:#fff;">Hazmat / Chemical Spill</div><div style="font-family:Arial,sans-serif;font-size:11px;color:rgba(255,255,255,.38);margin-top:1px;">Hazardous material or gas leak</div></div>
+                  <div><div style="font-family:Arial,sans-serif;font-weight:700;font-size:14px;color:#fff;font-weight:700;letter-spacing:0.01em;">Hazmat / Chemical Spill</div><div style="font-family:Arial,sans-serif;font-size:12px;color:rgba(255,255,255,.4);margin-top:3px;">Hazardous material or gas leak</div></div>
                   <svg style="margin-left:auto;flex-shrink:0;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
                 </div>
                 <div onclick="triggerEmergency('other')" class="inc-type-row" data-color="#8C1D40">
                   <div class="inc-icon" style="background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.12);">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L9.91 10a16 16 0 006 6l.32-.32a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
                   </div>
-                  <div><div style="font-family:Arial,sans-serif;font-weight:700;font-size:13px;color:#fff;">Other Emergency</div><div style="font-family:Arial,sans-serif;font-size:11px;color:rgba(255,255,255,.38);margin-top:1px;">Any other urgent situation</div></div>
+                  <div><div style="font-family:Arial,sans-serif;font-weight:700;font-size:14px;color:#fff;font-weight:700;letter-spacing:0.01em;">Other Emergency</div><div style="font-family:Arial,sans-serif;font-size:12px;color:rgba(255,255,255,.4);margin-top:3px;">Any other urgent situation</div></div>
                   <svg style="margin-left:auto;flex-shrink:0;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
                 </div>
               </div>
