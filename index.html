@@ -1267,6 +1267,21 @@
         Select building and floor before reporting an incident. SOS is for immediate
         life-threatening distress only — hold the button for 3 seconds to activate.
       </div>
+
+      <!-- NOTIFICATION OPT-IN -->
+      <button id="notifyBtn" onclick="enableNotifications()" style="
+        margin-top:14px;width:100%;padding:13px;border-radius:10px;
+        background:transparent;
+        border:1px solid rgba(255,255,255,0.12);
+        color:rgba(255,255,255,0.55);
+        font-family:Arial,sans-serif;font-size:13px;font-weight:600;
+        cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+        transition:border-color 0.2s,color 0.2s;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
+        </svg>
+        <span id="notifyBtnText">Enable Emergency Notifications</span>
+      </button>
     </div>
 
     <!-- EMERGENCY MODAL -->
@@ -2773,34 +2788,50 @@
 
     // ── REGISTER SERVICE WORKER + REQUEST NOTIFICATION PERMISSION ──
     async function setupPushNotifications() {
-      if (!('serviceWorker' in navigator) || !('Notification' in window)) return;
+      if (!('serviceWorker' in navigator) || !('Notification' in window)) {
+        console.log('Push not supported');
+        return;
+      }
 
       try {
-        // Register the service worker
-        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        // Use relative path so it works on any GitHub Pages subdirectory
+        const swPath = (location.pathname.endsWith('/') 
+          ? location.pathname 
+          : location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1))
+          + 'firebase-messaging-sw.js';
 
-        // Ask for notification permission
+        const registration = await navigator.serviceWorker.register(swPath);
+        console.log('Service worker registered at:', swPath);
+
+        // Ask for notification permission — MUST be triggered by user gesture
         const permission = await Notification.requestPermission();
-        if (permission !== 'granted') return;
+        console.log('Notification permission:', permission);
 
-        // Get this device's FCM token
+        if (permission !== 'granted') {
+          document.getElementById('notifyBtnText').textContent = 'Notifications Blocked';
+          return;
+        }
+
+        document.getElementById('notifyBtnText').textContent = 'Notifications Enabled';
+        document.getElementById('notifyBtn').style.borderColor = '#00AA55';
+
+        // Get FCM token
         const token = await getToken(messaging, {
           vapidKey: VAPID_KEY,
           serviceWorkerRegistration: registration
         });
 
         if (token) {
-          // Save token to Firebase so server can send notifications to this device
-          const tokenKey = token.substring(0, 20); // use first 20 chars as key
+          const tokenKey = token.substring(0, 20);
           set(ref(db, 'fcmTokens/' + tokenKey), {
             token: token,
-            subscribedAt: new Date().toISOString(),
-            userAgent: navigator.userAgent.substring(0, 100)
+            subscribedAt: new Date().toISOString()
           });
-          console.log('Push notifications enabled');
+          console.log('FCM token saved');
         }
       } catch (err) {
-        console.log('Push notification setup failed:', err);
+        console.log('Push setup error:', err);
+        document.getElementById('notifyBtnText').textContent = 'Notifications Unavailable';
       }
     }
 
@@ -2867,9 +2898,13 @@
       remove(ref(db, 'pushRequest'));
     };
 
-    // Start push notification setup on page load
-    // Small delay so it doesn't fire before camera/location prompts
-    setTimeout(setupPushNotifications, 3000);
+    // Expose for button click — notification permission MUST come from user tap
+    window.enableNotifications = setupPushNotifications;
+
+    // Auto-try silently on load (works if already granted previously)
+    if (Notification && Notification.permission === 'granted') {
+      setupPushNotifications();
+    }
   </script>
 
 </body>
