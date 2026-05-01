@@ -1995,7 +1995,7 @@
           dist:20, bearing:270, lat:33.3063361, lng:-111.6773115 },
         { label:'Turn right toward the front door',
           instruction:'Turn right — the front door is ahead of you',
-          dist:1, bearing:90, lat:33.3063361, lng:-111.6773115 },
+          dist:999, bearing:90, lat:33.3063361, lng:-111.6773115 },
         { label:'Walk straight to the front door',
           instruction:'Walk straight toward the front doors',
           dist:20, bearing:90, lat:33.3063369, lng:-111.6773038 },
@@ -2022,7 +2022,7 @@
           dist:15, bearing:270, lat:33.3063109, lng:-111.6769880 },
         { label:'Turn left toward the front door',
           instruction:'Turn left — the front door is straight ahead',
-          dist:1, bearing:180, lat:33.3063200, lng:-111.6771500 },
+          dist:999, bearing:180, lat:33.3063200, lng:-111.6771500 },
         { label:'Walk straight to the front door',
           instruction:'Walk straight toward the front doors',
           dist:5, bearing:180, lat:33.3063369, lng:-111.6773038 },
@@ -2366,7 +2366,14 @@
         // Update display — show steps remaining
         updateDistDisplay(arWPIndex, remainingSteps);
 
-        if (remainingSteps <= 0) autoAdvanceWaypoint();
+        if (remainingSteps <= 0) {
+          // Only auto-advance on straight/exit steps
+          // Turn steps (left/right) must be manually confirmed by tapping button
+          const dir = getDirection(arWPs[arWPIndex]);
+          if (dir === 'straight' || dir === 'exit') {
+            autoAdvanceWaypoint();
+          }
+        }
 
         setTimeout(() => { stepCooldown = false; }, 350);
       }
@@ -2601,31 +2608,30 @@
     if (!wp) return;
 
     const dir = getDirection(wp);
-    const icons = { straight:'↑', left:'←', right:'→', exit:'EXIT', arrived:'✓' };
+    const icons = { straight:'↑', left:'←', right:'→', exit:'↑', arrived:'✓' };
 
     document.getElementById('arTurnIcon').textContent  = icons[dir] || '↑';
     document.getElementById('arStepLabel').textContent = wp.label;
     document.getElementById('arStepSub').textContent   = wp.instruction;
-    document.getElementById('arStepBadge').textContent = `${arWPIndex + 1} / ${arWPs.length}`;
+    document.getElementById('arStepBadge').textContent = '';  // no step numbers
 
     const pct = Math.round((arWPIndex / arWPs.length) * 100);
     document.getElementById('arProgFill').style.width  = pct + '%';
-    document.getElementById('arProgLabel').textContent = `Step ${arWPIndex + 1} of ${arWPs.length}`;
-    document.getElementById('arProgPct').textContent   = pct + '%';
+    document.getElementById('arProgLabel').textContent = '';  // no step X of Y
+    document.getElementById('arProgPct').textContent   = '';
 
     // Update button label for last step
     const btn = document.getElementById('arImHereBtn');
     if (btn) {
       btn.textContent = arWPIndex === arWPs.length - 1
         ? 'I HAVE ARRIVED'
-        : 'I AM HERE — NEXT STEP';
+        : 'I AM HERE — NEXT';
     }
 
     waypointBearing = wp.bearing;
   }
 
   function renderWaypoints() {
-    // No chips anymore — instruction card replaces them
     updateARUI();
   }
 
@@ -2768,7 +2774,7 @@
         `;
         el.innerHTML = `
           <div style="font-size:.85rem;font-weight:600;color:#fff;flex:1;">${b.name}</div>
-          <div style="font-size:.68rem;color:rgba(255,255,255,.35);">${b.waypoints.length} steps</div>
+          <div style="font-size:.68rem;color:rgba(255,255,255,.35);">${b.waypoints.length} waypoints</div>
           ${selected ? '<div style="font-size:.7rem;color:#FFC627;font-weight:700;">✓</div>' : ''}
         `;
         list.appendChild(el);
