@@ -1028,8 +1028,15 @@
           </div>
         </div>
       </div>
-      <div style="font-family:Arial,sans-serif;font-size:11px;
-        color:rgba(255,255,255,0.6);" id="allClearTimer">Auto-dismissing in 60:00</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="font-family:Arial,sans-serif;font-size:11px;
+          color:rgba(255,255,255,0.6);" id="allClearTimer">Auto-dismissing in 60:00</div>
+        <button onclick="showAdminPIN()" style="
+          background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.3);
+          color:#fff;padding:6px 12px;border-radius:6px;
+          font-family:Arial,sans-serif;font-size:11px;font-weight:700;
+          cursor:pointer;white-space:nowrap;">🔒 Admin</button>
+      </div>
     </div>
     <div style="background:#008844;padding:8px 20px;
       font-family:Arial,sans-serif;font-size:11px;color:rgba(255,255,255,0.7);">
@@ -3186,7 +3193,7 @@
         // Hide all clear if showing
         document.getElementById('allClearBanner').style.display = 'none';
       } else if (data && data.allClear) {
-        // Admin sent all clear — show green banner on ALL devices with countdown
+        // Admin sent all clear — show green banner on ALL devices with correct countdown
         document.getElementById('siteAlert').classList.remove('show');
         const building = data.building || 'the building';
         document.getElementById('allClearHeadline').textContent =
@@ -3197,11 +3204,11 @@
         banner.style.display = 'block';
         document.body.style.paddingTop = banner.offsetHeight + 'px';
 
-        // Start 1-hour countdown on this device
-        let secondsLeft = 3600;
+        // Calculate remaining time from Firebase expiry — survives refresh
+        const expiresAt = data.expiresAt ? new Date(data.expiresAt).getTime() : Date.now() + 3600000;
         if (window._allClearCountdown) clearInterval(window._allClearCountdown);
         window._allClearCountdown = setInterval(function() {
-          secondsLeft--;
+          const secondsLeft = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
           const mins = Math.floor(secondsLeft / 60);
           const secs = secondsLeft % 60;
           const el = document.getElementById('allClearTimer');
@@ -3211,6 +3218,7 @@
             clearInterval(window._allClearCountdown);
             banner.style.display = 'none';
             document.body.style.paddingTop = '';
+            if (window.clearAlert) window.clearAlert();
           }
         }, 1000);
 
@@ -3255,14 +3263,16 @@
 
     // ── ALL CLEAR — broadcast green banner to all devices ──
     window.broadcastAllClear = function(building) {
-      const now  = new Date();
-      const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const now      = new Date();
+      const time     = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const expiresAt = new Date(now.getTime() + 3600000).toISOString(); // 1 hour from now
       set(alertRef, {
-        allClear: true,
-        active: false,
-        building: building,
-        time: time,
-        clearedAt: now.toISOString()
+        allClear:  true,
+        active:    false,
+        building:  building,
+        time:      time,
+        clearedAt: now.toISOString(),
+        expiresAt: expiresAt  // stored so refresh preserves countdown
       });
       // Auto-remove from Firebase after 1 hour
       setTimeout(function() { remove(alertRef); }, 3600000);
