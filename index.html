@@ -1269,19 +1269,35 @@
       </div>
 
       <!-- NOTIFICATION OPT-IN -->
-      <button id="notifyBtn" onclick="enableNotifications()" style="
-        margin-top:14px;width:100%;padding:13px;border-radius:10px;
-        background:transparent;
-        border:1px solid rgba(255,255,255,0.12);
-        color:rgba(255,255,255,0.55);
-        font-family:Arial,sans-serif;font-size:13px;font-weight:600;
-        cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
-        transition:border-color 0.2s,color 0.2s;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
-        </svg>
-        <span id="notifyBtnText">Enable Emergency Notifications</span>
-      </button>
+      <div id="notifySection" style="
+        margin-top:16px;
+        background:rgba(0,150,80,0.1);
+        border:1px solid rgba(0,200,100,0.2);
+        border-radius:12px;padding:16px;">
+
+        <div style="font-family:Arial,sans-serif;font-weight:700;font-size:14px;
+          color:#fff;margin-bottom:4px;">Get Emergency Alerts</div>
+
+        <div id="notifyMsg" style="font-family:Arial,sans-serif;font-size:12px;
+          color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:14px;">
+          Tap below to receive a push notification the moment an emergency is reported —
+          even when this site is closed.
+        </div>
+
+        <button id="notifyBtn" style="
+          width:100%;padding:16px 20px;border-radius:10px;
+          background:#00AA55;border:none;color:#fff;
+          font-family:Arial,sans-serif;font-size:15px;font-weight:700;
+          cursor:pointer;letter-spacing:0.02em;
+          display:flex;align-items:center;justify-content:center;gap:10px;
+          min-height:54px;-webkit-tap-highlight-color:transparent;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 01-3.46 0"/>
+          </svg>
+          <span id="notifyBtnText">Enable Emergency Notifications</span>
+        </button>
+      </div>
     </div>
 
     <!-- EMERGENCY MODAL -->
@@ -2905,6 +2921,64 @@
     if (Notification && Notification.permission === 'granted') {
       setupPushNotifications();
     }
+  </script>
+
+  <!-- Notification button wiring — must be outside module scope for iOS Safari -->
+  <script>
+    // Check if notifications are supported at all
+    document.addEventListener('DOMContentLoaded', function() {
+      const btn = document.getElementById('notifyBtn');
+      const msg = document.getElementById('notifyMsg');
+      if (!btn) return;
+
+      // Check iOS Safari without PWA — push not supported
+      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      const isInStandaloneMode = window.navigator.standalone === true;
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+      if (isIOS && isSafari && !isInStandaloneMode) {
+        // iOS Safari without Home Screen — push not supported
+        btn.style.background = '#555';
+        document.getElementById('notifyBtnText').textContent = 'Add to Home Screen to Enable';
+        if (msg) msg.innerHTML =
+          'On iPhone, push notifications require adding this site to your Home Screen first.<br><br>' +
+          '<strong style="color:#FFC627;">How to:</strong> Tap the Share button ' +
+          '<span style="color:#FFC627;">&#x2B06;</span> in Safari → ' +
+          '<strong style="color:#fff;">"Add to Home Screen"</strong> → open from there → tap this button again.';
+        btn.onclick = null;
+        return;
+      }
+
+      if (!('Notification' in window)) {
+        btn.style.background = '#555';
+        document.getElementById('notifyBtnText').textContent = 'Notifications Not Supported';
+        return;
+      }
+
+      // Already granted
+      if (Notification.permission === 'granted') {
+        btn.style.background = '#007733';
+        document.getElementById('notifyBtnText').textContent = 'Notifications Enabled';
+      }
+
+      // Wire button directly
+      btn.addEventListener('click', function() {
+        if (typeof window.enableNotifications === 'function') {
+          window.enableNotifications();
+        } else {
+          // Fallback — request permission directly
+          Notification.requestPermission().then(function(p) {
+            if (p === 'granted') {
+              btn.style.background = '#007733';
+              document.getElementById('notifyBtnText').textContent = 'Notifications Enabled';
+            } else {
+              btn.style.background = '#555';
+              document.getElementById('notifyBtnText').textContent = 'Permission Denied';
+            }
+          });
+        }
+      });
+    });
   </script>
 
 </body>
