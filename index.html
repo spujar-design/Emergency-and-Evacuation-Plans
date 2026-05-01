@@ -1590,6 +1590,11 @@
         window.broadcastAlert(building, floor, inc.label, type);
       }
 
+      // Send email alert to staff via EmailJS
+      if (window.sendEmergencyEmail) {
+        window.sendEmergencyEmail(building, floor, inc.label, time);
+      }
+
       if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
     }
 
@@ -2979,6 +2984,25 @@
         }
       });
     });
+  </script>
+
+  <!-- EMAILJS — sends alert email when emergency is reported -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    emailjs.init('zi-4_80_xxlRhTDfb');
+
+    window.sendEmergencyEmail = function(building, floor, incidentType, time) {
+      emailjs.send('service_z4jrhzo', 'template_wj9mkhc', {
+        incident_type: incidentType,
+        building:      building,
+        floor:         floor,
+        time:          time,
+      }).then(function() {
+        console.log('Emergency email sent successfully');
+      }).catch(function(err) {
+        console.log('Email send failed:', err);
+      });
+    };
   </script>
 
 </body>
