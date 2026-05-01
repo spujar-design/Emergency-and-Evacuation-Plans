@@ -2747,10 +2747,13 @@
   }
   </script>
 
-  <!-- FIREBASE REALTIME DATABASE — broadcasts alerts to all visitors -->
+  <!-- FIREBASE REALTIME DATABASE + CLOUD MESSAGING PUSH NOTIFICATIONS -->
   <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { initializeApp }           from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
     import { getDatabase, ref, set, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+    import { getMessaging, getToken, onMessage }      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js';
+
+    const VAPID_KEY = 'BL_2t0wrFdOkNJDOcg7r12ZPdBQSp-YS5LZmBCiKFaBpt3ktgFZ8DYhlFoll8r-vV1jAI3RruUDY0Q88f1Ds02U';
 
     const firebaseConfig = {
       apiKey: "AIzaSyB0gTstlQG6FpoZQy-mTeQXXjcNjACYFH0",
@@ -2759,19 +2762,61 @@
       projectId: "tps-emergency",
       storageBucket: "tps-emergency.firebasestorage.app",
       messagingSenderId: "349680838922",
-      appId: "1:349680838922:web:d7b0780510dd41d1c332f3",
-      measurementId: "G-HD9D74EYX7"
+      appId: "1:349680838922:web:d7b0780510dd41d1c332f3"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db  = getDatabase(app);
-    const alertRef = ref(db, 'activeAlert');
+    const app       = initializeApp(firebaseConfig);
+    const db        = getDatabase(app);
+    const messaging = getMessaging(app);
+    const alertRef  = ref(db, 'activeAlert');
+    const tokensRef = ref(db, 'fcmTokens');
 
-    // ── LISTEN — show alert to ALL visitors the moment one is reported ──
-    onValue(alertRef, (snapshot) => {
+    // ── REGISTER SERVICE WORKER + REQUEST NOTIFICATION PERMISSION ──
+    async function setupPushNotifications() {
+      if (!('serviceWorker' in navigator) || !('Notification' in window)) return;
+
+      try {
+        // Register the service worker
+        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+
+        // Ask for notification permission
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') return;
+
+        // Get this device's FCM token
+        const token = await getToken(messaging, {
+          vapidKey: VAPID_KEY,
+          serviceWorkerRegistration: registration
+        });
+
+        if (token) {
+          // Save token to Firebase so server can send notifications to this device
+          const tokenKey = token.substring(0, 20); // use first 20 chars as key
+          set(ref(db, 'fcmTokens/' + tokenKey), {
+            token: token,
+            subscribedAt: new Date().toISOString(),
+            userAgent: navigator.userAgent.substring(0, 100)
+          });
+          console.log('Push notifications enabled');
+        }
+      } catch (err) {
+        console.log('Push notification setup failed:', err);
+      }
+    }
+
+    // ── LISTEN FOR FOREGROUND MESSAGES (app is open) ──
+    onMessage(messaging, function(payload) {
+      // App is open — show a custom in-page notification
+      const title = payload.notification ? payload.notification.title : 'Emergency Alert';
+      const body  = payload.notification ? payload.notification.body  : '';
+      // The alert banner is already shown via Realtime DB listener below
+      console.log('Foreground message:', title, body);
+    });
+
+    // ── LISTEN — show alert banner to ALL visitors in real time ──
+    onValue(alertRef, function(snapshot) {
       const data = snapshot.val();
       if (data && data.active) {
-        // Show the banner for everyone
         document.getElementById('alertHeadline').textContent =
           'DO NOT ENTER — ' + data.incidentLabel.toUpperCase() + ' IN PROGRESS';
         document.getElementById('alertSubline').textContent =
@@ -2784,17 +2829,18 @@
         document.body.style.paddingTop =
           document.getElementById('siteAlert').offsetHeight + 'px';
       } else {
-        // Alert was cleared — hide for everyone
         document.getElementById('siteAlert').classList.remove('show');
         document.body.style.paddingTop = '';
       }
     });
 
-    // ── WRITE — called when someone reports an incident ──
-    window.broadcastAlert = function(building, floor, incidentLabel, incidentType) {
+    // ── WRITE ALERT + TRIGGER PUSH NOTIFICATIONS ──
+    window.broadcastAlert = async function(building, floor, incidentLabel, incidentType) {
       const now  = new Date();
       const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      set(alertRef, {
+
+      // Write alert to Realtime DB (shows banner to everyone currently on site)
+      await set(alertRef, {
         active: true,
         building,
         floor,
@@ -2803,12 +2849,27 @@
         time,
         reportedAt: now.toISOString()
       });
+
+      // Write push notification request to Firebase
+      // The Realtime DB listener on each device handles showing the notification
+      // For devices not on the site, FCM service worker shows the notification
+      await set(ref(db, 'pushRequest'), {
+        title: 'EMERGENCY — ' + incidentLabel,
+        body:  building + ', ' + floor + '. Do not enter this building.',
+        timestamp: now.toISOString(),
+        type: incidentType
+      });
     };
 
-    // ── CLEAR — called when Dismiss is tapped ──
+    // ── CLEAR ALERT ──
     window.clearAlert = function() {
       remove(alertRef);
+      remove(ref(db, 'pushRequest'));
     };
+
+    // Start push notification setup on page load
+    // Small delay so it doesn't fire before camera/location prompts
+    setTimeout(setupPushNotifications, 3000);
   </script>
 
 </body>
