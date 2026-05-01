@@ -693,6 +693,27 @@
     .alert-call-911 { background: #fff; color: #CC0000; }
     .alert-call-asu { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.25); }
 
+    .pin-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      transition: background 0.15s;
+    }
+    .pin-dot.filled { background: #fff; border-color: #fff; }
+    .pin-dot.error  { background: #CC0000; border-color: #CC0000; }
+
+    .pin-key {
+      padding: 16px; border-radius: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #fff; font-family: Arial, sans-serif;
+      font-size: 20px; font-weight: 600;
+      cursor: pointer; transition: background 0.15s;
+      min-height: 54px;
+    }
+    .pin-key:hover  { background: rgba(255,255,255,0.12); }
+    .pin-key:active { background: rgba(255,255,255,0.2); }
+
     @media (max-width: 640px) {
       .ar-banner-grid { grid-template-columns: 1fr; gap: 1.25rem; padding: 1.5rem; }
       .ar-launch-btn { width: 100%; justify-content: center; }
@@ -961,7 +982,8 @@
 
   <!-- SITE-WIDE EMERGENCY ALERT BANNER -->
   <div id="siteAlert">
-    <div class="alert-bar">
+    <!-- RED EMERGENCY BANNER -->
+    <div id="alertRedBar" class="alert-bar">
       <div class="alert-main">
         <div class="alert-dot"></div>
         <div class="alert-text">
@@ -969,9 +991,12 @@
           <span id="alertSubline">Loading details...</span>
         </div>
       </div>
-      <button class="alert-dismiss" onclick="dismissAlert()">Dismiss</button>
+      <!-- Admin lock button — only shows PIN modal -->
+      <button class="alert-dismiss" onclick="showAdminPIN()" title="Admin only">
+        🔒 Admin
+      </button>
     </div>
-    <div class="alert-detail">
+    <div id="alertDetailBar" class="alert-detail">
       <div class="alert-detail-item"><strong>Building</strong><span id="alertBuilding">—</span></div>
       <div class="alert-detail-item"><strong>Floor</strong><span id="alertFloor">—</span></div>
       <div class="alert-detail-item"><strong>Incident</strong><span id="alertType">—</span></div>
@@ -980,6 +1005,129 @@
         <a href="tel:911" class="alert-call-911">Call 911</a>
         <a href="tel:4809653456" class="alert-call-asu">ASU Police</a>
       </div>
+    </div>
+  </div>
+
+  <!-- GREEN ALL CLEAR BANNER -->
+  <div id="allClearBanner" style="
+    display:none; position:fixed; top:0; left:0; right:0; z-index:99999;
+    animation:alertSlide 0.4s ease;">
+    <div style="
+      background:#00AA55; padding:0 20px;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; min-height:56px;">
+      <div style="display:flex;align-items:center;gap:12px;flex:1;">
+        <div style="width:10px;height:10px;border-radius:50%;
+          background:#fff;flex-shrink:0;animation:arPulse 1.5s infinite;"></div>
+        <div>
+          <div style="font-family:Arial,sans-serif;font-weight:700;font-size:14px;
+            color:#fff;" id="allClearHeadline">ALL CLEAR — BUILDING IS SAFE</div>
+          <div style="font-family:Arial,sans-serif;font-size:11px;
+            color:rgba(255,255,255,0.75);margin-top:2px;" id="allClearSubline">
+            You are safe to return to the building
+          </div>
+        </div>
+      </div>
+      <div style="font-family:Arial,sans-serif;font-size:11px;
+        color:rgba(255,255,255,0.6);" id="allClearTimer">Auto-dismissing in 60:00</div>
+    </div>
+    <div style="background:#008844;padding:8px 20px;
+      font-family:Arial,sans-serif;font-size:11px;color:rgba(255,255,255,0.7);">
+      This all clear was issued by TPS building management. 
+      Continue to follow any instructions from emergency personnel on site.
+    </div>
+  </div>
+
+  <!-- ADMIN PIN MODAL -->
+  <div id="adminPINModal" style="
+    display:none; position:fixed; inset:0; z-index:99998;
+    background:rgba(0,0,0,0.88); backdrop-filter:blur(6px);
+    align-items:center; justify-content:center; padding:2rem;">
+    <div style="
+      background:#111; border-radius:16px; width:100%; max-width:320px;
+      overflow:hidden; border:1px solid rgba(255,255,255,0.1); padding:28px;">
+
+      <div style="font-family:Arial,sans-serif;font-weight:700;font-size:18px;
+        color:#fff;margin-bottom:6px;">Admin Access</div>
+      <div style="font-family:Arial,sans-serif;font-size:12px;
+        color:rgba(255,255,255,0.45);margin-bottom:20px;">Enter your PIN to manage this alert</div>
+
+      <!-- PIN dots display -->
+      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:20px;" id="pinDots">
+        <div class="pin-dot" id="dot0"></div>
+        <div class="pin-dot" id="dot1"></div>
+        <div class="pin-dot" id="dot2"></div>
+        <div class="pin-dot" id="dot3"></div>
+      </div>
+
+      <!-- PIN keypad -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">
+        <button class="pin-key" onclick="pinPress('1')">1</button>
+        <button class="pin-key" onclick="pinPress('2')">2</button>
+        <button class="pin-key" onclick="pinPress('3')">3</button>
+        <button class="pin-key" onclick="pinPress('4')">4</button>
+        <button class="pin-key" onclick="pinPress('5')">5</button>
+        <button class="pin-key" onclick="pinPress('6')">6</button>
+        <button class="pin-key" onclick="pinPress('7')">7</button>
+        <button class="pin-key" onclick="pinPress('8')">8</button>
+        <button class="pin-key" onclick="pinPress('9')">9</button>
+        <button class="pin-key" onclick="pinClear()" style="font-size:12px;color:rgba(255,255,255,0.5);">CLR</button>
+        <button class="pin-key" onclick="pinPress('0')">0</button>
+        <button class="pin-key" onclick="pinBackspace()" style="font-size:16px;">⌫</button>
+      </div>
+
+      <div id="pinError" style="font-family:Arial,sans-serif;font-size:12px;
+        color:#CC0000;text-align:center;min-height:18px;margin-bottom:12px;"></div>
+
+      <button onclick="closeAdminPIN()" style="
+        width:100%;padding:12px;border-radius:8px;
+        background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+        color:rgba(255,255,255,0.5);font-family:Arial,sans-serif;
+        font-size:13px;cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ADMIN CONTROLS MODAL (shown after correct PIN) -->
+  <div id="adminControls" style="
+    display:none; position:fixed; inset:0; z-index:99999;
+    background:rgba(0,0,0,0.88); backdrop-filter:blur(6px);
+    align-items:center; justify-content:center; padding:2rem;">
+    <div style="
+      background:#111; border-radius:16px; width:100%; max-width:360px;
+      border:1px solid rgba(255,255,255,0.1); padding:28px;">
+
+      <div style="font-family:Arial,sans-serif;font-weight:700;font-size:18px;
+        color:#fff;margin-bottom:6px;">Admin Controls</div>
+      <div style="font-family:Arial,sans-serif;font-size:12px;
+        color:rgba(255,255,255,0.45);margin-bottom:24px;">
+        Manage the active emergency alert
+      </div>
+
+      <!-- All Clear button -->
+      <button onclick="sendAllClear()" style="
+        width:100%;padding:16px;border-radius:10px;margin-bottom:10px;
+        background:#00AA55;border:none;color:#fff;
+        font-family:Arial,sans-serif;font-weight:700;font-size:15px;
+        cursor:pointer;display:flex;align-items:center;
+        justify-content:center;gap:10px;">
+        ✓ Send All Clear — Building is Safe
+      </button>
+
+      <!-- Dismiss silently -->
+      <button onclick="adminDismiss()" style="
+        width:100%;padding:14px;border-radius:10px;margin-bottom:16px;
+        background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+        color:rgba(255,255,255,0.6);
+        font-family:Arial,sans-serif;font-weight:600;font-size:13px;
+        cursor:pointer;">
+        Dismiss Alert Silently
+      </button>
+
+      <button onclick="closeAdminControls()" style="
+        width:100%;padding:12px;border-radius:8px;
+        background:transparent;border:1px solid rgba(255,255,255,0.08);
+        color:rgba(255,255,255,0.35);font-family:Arial,sans-serif;
+        font-size:12px;cursor:pointer;">Cancel</button>
     </div>
   </div>
 
@@ -1473,10 +1621,10 @@
 
     // ── EMERGENCY RESPONSE ───────────────────────────────
     const BUILDINGS_INFO = {
-      SUT:   { name: 'Sutton Hall',        floors: ['Floor 1 West (101)','Floor 1 East (140)','Floor 2 West (201)','Floor 2 East (230–240)','Floor 3 West (301)','Floor 3 East (330–340)'] },
-      PRLTA: { name: 'Peralta Hall',        floors: ['Floor 1','Floor 2','Floor 3'] },
-      SANCA: { name: 'Santa Catalina Hall', floors: ['Floor 1','Floor 2','Floor 3'] },
-      STN:   { name: 'Santan Hall',         floors: ['Floor 1','Floor 2','Floor 3'] },
+      SUT:   { name: 'Sutton Hall',        floors: ['1st Floor','2nd Floor','3rd Floor','Whole Building'] },
+      PRLTA: { name: 'Peralta Hall',        floors: ['1st Floor','2nd Floor','3rd Floor','Whole Building'] },
+      SANCA: { name: 'Santa Catalina Hall', floors: ['1st Floor','2nd Floor','3rd Floor','Whole Building'] },
+      STN:   { name: 'Santan Hall',         floors: ['1st Floor','2nd Floor','3rd Floor','Whole Building'] },
     };
 
     const INCIDENTS = {
@@ -1598,11 +1746,98 @@
       if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
     }
 
-    function dismissAlert() {
+    // ── ADMIN PIN SYSTEM ─────────────────────────────────
+    const ADMIN_PIN   = '7722';
+    let   pinEntry    = '';
+    let   allClearCountdown = null;
+
+    function showAdminPIN() {
+      pinEntry = '';
+      updatePinDots();
+      document.getElementById('pinError').textContent = '';
+      document.getElementById('adminPINModal').style.display = 'flex';
+    }
+
+    function closeAdminPIN() {
+      document.getElementById('adminPINModal').style.display = 'none';
+      pinEntry = '';
+      updatePinDots();
+    }
+
+    function pinPress(digit) {
+      if (pinEntry.length >= 4) return;
+      pinEntry += digit;
+      updatePinDots();
+      if (pinEntry.length === 4) {
+        setTimeout(checkPIN, 150);
+      }
+    }
+
+    function pinBackspace() {
+      pinEntry = pinEntry.slice(0, -1);
+      updatePinDots();
+    }
+
+    function pinClear() {
+      pinEntry = '';
+      updatePinDots();
+    }
+
+    function updatePinDots() {
+      for (let i = 0; i < 4; i++) {
+        const dot = document.getElementById('dot' + i);
+        if (dot) dot.className = 'pin-dot' + (i < pinEntry.length ? ' filled' : '');
+      }
+    }
+
+    function checkPIN() {
+      if (pinEntry === ADMIN_PIN) {
+        // Correct PIN — show admin controls
+        document.getElementById('adminPINModal').style.display  = 'none';
+        document.getElementById('adminControls').style.display  = 'flex';
+        pinEntry = '';
+        updatePinDots();
+      } else {
+        // Wrong PIN — flash red
+        for (let i = 0; i < 4; i++) {
+          const dot = document.getElementById('dot' + i);
+          if (dot) dot.className = 'pin-dot error';
+        }
+        document.getElementById('pinError').textContent = 'Incorrect PIN';
+        setTimeout(() => {
+          pinEntry = '';
+          updatePinDots();
+          document.getElementById('pinError').textContent = '';
+        }, 800);
+      }
+    }
+
+    function closeAdminControls() {
+      document.getElementById('adminControls').style.display = 'none';
+    }
+
+    function adminDismiss() {
+      document.getElementById('adminControls').style.display = 'none';
       document.getElementById('siteAlert').classList.remove('show');
       document.body.style.paddingTop = '';
-      // Clear from Firebase so alert disappears for everyone
       if (window.clearAlert) window.clearAlert();
+    }
+
+    function dismissAlert() {
+      // Non-admin dismiss — does nothing (just here for Firebase listener compatibility)
+    }
+
+    function sendAllClear() {
+      document.getElementById('adminControls').style.display = 'none';
+
+      // Hide red alert banner for everyone via Firebase
+      if (window.clearAlert) window.clearAlert();
+
+      // Broadcast all clear to all devices via Firebase
+      const building = document.getElementById('alertBuilding').textContent || 'the building';
+      if (window.broadcastAllClear) {
+        window.broadcastAllClear(building);
+      }
     }
 
     function closeEmergencyModal() {
@@ -2892,6 +3127,37 @@
         document.getElementById('siteAlert').classList.add('show');
         document.body.style.paddingTop =
           document.getElementById('siteAlert').offsetHeight + 'px';
+        // Hide all clear if showing
+        document.getElementById('allClearBanner').style.display = 'none';
+      } else if (data && data.allClear) {
+        // Admin sent all clear — show green banner on ALL devices with countdown
+        document.getElementById('siteAlert').classList.remove('show');
+        const building = data.building || 'the building';
+        document.getElementById('allClearHeadline').textContent =
+          'ALL CLEAR — ' + building.toUpperCase() + ' IS SAFE';
+        document.getElementById('allClearSubline').textContent =
+          'The emergency has been resolved. You are safe to return.';
+        const banner = document.getElementById('allClearBanner');
+        banner.style.display = 'block';
+        document.body.style.paddingTop = banner.offsetHeight + 'px';
+
+        // Start 1-hour countdown on this device
+        let secondsLeft = 3600;
+        if (window._allClearCountdown) clearInterval(window._allClearCountdown);
+        window._allClearCountdown = setInterval(function() {
+          secondsLeft--;
+          const mins = Math.floor(secondsLeft / 60);
+          const secs = secondsLeft % 60;
+          const el = document.getElementById('allClearTimer');
+          if (el) el.textContent = 'Auto-dismissing in ' +
+            String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
+          if (secondsLeft <= 0) {
+            clearInterval(window._allClearCountdown);
+            banner.style.display = 'none';
+            document.body.style.paddingTop = '';
+          }
+        }, 1000);
+
       } else {
         document.getElementById('siteAlert').classList.remove('show');
         document.body.style.paddingTop = '';
@@ -2929,6 +3195,21 @@
     window.clearAlert = function() {
       remove(alertRef);
       remove(ref(db, 'pushRequest'));
+    };
+
+    // ── ALL CLEAR — broadcast green banner to all devices ──
+    window.broadcastAllClear = function(building) {
+      const now  = new Date();
+      const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      set(alertRef, {
+        allClear: true,
+        active: false,
+        building: building,
+        time: time,
+        clearedAt: now.toISOString()
+      });
+      // Auto-remove from Firebase after 1 hour
+      setTimeout(function() { remove(alertRef); }, 3600000);
     };
 
     // Expose for button click — notification permission MUST come from user tap
