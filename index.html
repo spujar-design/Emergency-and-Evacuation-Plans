@@ -3351,13 +3351,17 @@
 
     window.sendEmergencyEmail = function(building, floor, incidentType, time) {
       console.log('Sending email:', building, floor, incidentType, time);
-      emailjs.send('service_7ymd5ta', 'template_wj9mkhc', {
+      var templateParams = {
         incident_type: incidentType,
         building:      building,
         floor:         floor,
         time:          time,
-      }).then(function(response) {
-        console.log('Email sent OK:', response);
+        to_email:      'samarthgale@gmail.com',
+        from_name:     'TPS Emergency System'
+      };
+      emailjs.send('service_7ymd5ta', 'template_wj9mkhc', templateParams)
+      .then(function(response) {
+        console.log('Email sent OK:', response.status, response.text);
       }).catch(function(err) {
         console.log('Email error:', JSON.stringify(err));
         alert('Email error: ' + JSON.stringify(err));
