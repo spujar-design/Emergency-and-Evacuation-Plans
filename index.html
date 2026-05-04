@@ -3350,15 +3350,17 @@
     emailjs.init('zi-4_80_xxlRhTDfb');
 
     window.sendEmergencyEmail = function(building, floor, incidentType, time) {
+      console.log('Sending email:', building, floor, incidentType, time);
       emailjs.send('service_7ymd5ta', 'template_wj9mkhc', {
         incident_type: incidentType,
         building:      building,
         floor:         floor,
         time:          time,
-      }).then(function() {
-        console.log('Emergency email sent successfully');
+      }).then(function(response) {
+        console.log('Email sent OK:', response);
       }).catch(function(err) {
-        console.log('Email send failed:', err);
+        console.log('Email error:', JSON.stringify(err));
+        alert('Email error: ' + JSON.stringify(err));
       });
     };
   </script>
